@@ -2,6 +2,7 @@ plugins {
 	id 'org.springframework.boot' version '2.7.4'
 	id 'io.spring.dependency-management' version '1.0.14.RELEASE'
 	id 'java'
+	id "org.flywaydb.flyway" version "8.4.2"
 }
 
 group = 'com.tweats'
@@ -15,7 +16,15 @@ repositories {
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	implementation 'org.postgresql:postgresql:42.4.1'
+	implementation 'org.flywaydb:flyway-core'
+	flyway {
+		url = 'jdbc:postgresql://localhost:5432/tweats'
+		user = 'tweats'
+		password = 'tweats'
+	}
 }
+
 
 tasks.named('test') {
 	useJUnitPlatform()

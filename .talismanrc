@@ -1,0 +1,23 @@
+fileignoreconfig:
+- filename: src/main/resources/db/migration/V1.1__CreateRoleTable.sql
+  checksum: 9005b89828a2c9130ae460fbb5e52e6cfc66ba59f6879dcbb6f77aeb85343f76
+- filename: src/main/resources/db/migration/V1.2__CreateUserTable.sql
+  checksum: beaad59dabec4e273c3356b283c3f020e74401bee4afbce2f8a469bf8e917c56
+- filename: src/main/resources/db/migration/V1.3__CreateCategoryTable.sql
+  checksum: e55c27b5d4a43584c81a318f7d914f5559f0e8e76eaa2181ec6f021aed92e446
+- filename: src/main/resources/db/migration/V1.4__CreateItemTable.sql
+  checksum: c2d46bd03c41df29e58573d44e0d18a0d5573ab1c1fb457130542983f7b53408
+- filename: src/main/resources/db/migration/V1.5__CreateOrderTable.sql
+  checksum: 7a3ee1c2e0e1ef9ce151baca32f3b62db2bfaa1e53daa4972ead055c025e6e21
+- filename: src/main/resources/db/migration/V1.6__CreateOrderedItemTable.sql
+  checksum: 848f4ae92fbb7344f0f25d79664765f981f6463de7c47611ee72958186bd30ba
+- filename: src/main/resources/db/migration/V1.7__CreateCartTable.sql
+  checksum: a6475ebbfe2fae6f76c756f27d960278b5ef91f0f882775781ae140c80b3891f
+- filename: src/main/resources/db/migration/V1.8__CreateCartItemTable.sql
+  checksum: cf3a942eea5bed4a0f8501c2b5931ec4ca6506f2bde3defc3e2d521449ea818b
+- filename: build.gradle
+  checksum: 69669aa1267134275b8b780ae7fadc7bfb634542e713190b6098c7c8f20bbce7
+- filename: README.md
+  checksum: 20b41a0a3a69086bda36c365300333b500bbf3790913362568da94dc4b368b40
+
+version: ""
