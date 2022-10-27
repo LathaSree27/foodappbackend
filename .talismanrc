@@ -17,10 +17,22 @@ fileignoreconfig:
   checksum: cf3a942eea5bed4a0f8501c2b5931ec4ca6506f2bde3defc3e2d521449ea818b
 - filename: build.gradle
   checksum: 69669aa1267134275b8b780ae7fadc7bfb634542e713190b6098c7c8f20bbce7
+
+- filename: src/main/resources/db/migration/V1.3__CreateImageTable.sql
+  checksum: 66e9ef66155dbc2226540dd58076177950af191fc4096dc9c7a477030138b3a3
+- filename: src/main/resources/db/migration/V1.4__CreateCategoryTable.sql
+  checksum: 50e35f0b3d5ce0379024b0bf96cc9e939a473c3b4fa58053ad1c08cf26ec305d
+- filename: src/main/resources/db/migration/V1.5__CreateItemTable.sql
+  checksum: 1bf9bf53e47d15403ab267033d09f4da32ec4acb789821ffd9d91922b57712bd
+
 - filename: README.md
   checksum: 20b41a0a3a69086bda36c365300333b500bbf3790913362568da94dc4b368b40
 - filename: src/main/java/com/tweats/tweats/users/User.java
   checksum: 482e5cfa5617e7c2308f617135d0d32355fbb58a79f4333dae980c9ccfcce129
 - filename: src/test/java/com/tweats/tweats/users/view/UserControllerIntegrationTest.java
   checksum: 0639dfc81f65446641f1f56dbc749a77e116d93da7b0d1b12c2655dfa39e98f9
+- filename: src/main/resources/db/migration/V1.0__CreateUUIDExtension.sql
+  checksum: 37e25186087a0e8e7c056377a0642d3398f9dc7702af35ac28afd888e45d8663
+- filename: src/main/resources/db/migration/V1.3__CreateImageTable.sql
+  checksum: 705dfa05cddeaa38aaa3046399491edcf2a1862f69fc60af86e388c6299aea77
 version: ""
