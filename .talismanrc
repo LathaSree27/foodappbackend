@@ -19,5 +19,8 @@ fileignoreconfig:
   checksum: 69669aa1267134275b8b780ae7fadc7bfb634542e713190b6098c7c8f20bbce7
 - filename: README.md
   checksum: 20b41a0a3a69086bda36c365300333b500bbf3790913362568da94dc4b368b40
-
+- filename: src/main/java/com/tweats/tweats/users/User.java
+  checksum: 482e5cfa5617e7c2308f617135d0d32355fbb58a79f4333dae980c9ccfcce129
+- filename: src/test/java/com/tweats/tweats/users/view/UserControllerIntegrationTest.java
+  checksum: 0639dfc81f65446641f1f56dbc749a77e116d93da7b0d1b12c2655dfa39e98f9
 version: ""
