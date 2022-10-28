@@ -53,9 +53,21 @@ public class ImageServiceTest {
                 .thenReturn(Optional.of(image));
         ImageService imageService = new ImageService(imageRepository);
 
-        Image fetchedImage = imageService.getImage(imageId);
+        Optional<Image> imageFetched = imageService.getImage(imageId);
 
-        assertThat(image, is(fetchedImage));
+        assertThat(Optional.of(image), is(imageFetched));
 
     }
+
+//    @Test
+//    void shouldThrowExceptionWhenImageIsNotFound() {
+//        String imageId = "Image@123";
+//        Image image = new Image();
+//        when(imageRepository.findById(imageId))
+//                .thenReturn(null);
+//        ImageService imageService = new ImageService(imageRepository);
+//
+//        assertThrows(ImageNotFoundException.class,()->imageService.getImage(imageId));
+
+//    }
 }

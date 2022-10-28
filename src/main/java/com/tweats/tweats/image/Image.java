@@ -17,17 +17,17 @@ public class Image {
     private String contentType;
 
     @Lob
-    private byte[] date;
+    private byte[] data;
 
     private Long size;
 
     public Image() {
     }
 
-    public Image(String name, String contentType, byte[] date, Long size) {
+    public Image(String name, String contentType, byte[] data, Long size) {
         this.name = name;
         this.contentType = contentType;
-        this.date = date;
+        this.data = data;
         this.size = size;
     }
 
@@ -43,8 +43,8 @@ public class Image {
         return contentType;
     }
 
-    public byte[] getDate() {
-        return date;
+    public byte[] getData() {
+        return data;
     }
 
     public Long getSize() {
@@ -59,8 +59,8 @@ public class Image {
         this.contentType = contentType;
     }
 
-    public void setDate(byte[] date) {
-        this.date = date;
+    public void setData(byte[] data) {
+        this.data = data;
     }
 
     public void setSize(Long size) {

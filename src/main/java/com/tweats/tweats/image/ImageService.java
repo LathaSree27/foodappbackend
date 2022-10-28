@@ -23,18 +23,13 @@ public class ImageService {
     public Image save(MultipartFile file) throws IOException, NotAnImageException {
         if (file.getContentType() == MediaType.IMAGE_PNG_VALUE || file.getContentType() == MediaType.IMAGE_JPEG_VALUE) {
             Image image = new Image(file.getName(), file.getContentType(), file.getBytes(), file.getSize());
-            imageRepository.save(image);
-            return image;
+            return imageRepository.save(image);
         }
         throw new NotAnImageException();
     }
 
-    public Image getImage(String imageId) throws ImageNotFoundException {
-        return imageRepository.findById(imageId).orElseThrow(() ->  new ImageNotFoundException());
+    public Optional<Image> getImage(String imageId) {
+        return imageRepository.findById(imageId);
     }
 
-
-
-//    public MultipartFile fetch(org.springframework.mock.web.MockMultipartFile mockMultipartFile) {
-//    }
 }
