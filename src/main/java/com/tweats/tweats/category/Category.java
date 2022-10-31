@@ -25,17 +25,16 @@ public class Category {
     private String name;
 
     @OneToOne
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "image_id")
     private Image image;
 
-    @JsonProperty
-    @NotBlank(message = "Is the category open or not")
+
     @Column(nullable = false)
     @ApiModelProperty(name = "is_open", value = "is_open", example = "is_open", required = true, position = 3)
     private boolean is_open;
 
     @OneToOne
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "user_id")
     private User user;
 
     public Category() {

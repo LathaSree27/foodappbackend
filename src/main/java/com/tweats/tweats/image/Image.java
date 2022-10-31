@@ -1,19 +1,27 @@
 package com.tweats.tweats.image;
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
+import java.io.Serializable;
+import java.util.UUID;
 
 @Entity
 @Table(name = "image")
 public class Image {
     @Id
-    @GeneratedValue(generator =  "uuid")
-    @GenericGenerator(name = "uuid" , strategy = "uuid2")
+    @GeneratedValue(generator = "uuid")
+    @GenericGenerator(name = "uuid", strategy = "uuid2")
     private String id;
 
     private String name;
 
+    @Column(name = "content_type")
     private String contentType;
 
     @Lob
@@ -65,5 +73,9 @@ public class Image {
 
     public void setSize(Long size) {
         this.size = size;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }
