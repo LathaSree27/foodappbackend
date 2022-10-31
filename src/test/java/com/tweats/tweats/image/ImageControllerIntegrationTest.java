@@ -1,6 +1,5 @@
 package com.tweats.tweats.image;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tweats.tweats.TweatsApplication;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,8 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -31,22 +29,26 @@ public class ImageControllerIntegrationTest {
     @Autowired
     private MockMvc mockMvc;
 
-   @BeforeEach
-   public  void beforeEach(){
-       imageRepository.deleteAll();
-   }
+    @BeforeEach
+    public void beforeEach() {
+        imageRepository.deleteAll();
+    }
 
-   @AfterEach
-   public  void afterEach(){
-       imageRepository.deleteAll();
-   }
+    @AfterEach
+    public void afterEach() {
+        imageRepository.deleteAll();
+    }
 
     @Test
     void shouldBeAbleToFetchImageWhenIdIsProvided() throws Exception {
-        Image image = new Image( "image.png", MediaType.IMAGE_JPEG_VALUE, "hello".getBytes(),22L);
+        Image image = new Image("image.png", MediaType.IMAGE_JPEG_VALUE, "hello".getBytes(), 22L);
         Image imageFetched = imageRepository.save(image);
         String imageId = imageFetched.getId();
-        mockMvc.perform(get("/images/"+imageId))
-                        .andExpect(status().isOk());
+
+        mockMvc.perform(get("/images/" + imageId))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.IMAGE_JPEG_VALUE))
+                .andExpect(content().bytes("hello".getBytes()))
+                .andReturn();
     }
 }

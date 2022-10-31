@@ -4,7 +4,6 @@ import com.tweats.tweats.exceptions.ImageNotFoundException;
 import com.tweats.tweats.exceptions.NotAnImageException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 
@@ -12,10 +11,10 @@ import java.io.IOException;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.hamcrest.Matchers.*;
 
 public class ImageServiceTest {
     private ImageRepository imageRepository;
@@ -59,15 +58,4 @@ public class ImageServiceTest {
 
     }
 
-//    @Test
-//    void shouldThrowExceptionWhenImageIsNotFound() {
-//        String imageId = "Image@123";
-//        Image image = new Image();
-//        when(imageRepository.findById(imageId))
-//                .thenReturn(null);
-//        ImageService imageService = new ImageService(imageRepository);
-//
-//        assertThrows(ImageNotFoundException.class,()->imageService.getImage(imageId));
-
-//    }
 }

@@ -1,6 +1,5 @@
 package com.tweats.tweats.image;
 
-import com.tweats.tweats.exceptions.ImageNotFoundException;
 import com.tweats.tweats.exceptions.NotAnImageException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;

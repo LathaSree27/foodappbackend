@@ -1,6 +1,5 @@
 package com.tweats.tweats.image;
 
-import com.tweats.tweats.exceptions.ImageNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -23,10 +22,10 @@ public class ImageController {
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<byte[]> getImage(@PathVariable String id){
+    public ResponseEntity<byte[]> getImage(@PathVariable String id) {
         Optional<Image> imageOptional = imageService.getImage(id);
 
-        if(!imageOptional.isPresent()){
+        if (!imageOptional.isPresent()) {
             return ResponseEntity.notFound()
                     .build();
         }
