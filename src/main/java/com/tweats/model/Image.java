@@ -1,4 +1,4 @@
-package com.tweats.tweats.image;
+package com.tweats.model;
 
 import org.hibernate.annotations.GenericGenerator;
 

@@ -1,5 +1,7 @@
-package com.tweats.tweats.image;
+package com.tweats.controller;
 
+import com.tweats.model.Image;
+import com.tweats.service.ImageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;

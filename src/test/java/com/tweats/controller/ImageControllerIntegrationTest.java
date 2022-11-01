@@ -1,6 +1,8 @@
-package com.tweats.tweats.image;
+package com.tweats.controller;
 
-import com.tweats.tweats.TweatsApplication;
+import com.tweats.TweatsApplication;
+import com.tweats.model.Image;
+import com.tweats.repo.ImageRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

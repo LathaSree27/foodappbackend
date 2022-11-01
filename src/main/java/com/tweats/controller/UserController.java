@@ -1,5 +1,6 @@
-package com.tweats.tweats.users;
+package com.tweats.controller;
 
+import com.tweats.service.UserPrincipalService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 

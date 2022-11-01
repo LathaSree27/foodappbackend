@@ -1,6 +1,8 @@
-package com.tweats.tweats.image;
+package com.tweats.service;
 
-import com.tweats.tweats.exceptions.NotAnImageException;
+import com.tweats.exceptions.NotAnImageException;
+import com.tweats.model.Image;
+import com.tweats.repo.ImageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;

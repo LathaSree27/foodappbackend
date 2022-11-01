@@ -1,5 +1,8 @@
-package com.tweats.tweats.users;
+package com.tweats.service;
 
+import com.tweats.controller.request.UserPrincipal;
+import com.tweats.model.User;
+import com.tweats.repo.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

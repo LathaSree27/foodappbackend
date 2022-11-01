@@ -1,7 +1,8 @@
-package com.tweats.tweats.image;
+package com.tweats.service;
 
-import com.tweats.tweats.exceptions.ImageNotFoundException;
-import com.tweats.tweats.exceptions.NotAnImageException;
+import com.tweats.exceptions.NotAnImageException;
+import com.tweats.model.Image;
+import com.tweats.repo.ImageRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -45,7 +46,7 @@ public class ImageServiceTest {
     }
 
     @Test
-    void shouldBeAbleToFetchImageWhenValidDetailsAreProvided() throws ImageNotFoundException {
+    void shouldBeAbleToFetchImageWhenValidDetailsAreProvided() {
         String imageId = "Image@123";
         Image image = new Image();
         when(imageRepository.findById(imageId))

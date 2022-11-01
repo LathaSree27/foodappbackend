@@ -1,11 +1,10 @@
-package com.tweats.tweats.users.view;
+package com.tweats.controller;
 
-import com.tweats.tweats.TweatsApplication;
-import com.tweats.tweats.users.Role;
-import com.tweats.tweats.users.RoleRepository;
-import com.tweats.tweats.users.User;
-import com.tweats.tweats.users.UserRepository;
-import org.junit.jupiter.api.AfterAll;
+import com.tweats.TweatsApplication;
+import com.tweats.model.Role;
+import com.tweats.repo.RoleRepository;
+import com.tweats.model.User;
+import com.tweats.repo.UserRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

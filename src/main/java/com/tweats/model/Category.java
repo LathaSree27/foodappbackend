@@ -1,8 +1,6 @@
-package com.tweats.tweats.category;
+package com.tweats.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.tweats.tweats.image.Image;
-import com.tweats.tweats.users.User;
 import io.swagger.annotations.ApiModelProperty;
 
 import javax.persistence.*;
