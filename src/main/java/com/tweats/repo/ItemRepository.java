@@ -1,5 +1,6 @@
-package com.tweats.tweats.items;
+package com.tweats.repo;
 
+import com.tweats.model.Item;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

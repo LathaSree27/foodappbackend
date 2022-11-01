@@ -1,4 +1,4 @@
-package com.tweats.tweats.users;
+package com.tweats.model;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

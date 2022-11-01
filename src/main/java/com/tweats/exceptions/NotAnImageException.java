@@ -1,4 +1,4 @@
-package com.tweats.tweats.exceptions;
+package com.tweats.exceptions;
 
 public class NotAnImageException extends Exception {
     public NotAnImageException() {

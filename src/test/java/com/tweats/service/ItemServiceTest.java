@@ -1,12 +1,14 @@
-package com.tweats.tweats.items;
+package com.tweats.service;
 
-import com.tweats.tweats.category.Category;
-import com.tweats.tweats.category.CategoryRepository;
-import com.tweats.tweats.image.Image;
-import com.tweats.tweats.users.User;
+import com.tweats.model.Category;
+import com.tweats.model.Image;
+import com.tweats.model.User;
+import com.tweats.repo.CategoryRepository;
+import com.tweats.repo.ItemRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import java.math.BigDecimal;
 import java.util.Optional;
 

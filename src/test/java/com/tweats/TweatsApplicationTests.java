@@ -1,4 +1,4 @@
-package com.tweats.tweats;
+package com.tweats;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

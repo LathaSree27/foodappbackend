@@ -1,12 +1,13 @@
-package com.tweats.tweats.items;
+package com.tweats.service;
 
-import com.tweats.tweats.category.CategoryRepository;
-import com.tweats.tweats.image.Image;
+import com.tweats.model.Image;
+import com.tweats.model.Item;
+import com.tweats.repo.CategoryRepository;
+import com.tweats.repo.ItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 
 @Service
 public class ItemService {

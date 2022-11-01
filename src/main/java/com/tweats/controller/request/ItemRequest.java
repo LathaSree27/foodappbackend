@@ -1,6 +1,6 @@
-package com.tweats.tweats.items;
+package com.tweats.controller.request;
 
-import com.tweats.tweats.category.Category;
+import com.tweats.model.Category;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;

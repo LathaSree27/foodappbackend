@@ -1,16 +1,13 @@
-package com.tweats.tweats.items;
+package com.tweats.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.tweats.tweats.TweatsApplication;
-import com.tweats.tweats.category.Category;
-import com.tweats.tweats.category.CategoryRepository;
-import com.tweats.tweats.image.Image;
-import com.tweats.tweats.image.ImageRepository;
-import com.tweats.tweats.image.ImageService;
-import com.tweats.tweats.users.Role;
-import com.tweats.tweats.users.RoleRepository;
-import com.tweats.tweats.users.User;
-import com.tweats.tweats.users.UserRepository;
+import com.tweats.TweatsApplication;
+import com.tweats.model.Category;
+import com.tweats.model.Image;
+import com.tweats.model.Role;
+import com.tweats.model.User;
+import com.tweats.repo.*;
+import com.tweats.service.ImageService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

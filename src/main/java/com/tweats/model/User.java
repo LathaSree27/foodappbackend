@@ -1,4 +1,4 @@
-package com.tweats.tweats.users;
+package com.tweats.model;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;

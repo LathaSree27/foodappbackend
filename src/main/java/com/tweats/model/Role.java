@@ -1,9 +1,6 @@
-package com.tweats.tweats.users;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
+package com.tweats.model;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "role")

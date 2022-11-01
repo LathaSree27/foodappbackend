@@ -1,11 +1,11 @@
-package com.tweats.tweats.users.view;
+package com.tweats.controller;
 
-import com.tweats.tweats.TweatsApplication;
-import com.tweats.tweats.users.Role;
-import com.tweats.tweats.users.RoleRepository;
-import com.tweats.tweats.users.User;
-import com.tweats.tweats.users.UserRepository;
-import org.junit.jupiter.api.AfterAll;
+
+import com.tweats.TweatsApplication;
+import com.tweats.model.Role;
+import com.tweats.model.User;
+import com.tweats.repo.RoleRepository;
+import com.tweats.repo.UserRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,13 +14,11 @@ import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
-
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(classes = TweatsApplication.class)

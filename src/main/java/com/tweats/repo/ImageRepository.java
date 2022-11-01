@@ -1,5 +1,6 @@
-package com.tweats.tweats.image;
+package com.tweats.repo;
 
+import com.tweats.model.Image;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
