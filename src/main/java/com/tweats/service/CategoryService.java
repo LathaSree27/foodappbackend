@@ -1,8 +1,9 @@
 package com.tweats.service;
 
 import com.tweats.model.Category;
+import com.tweats.model.Image;
 import com.tweats.repo.CategoryRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.tweats.repo.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -11,14 +12,16 @@ import java.util.Optional;
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    public CategoryService(CategoryRepository categoryRepository) {
+    public CategoryService(CategoryRepository categoryRepository, UserRepository userRepository) {
         this.categoryRepository = categoryRepository;
+        this.userRepository = userRepository;
     }
 
 
-    public void save(Category category) {
+    public void save(String name, Image categoryImage, Boolean is_open, String email) {
+        Category category = new Category(name, categoryImage, is_open, userRepository.findByEmail(email).get());
         categoryRepository.save(category);
     }
 
