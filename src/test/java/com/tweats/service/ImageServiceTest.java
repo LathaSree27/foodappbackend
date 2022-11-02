@@ -1,8 +1,10 @@
 package com.tweats.service;
 
+import com.tweats.exceptions.ImageNotFoundException;
 import com.tweats.exceptions.NotAnImageException;
 import com.tweats.model.Image;
 import com.tweats.repo.ImageRepository;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -20,14 +22,13 @@ import static org.mockito.Mockito.*;
 public class ImageServiceTest {
     private ImageRepository imageRepository;
 
-
     @BeforeEach
     public void setup() {
         imageRepository = mock(ImageRepository.class);
     }
 
     @Test
-    void shouldBeAbleToSaveImageWhenValidDetailsAreProvided() throws IOException, NotAnImageException {
+    void shouldBeAbleToSaveImageFile() throws IOException, NotAnImageException {
         MockMultipartFile mockMultipartFile = new MockMultipartFile("file", "image.png", MediaType.IMAGE_JPEG_VALUE, "hello".getBytes());
         ImageService imageService = new ImageService(imageRepository);
 
@@ -38,7 +39,7 @@ public class ImageServiceTest {
     }
 
     @Test
-    void shouldNotBeAbleToSaveImageWhenGivenFileIsNotImage() {
+    void shouldThrowNotAnImageExceptionWhenTheFileIsNotPngOrJpegFormat() {
         MockMultipartFile mockMultipartFile = new MockMultipartFile("file", "image.png", MediaType.APPLICATION_FORM_URLENCODED_VALUE, "hello".getBytes());
         ImageService imageService = new ImageService(imageRepository);
 
@@ -46,7 +47,7 @@ public class ImageServiceTest {
     }
 
     @Test
-    void shouldBeAbleToFetchImageWhenValidDetailsAreProvided() {
+    void shouldBeAbleToFetchImageWhenImageIdIsGiven() throws ImageNotFoundException {
 
         String imageId = "Image@123";
         Image image = new Image();
@@ -54,9 +55,20 @@ public class ImageServiceTest {
                 .thenReturn(Optional.of(image));
         ImageService imageService = new ImageService(imageRepository);
 
-        Optional<Image> imageFetched = imageService.getImage(imageId);
+        Image imageFetched = imageService.getImage(imageId);
 
-        assertThat(Optional.of(image), is(imageFetched));
+        assertThat(image, is(imageFetched));
+
+    }
+
+    @Test
+    void shouldThrowImageNotFoundExceptionWhenInvalidImageIdIsGiven() {
+
+        String imageId = "Image@123";
+        ImageService imageService = new ImageService(imageRepository);
+
+        assertThrows(ImageNotFoundException.class, () -> imageService.getImage(imageId));
+
 
     }
 

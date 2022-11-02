@@ -52,4 +52,14 @@ public class ImageControllerIntegrationTest {
                 .andExpect(content().bytes("hello".getBytes()))
                 .andReturn();
     }
+    @Test
+    void shouldThrowImageNotFoundErrorWhenImageIsNotPresent() throws Exception {
+
+        String imageId = "Image@3456";
+
+        mockMvc.perform(get("/images/" + imageId))
+                .andExpect(status().isNotFound());
+
+    }
+
 }
