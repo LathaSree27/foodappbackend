@@ -19,6 +19,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
@@ -28,7 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest(classes = TweatsApplication.class)
 @WithMockUser
-@AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
+@ActiveProfiles("test")
 @AutoConfigureMockMvc
 public class ItemControllerIntegrationTest {
     @Autowired
@@ -83,10 +84,11 @@ public class ItemControllerIntegrationTest {
         MockMultipartFile mockMultipartFile = new MockMultipartFile("file", "image.png", MediaType.IMAGE_JPEG_VALUE, "hello".getBytes());
         MockMultipartFile mockMultipartFileCategory = new MockMultipartFile("file", "image.png", MediaType.IMAGE_JPEG_VALUE, "hello".getBytes());
         Image categoryImage = imageService.save(mockMultipartFileCategory);
+        System.out.println(categoryImage.getName());
         Category category = new Category("Juice", categoryImage, true, vendor);
         Category juice = categoryRepository.save(category);
 
-        mockMvc.perform(MockMvcRequestBuilders.multipart("/api/v1/item")
+        mockMvc.perform(MockMvcRequestBuilders.multipart("/item")
                         .file(mockMultipartFile)
                         .param("name", "Mango")
                         .param("price", String.valueOf(new BigDecimal(80)))
