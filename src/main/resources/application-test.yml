@@ -1,0 +1,14 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: validate
+  datasource:
+    url: jdbc:postgresql://localhost:5432/test_tweats
+    username: tweats
+    password: tweats
+logging:
+  level:
+    root: INFO
+server:
+  servlet:
+    context-path: /tweats/api/v1

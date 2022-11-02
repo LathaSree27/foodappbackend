@@ -47,6 +47,7 @@ public class ImageServiceTest {
 
     @Test
     void shouldBeAbleToFetchImageWhenValidDetailsAreProvided() {
+
         String imageId = "Image@123";
         Image image = new Image();
         when(imageRepository.findById(imageId))

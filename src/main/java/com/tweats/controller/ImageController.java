@@ -36,7 +36,6 @@ public class ImageController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + image.getName() + "\"")
                 .contentType(MediaType.valueOf(image.getContentType()))
                 .body(image.getData());
-
     }
 
 }

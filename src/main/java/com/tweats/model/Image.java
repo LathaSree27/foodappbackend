@@ -14,6 +14,7 @@ public class Image {
 
     private String name;
 
+    @Column(name = "content_type")
     private String contentType;
 
     @Lob
@@ -65,5 +66,9 @@ public class Image {
 
     public void setSize(Long size) {
         this.size = size;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }

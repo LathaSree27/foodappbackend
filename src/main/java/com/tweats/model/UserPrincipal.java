@@ -1,8 +1,6 @@
-<<<<<<<< HEAD:src/main/java/com/tweats/controller/request/UserPrincipal.java
-package com.tweats.controller.request;
-========
+
+
 package com.tweats.model;
->>>>>>>> main:src/main/java/com/tweats/model/UserPrincipal.java
 
 import com.tweats.model.User;
 import org.springframework.security.core.GrantedAuthority;

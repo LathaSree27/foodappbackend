@@ -1,4 +1,4 @@
-package com.tweats.tweats.config.security;
+package com.tweats.config.security;
 
 import com.tweats.service.UserPrincipalService;
 import org.springframework.beans.factory.annotation.Autowired;

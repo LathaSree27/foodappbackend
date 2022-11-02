@@ -6,9 +6,11 @@ import com.tweats.repo.ImageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -22,8 +24,8 @@ public class ImageService {
     }
 
     public Image save(MultipartFile file) throws IOException, NotAnImageException {
-        if (file.getContentType() == MediaType.IMAGE_PNG_VALUE || file.getContentType() == MediaType.IMAGE_JPEG_VALUE) {
-            Image image = new Image(file.getName(), file.getContentType(), file.getBytes(), file.getSize());
+        if (Objects.equals(file.getContentType(), MediaType.IMAGE_PNG_VALUE) || file.getContentType().equals( MediaType.IMAGE_JPEG_VALUE) ){
+            Image image = new Image(StringUtils.cleanPath(file.getOriginalFilename()), file.getContentType(), file.getBytes(), file.getSize());
             return imageRepository.save(image);
         }
         throw new NotAnImageException();
