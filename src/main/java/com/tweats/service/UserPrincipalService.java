@@ -30,9 +30,6 @@ public class UserPrincipalService implements UserDetailsService {
         return userRepository.findByEmail(email).orElseThrow(()-> new UsernameNotFoundException("user not found"));
     }
 
-    public User findUserById(Long id){
-        return userRepository.findById(id).orElseThrow(()-> new UsernameNotFoundException("user not found"));
-    }
 
     public String getRoleName(String email) {
         User user = findUserByEmail(email);
