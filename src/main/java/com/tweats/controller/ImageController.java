@@ -4,6 +4,7 @@ import com.tweats.exceptions.ImageNotFoundException;
 import com.tweats.exceptions.NotAnImageException;
 import com.tweats.model.Image;
 import com.tweats.service.ImageService;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -15,13 +16,10 @@ import java.io.IOException;
 
 @RestController
 @RequestMapping("images")
+@AllArgsConstructor
 public class ImageController {
 
     private ImageService imageService;
-
-    public ImageController(ImageService imageService) {
-        this.imageService = imageService;
-    }
 
     @GetMapping("{id}")
     public ResponseEntity getImage(@PathVariable String id) throws ImageNotFoundException {
@@ -36,6 +34,5 @@ public class ImageController {
     public void save(@RequestParam(value = "file" ) MultipartFile image) throws IOException, NotAnImageException {
         imageService.save(image);
     }
-
 
 }

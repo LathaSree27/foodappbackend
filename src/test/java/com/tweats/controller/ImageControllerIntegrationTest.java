@@ -14,7 +14,6 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -79,7 +78,5 @@ public class ImageControllerIntegrationTest {
         mockMvc.perform(multipart("/images").file(mockMultipartFile))
                 .andExpect(status().isBadRequest());
     }
-
-
 
 }

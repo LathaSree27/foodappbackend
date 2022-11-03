@@ -4,6 +4,7 @@ import com.tweats.exceptions.ImageNotFoundException;
 import com.tweats.exceptions.NotAnImageException;
 import com.tweats.model.Image;
 import com.tweats.repo.ImageRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -14,13 +15,10 @@ import java.util.Objects;
 import java.util.Optional;
 
 @Service
+@AllArgsConstructor
 public class ImageService {
 
     private final ImageRepository imageRepository;
-
-    public ImageService(ImageRepository imageRepository) {
-        this.imageRepository = imageRepository;
-    }
 
     public Image save(MultipartFile file) throws IOException, NotAnImageException {
         if (isPngFile(file) || isJpegFile(file)){
