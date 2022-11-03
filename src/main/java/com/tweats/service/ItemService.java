@@ -6,11 +6,14 @@ import com.tweats.repo.CategoryRepository;
 import com.tweats.repo.ItemRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.util.List;
 
 @Service
 @AllArgsConstructor
+@Transactional
 public class ItemService {
 
     private ItemRepository itemRepository;
