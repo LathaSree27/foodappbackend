@@ -35,6 +35,9 @@ dependencies {
 	implementation 'org.flywaydb:flyway-core'
 	testImplementation group: 'com.h2database', name: 'h2', version: '2.1.214'
 
+	annotationProcessor 'org.projectlombok:lombok:1.18.24'
+	compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.24'
+
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: "junit", module: "junit"
 	}
