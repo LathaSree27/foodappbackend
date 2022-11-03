@@ -35,4 +35,7 @@ fileignoreconfig:
   checksum: 37e25186087a0e8e7c056377a0642d3398f9dc7702af35ac28afd888e45d8663
 - filename: src/main/resources/db/migration/V1.3__CreateImageTable.sql
   checksum: 705dfa05cddeaa38aaa3046399491edcf2a1862f69fc60af86e388c6299aea77
+- filename: src/main/resources/db/migration/V2.0__AlterColumnDataInImageTable.sql
+  checksum: 9da5d9dd2467d4de224374196cacb262c51e151ba67519cc16f8eb1fe6770071
+
 version: ""

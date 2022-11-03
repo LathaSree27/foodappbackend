@@ -14,7 +14,7 @@ import java.math.BigDecimal;
 
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/item")
 public class ItemController {
 
 
@@ -27,7 +27,7 @@ public class ItemController {
         this.imageService = imageService;
     }
 
-    @PostMapping("/item")
+    @PostMapping
     @ResponseStatus(code = HttpStatus.CREATED)
     public void save(@RequestParam(value = "name") String name, @RequestParam(value = "price") BigDecimal price,
                      @RequestParam(value = "category_id") Long category_id,

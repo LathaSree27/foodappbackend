@@ -2,15 +2,13 @@ package com.tweats.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
-
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import java.math.BigDecimal;
 
 @Entity
 @Table(name = "item")
-public class    Item {
-
+public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;

@@ -33,6 +33,7 @@ dependencies {
 	implementation 'org.postgresql:postgresql:42.4.1'
 	implementation 'com.jcabi:jcabi-manifests:1.1'
 	implementation 'org.flywaydb:flyway-core'
+	testImplementation group: 'com.h2database', name: 'h2', version: '2.1.214'
 
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: "junit", module: "junit"

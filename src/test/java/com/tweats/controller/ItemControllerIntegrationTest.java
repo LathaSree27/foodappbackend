@@ -3,11 +3,11 @@ package com.tweats.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tweats.TweatsApplication;
 import com.tweats.model.Category;
-import com.tweats.repo.*;
 import com.tweats.model.Image;
-import com.tweats.service.ImageService;
 import com.tweats.model.Role;
 import com.tweats.model.User;
+import com.tweats.repo.*;
+import com.tweats.service.ImageService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,6 +19,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
@@ -28,7 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest(classes = TweatsApplication.class)
 @WithMockUser
-@AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
+@ActiveProfiles("test")
 @AutoConfigureMockMvc
 public class ItemControllerIntegrationTest {
     @Autowired
@@ -39,6 +40,7 @@ public class ItemControllerIntegrationTest {
 
     @Autowired
     ImageRepository imageRepository;
+
 
     @Autowired
     CategoryRepository categoryRepository;
@@ -83,7 +85,7 @@ public class ItemControllerIntegrationTest {
         Category category = new Category("Juice", categoryImage, true, vendor);
         Category juice = categoryRepository.save(category);
 
-        mockMvc.perform(MockMvcRequestBuilders.multipart("/api/v1/item")
+        mockMvc.perform(MockMvcRequestBuilders.multipart("/item")
                         .file(mockMultipartFile)
                         .param("name", "Mango")
                         .param("price", String.valueOf(new BigDecimal(80)))
