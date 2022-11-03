@@ -85,7 +85,7 @@ public class ItemControllerIntegrationTest {
         MockMultipartFile mockMultipartFileCategory = new MockMultipartFile("file", "image.png", MediaType.IMAGE_JPEG_VALUE, "hello".getBytes());
         Image categoryImage = imageService.save(mockMultipartFileCategory);
         System.out.println(categoryImage.getName());
-        Category category = new Category("Juice", categoryImage, true, vendor);
+        Category category = new Category("Juice", categoryImage, vendor);
         Category juice = categoryRepository.save(category);
 
         mockMvc.perform(MockMvcRequestBuilders.multipart("/item")

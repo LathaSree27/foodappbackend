@@ -5,10 +5,11 @@ import com.tweats.model.Image;
 import com.tweats.repo.CategoryRepository;
 import com.tweats.repo.UserRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
 
 @Service
+@Transactional
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
@@ -20,12 +21,12 @@ public class CategoryService {
     }
 
 
-    public void save(String name, Image categoryImage, Boolean is_open, String email) {
-        Category category = new Category(name, categoryImage, is_open, userRepository.findByEmail(email).get());
+    public void save(String name, Image categoryImage, String email) {
+        Category category = new Category(name, categoryImage, userRepository.findByEmail(email).get());
         categoryRepository.save(category);
     }
 
-    public Optional<Category> getCategory(long id) {
-        return categoryRepository.findById(id);
+    public Category getCategory(long userId) {
+        return categoryRepository.findByUser_id(userId);
     }
 }

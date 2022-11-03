@@ -38,7 +38,7 @@ public class ItemServiceTest {
         Image itemImage = new Image();
         Image categoryImage = new Image();
         Long category_id = 1L;
-        Category category = new Category("Juice", categoryImage, true, new User());
+        Category category = new Category("Juice", categoryImage, new User());
         when(categoryRepository.findById(category_id)).thenReturn(Optional.of(category));
         itemService = new ItemService(itemRepository,categoryRepository);
 

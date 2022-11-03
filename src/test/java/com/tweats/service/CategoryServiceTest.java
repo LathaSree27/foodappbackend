@@ -35,21 +35,21 @@ public class CategoryServiceTest {
         when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
         CategoryService categoryService = new CategoryService(categoryRepository, userRepository);
 
-        categoryService.save("Juice", image, true, email);
+        categoryService.save("Juice", image, email);
 
         verify(categoryRepository).save(any());
     }
 
     @Test
-    public void shouldBeAbleToFetchCategoryWhenIdIsProvided() {
-        long id = 1;
+    public void shouldBeAbleToFetchCategoryWhenUserIdIsProvided() {
+        long user_id = 1;
         Category category = new Category();
-        when(categoryRepository.findById(id))
-                .thenReturn(Optional.of(category));
+        when(categoryRepository.findByUser_id(user_id))
+                .thenReturn(category);
         CategoryService categoryService = new CategoryService(categoryRepository, userRepository);
 
-        Optional<Category> fetchedCategory = categoryService.getCategory(id);
+        Category fetchedCategory = categoryService.getCategory(user_id);
 
-        assertThat(Optional.of(category), is(fetchedCategory));
+        assertThat(category, is(fetchedCategory));
     }
 }
