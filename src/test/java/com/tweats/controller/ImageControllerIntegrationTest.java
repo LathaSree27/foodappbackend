@@ -10,11 +10,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -61,5 +63,23 @@ public class ImageControllerIntegrationTest {
                 .andExpect(status().isNotFound());
 
     }
+
+    @Test
+    void shouldBeAbleToSaveImageWhenJpegOrPngFileIsProvided() throws Exception {
+        MockMultipartFile mockMultipartFile = new MockMultipartFile("file", "image.png", MediaType.IMAGE_PNG_VALUE, "hello".getBytes());
+
+        mockMvc.perform(multipart("/images").file(mockMultipartFile))
+                .andExpect(status().isCreated());
+    }
+
+    @Test
+    void shouldThrowNotAnImageErrorWhenGivenFileIsNotJpegOrPngFormat() throws Exception {
+        MockMultipartFile mockMultipartFile = new MockMultipartFile("file", "image.png", MediaType.APPLICATION_ATOM_XML_VALUE, "hello".getBytes());
+
+        mockMvc.perform(multipart("/images").file(mockMultipartFile))
+                .andExpect(status().isBadRequest());
+    }
+
+
 
 }

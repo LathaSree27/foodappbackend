@@ -33,15 +33,13 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(value = {ImageNotFoundException.class})
-    public ResponseEntity<ErrorResponse> handleImageNotFoundException(ImageNotFoundException ex) {
-        ErrorResponse error = new ErrorResponse("image not found", Collections.singletonList(ex.getMessage()));
+    public ResponseEntity handleImageNotFoundException(ImageNotFoundException ex) {
         return new ResponseEntity(HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(NotAnImageException.class)
-    public ResponseEntity<ErrorResponse> handleNotAnImageException(NotAnImageException ex) {
-        ErrorResponse error = new ErrorResponse("image should be jpeg or png file", Collections.singletonList(ex.getMessage()));
-        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    public ResponseEntity handleNotAnImageException(NotAnImageException ex) {
+          return new ResponseEntity(HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(Exception.class)
