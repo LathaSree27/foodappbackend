@@ -22,7 +22,7 @@ public class ImageController {
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<byte[]> getImage(@PathVariable String id) throws ImageNotFoundException {
+    public ResponseEntity getImage(@PathVariable String id) throws ImageNotFoundException {
         Image image = imageService.getImage(id);
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + image.getName() + "\"")
