@@ -1,12 +1,13 @@
 package com.tweats.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
 @Entity
 @Getter
+@NoArgsConstructor
 @Table(name = "category")
 public class Category {
 
@@ -14,24 +15,18 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @JsonProperty
     @Column(nullable = false)
     private String name;
-    @JsonProperty
+
     @OneToOne
     @JoinColumn(name = "image_id")
     private Image image;
 
-    @JsonProperty
     @Column(nullable = false)
     private boolean is_open;
-    @JsonProperty
     @OneToOne
     @JoinColumn(name = "user_id")
     private User user;
-
-    public Category() {
-    }
 
     public Category(String name, Image image, User user) {
         this.name = name;

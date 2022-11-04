@@ -1,14 +1,12 @@
 package com.tweats.controller;
 
+import com.tweats.exceptions.NoCategoryFoundException;
 import com.tweats.exceptions.NotAnImageException;
 import com.tweats.model.Category;
 import com.tweats.model.Image;
-import com.tweats.model.User;
 import com.tweats.service.CategoryService;
 import com.tweats.service.ImageService;
-import com.tweats.service.UserPrincipalService;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,8 +22,6 @@ import java.util.Map;
 public class CategoryController {
     private ImageService imageService;
     private CategoryService categoryService;
-    private UserPrincipalService userPrincipalService;
-
 
     @PostMapping
     @ResponseStatus(code = HttpStatus.CREATED)
@@ -39,11 +35,10 @@ public class CategoryController {
 
     @GetMapping
     @ResponseStatus(code = HttpStatus.OK)
-    public Map<String, Object> fetchCategory(Principal principal) {
+    public Map<String, Object> fetchCategory(Principal principal) throws NoCategoryFoundException {
         Map<String, Object> response = new HashMap<>();
         String userEmail = principal.getName();
-        User user = userPrincipalService.findUserByEmail(userEmail);
-        Category category = categoryService.getCategory(user.getId());
+        Category category = categoryService.getCategory(userEmail);
         response.put("id", category.getId());
         return response;
 
