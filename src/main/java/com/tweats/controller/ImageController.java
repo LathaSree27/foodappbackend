@@ -1,6 +1,7 @@
 package com.tweats.controller;
 
 import com.tweats.exceptions.ImageNotFoundException;
+import com.tweats.exceptions.ImageSizeExceededException;
 import com.tweats.exceptions.NotAnImageException;
 import com.tweats.model.Image;
 import com.tweats.service.ImageService;
@@ -31,7 +32,7 @@ public class ImageController {
     }
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void save(@RequestParam(value = "file" ) MultipartFile image) throws IOException, NotAnImageException {
+    public void save(@RequestParam(value = "file" ) MultipartFile image) throws IOException, NotAnImageException, ImageSizeExceededException {
         imageService.save(image);
     }
 
