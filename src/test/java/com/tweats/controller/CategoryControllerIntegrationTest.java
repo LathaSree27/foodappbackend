@@ -101,6 +101,10 @@ public class CategoryControllerIntegrationTest {
 
     }
 
-
-
+    @Test
+    void shouldThrowNoCategoryFoundErrorWhenVendorIsNotAssignedWithCategory() throws Exception {
+        mockMvc.perform(get("/category")
+                        .with((httpBasic("abc@example.com", "password"))))
+                .andExpect(status().isNotFound());
+    }
 }
