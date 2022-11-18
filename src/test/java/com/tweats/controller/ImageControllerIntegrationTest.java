@@ -79,4 +79,13 @@ public class ImageControllerIntegrationTest {
                 .andExpect(status().isBadRequest());
     }
 
+    @Test
+    void shouldThrowImageSizeExceededErrorWhenImageSizeIsGreaterThanConfiguredSize() throws Exception {
+        byte[] content = new byte[1024 * 1024 * 4];
+        MockMultipartFile mockMultipartFile = new MockMultipartFile("file", "image.png", MediaType.IMAGE_PNG_VALUE, content);
+
+        mockMvc.perform(multipart("/images").file(mockMultipartFile))
+                .andExpect(status().isBadRequest());
+    }
+
 }
