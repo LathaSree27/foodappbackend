@@ -2,7 +2,6 @@
 
 package com.tweats.model;
 
-import com.tweats.model.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 

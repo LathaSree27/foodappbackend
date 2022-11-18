@@ -1,10 +1,6 @@
 package com.tweats.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.annotations.ApiModelProperty;
-
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "category")
@@ -14,10 +10,7 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @JsonProperty
-    @NotBlank(message = "category name should be provided")
     @Column(nullable = false)
-    @ApiModelProperty(name = "category_name", value = "name of category", example = "category_name", required = true, position = 1)
     private String name;
 
     @OneToOne
@@ -25,8 +18,6 @@ public class Category {
     private Image image;
 
 
-    @Column(nullable = false)
-    @ApiModelProperty(name = "is_open", value = "is_open", example = "is_open", required = true, position = 3)
     private boolean is_open;
 
     @OneToOne
