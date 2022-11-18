@@ -1,63 +1,66 @@
 package com.tweats.service;
 
 import com.tweats.exceptions.NoCategoryFoundException;
+import com.tweats.exceptions.NotAnImageException;
 import com.tweats.model.Category;
 import com.tweats.model.Image;
 import com.tweats.model.User;
 import com.tweats.repo.CategoryRepository;
-import com.tweats.repo.UserRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.mock.web.MockMultipartFile;
 
+import java.io.IOException;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 
 public class CategoryServiceTest {
 
     private CategoryRepository categoryRepository;
-    private UserRepository userRepository;
 
-    //    @Autowired
-    UserPrincipalService userPrincipalService;
+    private UserPrincipalService userPrincipalService;
+    private ImageService imageService;
+    private CategoryService categoryService;
+    private User user;
+    private Image image;
+
 
     @BeforeEach
     public void setup() {
         categoryRepository = mock(CategoryRepository.class);
-        userRepository = mock(UserRepository.class);
+        imageService = mock(ImageService.class);
         userPrincipalService = mock(UserPrincipalService.class);
+        categoryService = new CategoryService(categoryRepository, userPrincipalService, imageService);
+        user = mock(User.class);
+        image = mock(Image.class);
     }
 
     @Test
-    public void shouldBeAbleToSaveValidCategoryWhenCategoryDetailsAreProvided() {
-        Image image = mock(Image.class);
-        User user = mock(User.class);
+    public void shouldBeAbleToSaveValidCategoryWhenCategoryDetailsAreProvided() throws IOException, NotAnImageException {
         String email = "user@gmail.com";
-        when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
-        CategoryService categoryService = new CategoryService(categoryRepository, userRepository, userPrincipalService);
+        MockMultipartFile categoryImageFile = new MockMultipartFile("image.png", "Hello".getBytes());
+        when(userPrincipalService.findUserByEmail(email)).thenReturn(user);
+        when(imageService.save(categoryImageFile)).thenReturn(image);
+        String categoryName = "Juice";
+        Category category = new Category(categoryName, image, user);
 
-        categoryService.save("Juice", image, email);
+        categoryService.save(categoryName, categoryImageFile, email);
 
-        verify(categoryRepository).save(any());
+        verify(categoryRepository).save(category);
     }
 
     @Test
     public void shouldBeAbleToFetchCategoryWhenUserIdIsProvided() throws NoCategoryFoundException {
         String userEmail = "abc@example.com";
-        User user = mock(User.class);
-        userRepository.save(user);
         when(userPrincipalService.findUserByEmail(userEmail)).thenReturn(user);
-        when(user.getId()).thenReturn(1L);
-        Long userId = user.getId();
+        long userId = user.getId();
         Category category = new Category();
-        when(categoryRepository.findByUser_id(userId))
-                .thenReturn(category);
-        CategoryService categoryService = new CategoryService(categoryRepository, userRepository, userPrincipalService);
+        when(categoryRepository.findByUser_id(userId)).thenReturn(Optional.of(category));
 
         Category fetchedCategory = categoryService.getCategory(userEmail);
 
@@ -67,12 +70,7 @@ public class CategoryServiceTest {
     @Test
     void shouldNotBeAbleToFetchCategoryWhenCategoryIsNotPresentForTheUser() {
         String userEmail = "abc@example.com";
-        User user = mock(User.class);
-        userRepository.save(user);
         when(userPrincipalService.findUserByEmail(userEmail)).thenReturn(user);
-        when(user.getId()).thenReturn(1L);
-        Long userId = user.getId();
-        CategoryService categoryService = new CategoryService(categoryRepository, userRepository, userPrincipalService);
 
         Assertions.assertThrows(NoCategoryFoundException.class, () -> categoryService.getCategory(userEmail));
 

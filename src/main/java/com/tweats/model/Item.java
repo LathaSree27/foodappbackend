@@ -1,10 +1,6 @@
 package com.tweats.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.annotations.ApiModelProperty;
-
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 import java.math.BigDecimal;
 
 @Entity
@@ -15,25 +11,18 @@ public class Item {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @JsonProperty
-    @NotBlank(message = "Item name should be provided")
     @Column(nullable = false)
-    @ApiModelProperty(name = "item name", value = "name of the item", required = true, example = "item_name", position = 1)
     private String name;
 
     @OneToOne
     @JoinColumn(name = "image_id")
     private Image image;
 
-    @JsonProperty
     @Column(nullable = false)
-    @ApiModelProperty(name = "item price", value = "price of item", required = true, example = "100", position = 3)
     private BigDecimal price;
 
 
-    @JsonProperty
     @Column(nullable = false)
-    @ApiModelProperty(name = "is_available", value = "is available", required = true, example = "true", position = 4)
     private boolean is_available;
 
     @OneToOne

@@ -1,6 +1,7 @@
 package com.tweats.controller;
 
 import com.tweats.TweatsApplication;
+import com.tweats.controller.response.VendorCategoryResponse;
 import com.tweats.model.Category;
 import com.tweats.model.Image;
 import com.tweats.model.Role;
@@ -53,6 +54,7 @@ public class CategoryControllerIntegrationTest {
 
     @Autowired
     BCryptPasswordEncoder bCryptPasswordEncoder;
+    private User vendor;
 
     @BeforeEach
     public void before() {
@@ -60,6 +62,8 @@ public class CategoryControllerIntegrationTest {
         userRepository.deleteAll();
         roleRepository.deleteAll();
         imageRepository.deleteAll();
+        vendor = userRepository.save(new User("abc", "abc@example.com", bCryptPasswordEncoder.encode("password"), roleRepository.save(new Role("VENDOR"))));
+
 
     }
 
@@ -74,29 +78,26 @@ public class CategoryControllerIntegrationTest {
     @Test
     public void shouldBeAbleToSaveValidCategoryWhenCategoryDetailsAreProvided() throws Exception {
         MockMultipartFile mockMultipartFile = new MockMultipartFile("file", "image.png", MediaType.IMAGE_JPEG_VALUE, "hello".getBytes());
-        User vendor = userRepository.save(new User("abc", "abc@example.com", bCryptPasswordEncoder.encode("password"), roleRepository.save(new Role("VENDOR"))));
+
         mockMvc.perform(MockMvcRequestBuilders.multipart("/category")
                         .file(mockMultipartFile)
                         .param("name", "juice")
                         .param("user_email", vendor.getEmail())
-                        .with((httpBasic("abc@example.com", "password")))
-                )
+                        .with((httpBasic("abc@example.com", "password"))))
                 .andExpect(status().isCreated());
     }
 
     @Test
     void shouldBeAbleToFetchCategoryWhenUserEmailIsProvided() throws Exception {
-        User vendor = userRepository.save(new User("abc", "abc@example.com", bCryptPasswordEncoder.encode("password"),roleRepository.save(new Role("VENDOR"))));
         MockMultipartFile mockMultipartFileCategory = new MockMultipartFile("file", "image.png", MediaType.IMAGE_JPEG_VALUE, "hello".getBytes());
         Image categoryImage = imageService.save(mockMultipartFileCategory);
         Category juice = categoryRepository.save(new Category("juice", categoryImage, vendor));
+        VendorCategoryResponse vendorCategoryResponse = new VendorCategoryResponse(juice.getId());
 
         mockMvc.perform(get("/category")
                         .with((httpBasic("abc@example.com", "password"))))
                 .andExpect(status().isOk())
-                .andExpect(content().json(
-                        "{'id':" + juice.getId() + "}"
-                ));
+                .andExpect(content().json(vendorCategoryResponse.toString()));
 
     }
 
