@@ -1,9 +1,6 @@
 package com.tweats.service;
 
-import com.tweats.exceptions.NoCategoryFoundException;
-import com.tweats.exceptions.NotAVendorException;
-import com.tweats.exceptions.NotAnImageException;
-import com.tweats.exceptions.UserNotFoundException;
+import com.tweats.exceptions.*;
 import com.tweats.model.Category;
 import com.tweats.model.Image;
 import com.tweats.model.User;
@@ -27,10 +24,15 @@ public class CategoryService {
 
     private ImageService imageService;
 
-    public void save(String name, MultipartFile categoryImageFile, String email) throws IOException, NotAnImageException, UserNotFoundException, NotAVendorException {
+    public void save(String name, MultipartFile categoryImageFile, String email) throws IOException, NotAnImageException, UserNotFoundException, NotAVendorException, CategoryAlreadyAssignedException {
         User vendor = userPrincipalService.findUserByEmail(email);
         if (!userPrincipalService.isVendor(vendor))
             throw new NotAVendorException();
+
+        Optional<Category> optionalCategory = categoryRepository.findByUser_id(vendor.getId());
+        if (optionalCategory.isPresent())
+            throw new CategoryAlreadyAssignedException();
+
         Image categoryImage = imageService.save(categoryImageFile);
 
         Category category = new Category(name, categoryImage, vendor);

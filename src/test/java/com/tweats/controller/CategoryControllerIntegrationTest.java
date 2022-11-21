@@ -58,14 +58,16 @@ public class CategoryControllerIntegrationTest {
 
     @Autowired
     BCryptPasswordEncoder bCryptPasswordEncoder;
+
+
     private User vendor;
 
     @BeforeEach
     public void before() {
         categoryRepository.deleteAll();
+        imageRepository.deleteAll();
         userRepository.deleteAll();
         roleRepository.deleteAll();
-        imageRepository.deleteAll();
         vendor = userRepository.save(new User("abc", "abc@example.com", bCryptPasswordEncoder.encode("password"), roleRepository.save(new Role("VENDOR"))));
 
 
@@ -74,9 +76,11 @@ public class CategoryControllerIntegrationTest {
     @AfterEach
     public void after() {
         categoryRepository.deleteAll();
+        imageRepository.deleteAll();
         userRepository.deleteAll();
         roleRepository.deleteAll();
-        imageRepository.deleteAll();
+
+
     }
 
     @Test
@@ -135,5 +139,21 @@ public class CategoryControllerIntegrationTest {
                         .param("user_email", "pqr@gmail.com")
                         .with((httpBasic("abc@example.com", "password"))))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void shouldThrowCategoryAlreadyAssignedErrorWhenTheGivenVendorHasCategoryAssigned() throws Exception {
+        MockMultipartFile mockMultipartFile = new MockMultipartFile("file", "image.png", MediaType.IMAGE_JPEG_VALUE, "hello".getBytes());
+        Image image = new Image("image.png", MediaType.IMAGE_JPEG_VALUE, "hello".getBytes(), 22L);
+
+        Image categoryImage = imageRepository.save(image);
+        Category juice = new Category("juice", categoryImage, vendor);
+        categoryRepository.save(juice);
+        mockMvc.perform(MockMvcRequestBuilders.multipart("/category")
+                        .file(mockMultipartFile)
+                        .param("name", "juice")
+                        .param("user_email", vendor.getEmail())
+                        .with((httpBasic("abc@example.com", "password"))))
+                .andExpect(status().isForbidden());
     }
 }

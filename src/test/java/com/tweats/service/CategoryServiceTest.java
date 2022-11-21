@@ -1,9 +1,6 @@
 package com.tweats.service;
 
-import com.tweats.exceptions.NoCategoryFoundException;
-import com.tweats.exceptions.NotAVendorException;
-import com.tweats.exceptions.NotAnImageException;
-import com.tweats.exceptions.UserNotFoundException;
+import com.tweats.exceptions.*;
 import com.tweats.model.Category;
 import com.tweats.model.Image;
 import com.tweats.model.User;
@@ -43,7 +40,7 @@ public class CategoryServiceTest {
     }
 
     @Test
-    public void shouldBeAbleToSaveValidCategoryWhenCategoryDetailsAreProvided() throws IOException, NotAnImageException, UserNotFoundException, NotAVendorException {
+    public void shouldBeAbleToSaveValidCategoryWhenCategoryDetailsAreProvided() throws IOException, NotAnImageException, UserNotFoundException, NotAVendorException, CategoryAlreadyAssignedException {
         String email = "user@gmail.com";
         MockMultipartFile categoryImageFile = new MockMultipartFile("image.png", "Hello".getBytes());
         when(userPrincipalService.findUserByEmail(email)).thenReturn(user);
@@ -88,5 +85,19 @@ public class CategoryServiceTest {
         String categoryName = "Juice";
 
         assertThrows(NotAVendorException.class, () -> categoryService.save(categoryName, categoryImageFile, email));
+    }
+
+    @Test
+    void shouldThrowCategoryAlreadyAssignedExceptionWhenTheGivenVendorHasCategoryAssigned() throws UserNotFoundException {
+        String email = "user@gmail.com";
+        long userId = 2;
+        MockMultipartFile categoryImageFile = new MockMultipartFile("image.png", "Hello".getBytes());
+        when(userPrincipalService.findUserByEmail(email)).thenReturn(user);
+        when(userPrincipalService.isVendor(user)).thenReturn(true);
+        when(user.getId()).thenReturn(userId);
+        when(categoryRepository.findByUser_id(userId)).thenReturn(Optional.of(new Category()));
+        String categoryName = "Juice";
+
+        assertThrows(CategoryAlreadyAssignedException.class, () -> categoryService.save(categoryName, categoryImageFile, email));
     }
 }

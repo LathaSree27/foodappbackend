@@ -1,6 +1,7 @@
 package com.tweats.handlers;
 
 import com.tweats.controller.response.ErrorResponse;
+import com.tweats.exceptions.CategoryAlreadyAssignedException;
 import com.tweats.exceptions.NoCategoryFoundException;
 import com.tweats.exceptions.NotAVendorException;
 import com.tweats.exceptions.UserNotFoundException;
@@ -30,6 +31,18 @@ public class CustomExceptionHandler {
     public ResponseEntity handlerUserNotFoundException(UserNotFoundException ex) {
         ErrorResponse errorResponse = new ErrorResponse("User does not Exist!", Collections.singletonList(ex.getMessage()));
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(CategoryAlreadyAssignedException.class)
+    public ResponseEntity handlerCategoryAlreadyAssignedException(CategoryAlreadyAssignedException ex) {
+        ErrorResponse errorResponse = new ErrorResponse("Category already Assigned!", Collections.singletonList(ex.getMessage()));
+        return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity handlerIllegalArgumentException(IllegalArgumentException ex) {
+        ErrorResponse errorResponse = new ErrorResponse("Parameters cannot be blank!", Collections.singletonList(ex.getMessage()));
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
 }

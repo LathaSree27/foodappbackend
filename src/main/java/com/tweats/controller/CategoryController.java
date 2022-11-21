@@ -1,10 +1,7 @@
 package com.tweats.controller;
 
 import com.tweats.controller.response.VendorCategoryResponse;
-import com.tweats.exceptions.NoCategoryFoundException;
-import com.tweats.exceptions.NotAVendorException;
-import com.tweats.exceptions.NotAnImageException;
-import com.tweats.exceptions.UserNotFoundException;
+import com.tweats.exceptions.*;
 import com.tweats.model.Category;
 import com.tweats.service.CategoryService;
 import lombok.AllArgsConstructor;
@@ -26,8 +23,11 @@ public class CategoryController {
     @ResponseStatus(code = HttpStatus.CREATED)
     public void save(@RequestParam(value = "file") MultipartFile imageFile,
                      @RequestParam(value = "name") String name,
-                     @RequestParam(value = "user_email") String user_email) throws IOException, NotAnImageException, UserNotFoundException, NotAVendorException {
+                     @RequestParam(value = "user_email") String user_email) throws IOException, NotAnImageException, UserNotFoundException, NotAVendorException, CategoryAlreadyAssignedException {
+        if (name.isEmpty() || name.isBlank() || user_email.isEmpty() || user_email.isBlank())
+            throw new IllegalArgumentException("At least one parameter is invalid or not supplied");
         categoryService.save(name, imageFile, user_email);
+
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
