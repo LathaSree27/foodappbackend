@@ -10,11 +10,4 @@ public class VendorCategoryResponse {
     public String getId() {
         return String.valueOf(id);
     }
-
-    @Override
-    public String toString() {
-        return "{" +
-                "id='" + id + '\'' +
-                '}';
-    }
 }

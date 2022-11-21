@@ -1,5 +1,6 @@
 package com.tweats.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tweats.TweatsApplication;
 import com.tweats.controller.response.VendorCategoryResponse;
 import com.tweats.model.Category;
@@ -53,6 +54,9 @@ public class CategoryControllerIntegrationTest {
     ImageRepository imageRepository;
 
     @Autowired
+    ObjectMapper objectMapper;
+
+    @Autowired
     BCryptPasswordEncoder bCryptPasswordEncoder;
     private User vendor;
 
@@ -97,7 +101,7 @@ public class CategoryControllerIntegrationTest {
         mockMvc.perform(get("/category")
                         .with((httpBasic("abc@example.com", "password"))))
                 .andExpect(status().isOk())
-                .andExpect(content().json(vendorCategoryResponse.toString()));
+                .andExpect(content().json(objectMapper.writeValueAsString(vendorCategoryResponse)));
 
     }
 
