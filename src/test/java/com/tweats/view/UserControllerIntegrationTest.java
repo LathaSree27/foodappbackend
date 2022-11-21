@@ -1,4 +1,4 @@
-package com.tweats.controller;
+package com.tweats.view;
 
 import com.tweats.TweatsApplication;
 import com.tweats.model.Role;
