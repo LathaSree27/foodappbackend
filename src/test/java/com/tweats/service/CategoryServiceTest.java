@@ -1,12 +1,13 @@
 package com.tweats.service;
 
 import com.tweats.exceptions.NoCategoryFoundException;
+import com.tweats.exceptions.NotAVendorException;
 import com.tweats.exceptions.NotAnImageException;
+import com.tweats.exceptions.UserNotFoundException;
 import com.tweats.model.Category;
 import com.tweats.model.Image;
 import com.tweats.model.User;
 import com.tweats.repo.CategoryRepository;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockMultipartFile;
@@ -16,6 +17,7 @@ import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 
@@ -41,7 +43,7 @@ public class CategoryServiceTest {
     }
 
     @Test
-    public void shouldBeAbleToSaveValidCategoryWhenCategoryDetailsAreProvided() throws IOException, NotAnImageException {
+    public void shouldBeAbleToSaveValidCategoryWhenCategoryDetailsAreProvided() throws IOException, NotAnImageException, UserNotFoundException, NotAVendorException {
         String email = "user@gmail.com";
         MockMultipartFile categoryImageFile = new MockMultipartFile("image.png", "Hello".getBytes());
         when(userPrincipalService.findUserByEmail(email)).thenReturn(user);
@@ -55,7 +57,7 @@ public class CategoryServiceTest {
     }
 
     @Test
-    public void shouldBeAbleToFetchCategoryWhenUserIdIsProvided() throws NoCategoryFoundException {
+    public void shouldBeAbleToFetchCategoryWhenUserIdIsProvided() throws NoCategoryFoundException, UserNotFoundException {
         String userEmail = "abc@example.com";
         when(userPrincipalService.findUserByEmail(userEmail)).thenReturn(user);
         long userId = user.getId();
@@ -68,11 +70,11 @@ public class CategoryServiceTest {
     }
 
     @Test
-    void shouldNotBeAbleToFetchCategoryWhenCategoryIsNotPresentForTheUser() {
+    void shouldNotBeAbleToFetchCategoryWhenCategoryIsNotPresentForTheUser() throws UserNotFoundException {
         String userEmail = "abc@example.com";
         when(userPrincipalService.findUserByEmail(userEmail)).thenReturn(user);
 
-        Assertions.assertThrows(NoCategoryFoundException.class, () -> categoryService.getCategory(userEmail));
+        assertThrows(NoCategoryFoundException.class, () -> categoryService.getCategory(userEmail));
 
     }
 }

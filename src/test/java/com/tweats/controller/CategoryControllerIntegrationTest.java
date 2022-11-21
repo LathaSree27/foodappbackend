@@ -111,4 +111,29 @@ public class CategoryControllerIntegrationTest {
                         .with((httpBasic("abc@example.com", "password"))))
                 .andExpect(status().isNotFound());
     }
+
+    @Test
+    void shouldThrowNotAVendorErrorWhenTheGivenUserIsNotAVendor() throws Exception {
+        MockMultipartFile mockMultipartFile = new MockMultipartFile("file", "image.png", MediaType.IMAGE_JPEG_VALUE, "hello".getBytes());
+        User user = userRepository.save(new User("xyz", "xyz@example.com", bCryptPasswordEncoder.encode("password"), roleRepository.save(new Role("USER"))));
+
+        mockMvc.perform(MockMvcRequestBuilders.multipart("/category")
+                        .file(mockMultipartFile)
+                        .param("name", "juice")
+                        .param("user_email", user.getEmail())
+                        .with((httpBasic("abc@example.com", "password"))))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void shouldThrowUserNotFoundErrorWhenNoAccountExistsWithTheGivenEmailId() throws Exception {
+        MockMultipartFile mockMultipartFile = new MockMultipartFile("file", "image.png", MediaType.IMAGE_JPEG_VALUE, "hello".getBytes());
+
+        mockMvc.perform(MockMvcRequestBuilders.multipart("/category")
+                        .file(mockMultipartFile)
+                        .param("name", "juice")
+                        .param("user_email", "pqr@gmail.com")
+                        .with((httpBasic("abc@example.com", "password"))))
+                .andExpect(status().isNotFound());
+    }
 }
