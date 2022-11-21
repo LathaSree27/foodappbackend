@@ -1,6 +1,5 @@
 package com.tweats.service;
 
-import com.tweats.exceptions.NotAVendorException;
 import com.tweats.exceptions.UserNotFoundException;
 import com.tweats.model.Role;
 import com.tweats.model.User;
@@ -13,8 +12,7 @@ import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -49,7 +47,7 @@ public class UserPrincipleServiceTest {
     }
 
     @Test
-    void shouldBeAbleToReturnTrueWhenTheGivenUserIsVendor() throws NotAVendorException {
+    void shouldBeAbleToReturnTrueWhenTheGivenUserIsVendor() {
         Role role = new Role("VENDOR");
         when(user.getRole()).thenReturn(role);
         when(roleRepository.findByName("VENDOR")).thenReturn(role);
@@ -58,10 +56,12 @@ public class UserPrincipleServiceTest {
     }
 
     @Test
-    void shouldThrowNotAVendorExceptionWhenTheGivenUserIsNotAVendor() {
-        Role role = new Role("VENDOR");
-        when(roleRepository.findByName("VENDOR")).thenReturn(role);
+    void shouldBeAbleToReturnFalseWhenTheGivenUserIsNotVendor() {
+        Role userRole = new Role("USER");
+        Role vendorRole = new Role("VENDOR");
+        when(user.getRole()).thenReturn(userRole);
+        when(roleRepository.findByName("VENDOR")).thenReturn(vendorRole);
 
-        assertThrows(NotAVendorException.class, () -> userPrincipalService.isVendor(user));
+        assertFalse(userPrincipalService.isVendor(user));
     }
 }

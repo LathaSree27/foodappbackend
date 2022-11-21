@@ -29,7 +29,8 @@ public class CategoryService {
 
     public void save(String name, MultipartFile categoryImageFile, String email) throws IOException, NotAnImageException, UserNotFoundException, NotAVendorException {
         User vendor = userPrincipalService.findUserByEmail(email);
-        userPrincipalService.isVendor(vendor);
+        if (!userPrincipalService.isVendor(vendor))
+            throw new NotAVendorException();
         Image categoryImage = imageService.save(categoryImageFile);
 
         Category category = new Category(name, categoryImage, vendor);

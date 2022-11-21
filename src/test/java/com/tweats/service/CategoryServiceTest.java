@@ -47,6 +47,7 @@ public class CategoryServiceTest {
         String email = "user@gmail.com";
         MockMultipartFile categoryImageFile = new MockMultipartFile("image.png", "Hello".getBytes());
         when(userPrincipalService.findUserByEmail(email)).thenReturn(user);
+        when(userPrincipalService.isVendor(user)).thenReturn(true);
         when(imageService.save(categoryImageFile)).thenReturn(image);
         String categoryName = "Juice";
         Category category = new Category(categoryName, image, user);
@@ -70,11 +71,22 @@ public class CategoryServiceTest {
     }
 
     @Test
-    void shouldNotBeAbleToFetchCategoryWhenCategoryIsNotPresentForTheUser() throws UserNotFoundException {
+    void shouldThrowNoCategoryFoundExceptionWhenCategoryIsNotPresentForTheUser() throws UserNotFoundException {
         String userEmail = "abc@example.com";
         when(userPrincipalService.findUserByEmail(userEmail)).thenReturn(user);
 
         assertThrows(NoCategoryFoundException.class, () -> categoryService.getCategory(userEmail));
 
+    }
+
+    @Test
+    public void shouldThrowNotAVendorExceptionWhenTheUserIsNotAVendor() throws UserNotFoundException{
+        String email = "user@gmail.com";
+        MockMultipartFile categoryImageFile = new MockMultipartFile("image.png", "Hello".getBytes());
+        when(userPrincipalService.findUserByEmail(email)).thenReturn(user);
+        when(userPrincipalService.isVendor(user)).thenReturn(false);
+        String categoryName = "Juice";
+
+        assertThrows(NotAVendorException.class, () -> categoryService.save(categoryName, categoryImageFile, email));
     }
 }
