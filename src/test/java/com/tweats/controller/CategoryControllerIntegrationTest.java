@@ -156,4 +156,27 @@ public class CategoryControllerIntegrationTest {
                         .with((httpBasic("abc@example.com", "password"))))
                 .andExpect(status().isForbidden());
     }
+    @Test
+    public void shouldNotBeAbleToSaveCategoryWhenInvalidCategoryDetailsAreProvided() throws Exception {
+        MockMultipartFile mockMultipartFile = new MockMultipartFile("file", "image.png", MediaType.IMAGE_JPEG_VALUE, "hello".getBytes());
+
+        mockMvc.perform(MockMvcRequestBuilders.multipart("/category")
+                        .file(mockMultipartFile)
+                        .param("name", "")
+                        .param("user_email","")
+                        .with((httpBasic("abc@example.com", "password"))))
+                .andExpect(status().isBadRequest());
+    }
+    @Test
+    public void shouldNotBeAbleToSaveCategoryWhenInvalidEmailIdIsProvided() throws Exception {
+        MockMultipartFile mockMultipartFile = new MockMultipartFile("file", "image.png", MediaType.IMAGE_JPEG_VALUE, "hello".getBytes());
+
+        mockMvc.perform(MockMvcRequestBuilders.multipart("/category")
+                        .file(mockMultipartFile)
+                        .param("name", "juice")
+                        .param("user_email","abc")
+                        .with((httpBasic("abc@example.com", "password"))))
+                .andExpect(status().isBadRequest());
+    }
+
 }

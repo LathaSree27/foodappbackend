@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import java.util.Objects;
 
 @Entity
@@ -19,6 +20,7 @@ public class Category {
     private long id;
 
     @Column(nullable = false)
+    @NotBlank(message = "category name cannot be empty!")
     private String name;
 
     @OneToOne

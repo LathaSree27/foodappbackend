@@ -2,6 +2,8 @@ package com.tweats.model;
 
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "user_table")
@@ -15,6 +17,8 @@ public class User {
     private String name;
 
     @Column(nullable = false, unique = true)
+    @Email
+    @NotBlank(message = "email cannot be blank!")
     private String email;
 
     @Column(nullable = false)
