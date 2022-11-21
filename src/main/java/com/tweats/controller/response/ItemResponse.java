@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 @AllArgsConstructor
@@ -29,21 +28,5 @@ public class ItemResponse {
     @Override
     public int hashCode() {
         return Objects.hash(id, name, imageLink, price, isAvailable);
-    }
-
-
-    public String getImageLink() {
-        return imageLink.substring(imageLink.length()-36);
-    }
-
-    @Override
-    public String toString() {
-        return "{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", imageLink='" + imageLink + '\'' +
-                ", price=" + price +
-                ", isAvailable=" + isAvailable +
-                '}';
     }
 }

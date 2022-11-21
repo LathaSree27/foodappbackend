@@ -7,6 +7,7 @@ import com.tweats.exceptions.NotAnImageException;
 import com.tweats.model.Category;
 import com.tweats.model.Image;
 import com.tweats.model.Item;
+import com.tweats.model.User;
 import com.tweats.repo.CategoryRepository;
 import com.tweats.repo.ItemRepository;
 import lombok.Setter;
@@ -28,19 +29,22 @@ public class ItemService {
     private ItemRepository itemRepository;
     private CategoryRepository categoryRepository;
     private ImageService imageService;
+    private UserPrincipalService userPrincipalService;
 
     @Value("${application.link}")
     private String appLink;
 
-    public ItemService(ItemRepository itemRepository, CategoryRepository categoryRepository, ImageService imageService) {
+    public ItemService(ItemRepository itemRepository, CategoryRepository categoryRepository, ImageService imageService, UserPrincipalService userPrincipalService) {
         this.itemRepository = itemRepository;
         this.categoryRepository = categoryRepository;
         this.imageService = imageService;
+        this.userPrincipalService = userPrincipalService;
     }
 
-    public void save(String name, BigDecimal price, MultipartFile itemImageFile, Long category_id) throws IOException, NotAnImageException {
+    public void save(String name, BigDecimal price, MultipartFile itemImageFile, String userEmail) throws IOException, NotAnImageException {
         Image itemImage = imageService.save(itemImageFile);
-        Category category = categoryRepository.findById(category_id).get();
+        User vendor = userPrincipalService.findUserByEmail(userEmail);
+        Category category = categoryRepository.findByUserId(vendor.getId());
         Item item = new Item(name, itemImage, price, category);
         itemRepository.save(item);
     }
@@ -48,7 +52,7 @@ public class ItemService {
     public ItemListResponse getItems(Long category_id) throws NoItemsFoundException {
         List<Item> items = itemRepository.findByCategory_id(category_id);
         List<ItemResponse> itemResponses = getItemResponses(items);
-        if(isEmpty(itemResponses)) throw new NoItemsFoundException();
+        if (isEmpty(itemResponses)) throw new NoItemsFoundException();
         ItemListResponse itemListResponse = new ItemListResponse(category_id, itemResponses);
         return itemListResponse;
     }
@@ -59,7 +63,7 @@ public class ItemService {
 
     private List<ItemResponse> getItemResponses(List<Item> items) {
         List<ItemResponse> itemResponses = new ArrayList<>();
-        for(Item item: items){
+        for (Item item : items) {
             String itemImageLink = getItemImageLink(item.getImage().getId());
             ItemResponse itemResponse = new ItemResponse(item.getId(), item.getName(), itemImageLink, item.getPrice(), item.is_available());
             itemResponses.add(itemResponse);
@@ -68,6 +72,6 @@ public class ItemService {
     }
 
     private String getItemImageLink(String itemImageId) {
-        return appLink+"/images/"+itemImageId;
+        return appLink + "/images/" + itemImageId;
     }
 }
