@@ -3,7 +3,10 @@ package com.tweats.model;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 import javax.persistence.*;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
 import java.math.BigDecimal;
 import java.util.Objects;
 
@@ -17,6 +20,7 @@ public class Item {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    @NotBlank(message = "Item name can't be empty!")
     @Column(nullable = false)
     private String name;
 
@@ -24,6 +28,7 @@ public class Item {
     @JoinColumn(name = "image_id")
     private Image image;
 
+    @Min(value = 0, message = "Price can't be negative!")
     @Column(nullable = false)
     private BigDecimal price;
 

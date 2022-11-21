@@ -97,6 +97,30 @@ public class ItemControllerIntegrationTest {
     }
 
     @Test
+    void shouldThrowValidationErrorWhenPriceIsNegative() throws Exception {
+        MockMultipartFile ItemImage = new MockMultipartFile("file", "image.png", MediaType.IMAGE_JPEG_VALUE, "hello".getBytes());
+
+        mockMvc.perform(MockMvcRequestBuilders.multipart("/item")
+                        .file(ItemImage)
+                        .param("name", "mango")
+                        .param("price", String.valueOf(new BigDecimal(-1)))
+                        .with(httpBasic("abc@example.com", "password")))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldThrowValidationErrorWhenNameIsBlank() throws Exception {
+        MockMultipartFile ItemImage = new MockMultipartFile("file", "image.png", MediaType.IMAGE_JPEG_VALUE, "hello".getBytes());
+
+        mockMvc.perform(MockMvcRequestBuilders.multipart("/item")
+                        .file(ItemImage)
+                        .param("name", "")
+                        .param("price", String.valueOf(new BigDecimal(80)))
+                        .with(httpBasic("abc@example.com", "password")))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     void shouldBeAbleToFetchAllTheItemsWhenAValidCategoryIdIsGiven() throws Exception {
         BigDecimal itemPrice = new BigDecimal(100);
         String itemName = "mango";
