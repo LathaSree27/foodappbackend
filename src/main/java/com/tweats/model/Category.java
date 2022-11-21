@@ -2,12 +2,14 @@ package com.tweats.model;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor
 @Table(name = "category")
 public class Category {
@@ -33,24 +35,6 @@ public class Category {
         this.name = name;
         this.image = image;
         this.is_open = false;
-        this.user = user;
-    }
-
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setImage(Image image) {
-        this.image = image;
-    }
-
-    public void setIs_open(boolean is_open) {
-        this.is_open = is_open;
-    }
-
-
-    public void setUser(User user) {
         this.user = user;
     }
 
