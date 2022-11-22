@@ -32,28 +32,38 @@ public class OrderService {
         int count = orders.size();
         if(count==0) throw new NoOrdersFoundException();
         ArrayList<OrderResponse> orderResponses = new ArrayList<>();
+        revenue = getRevenue(orders, revenue, orderResponses);
+
+        return new CompletedOrdersResponse(count, revenue, orderResponses);
+
+    }
+
+    private BigDecimal getRevenue(List<Order> orders, BigDecimal revenue, ArrayList<OrderResponse> orderResponses) {
         for (Order order : orders) {
             Set<OrderedItem> orderedItems = order.getOrderedItems();
             List<OrderedItemResponse> orderedItemResponses = new ArrayList<>();
             BigDecimal billAmount = new BigDecimal(0);
-            for (OrderedItem orderedItem : orderedItems) {
-                Item item = orderedItem.getItem();
-                orderedItemResponses.add(
-                        new OrderedItemResponse(
-                                item.getId(),
-                                item.getName(),
-                                orderedItem.getQuantity(),
-                                item.getPrice(),
-                                imageService.getImageLink(item.getImage())
-                        )
-                );
-                billAmount = billAmount.add(item.getPrice().multiply(BigDecimal.valueOf(orderedItem.getQuantity())));
-            }
+            billAmount = getBillAmount(orderedItems, orderedItemResponses, billAmount);
             orderResponses.add(new OrderResponse(order.getId(), order.getDate(), billAmount, orderedItemResponses));
             revenue = revenue.add(billAmount);
         }
+        return revenue;
+    }
 
-        return new CompletedOrdersResponse(count, revenue, orderResponses);
-
+    private BigDecimal getBillAmount(Set<OrderedItem> orderedItems, List<OrderedItemResponse> orderedItemResponses, BigDecimal billAmount) {
+        for (OrderedItem orderedItem : orderedItems) {
+            Item item = orderedItem.getItem();
+            orderedItemResponses.add(
+                    new OrderedItemResponse(
+                            item.getId(),
+                            item.getName(),
+                            orderedItem.getQuantity(),
+                            item.getPrice(),
+                            imageService.getImageLink(item.getImage())
+                    )
+            );
+            billAmount = billAmount.add(item.getPrice().multiply(BigDecimal.valueOf(orderedItem.getQuantity())));
+        }
+        return billAmount;
     }
 }
