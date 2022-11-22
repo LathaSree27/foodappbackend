@@ -3,6 +3,7 @@ package com.tweats.service;
 import com.tweats.controller.response.ItemListResponse;
 import com.tweats.controller.response.ItemResponse;
 import com.tweats.exceptions.ItemAccessException;
+import com.tweats.exceptions.ItemDoesNotExistException;
 import com.tweats.exceptions.NoItemsFoundException;
 import com.tweats.exceptions.NotAnImageException;
 import com.tweats.model.Category;
@@ -109,7 +110,7 @@ public class ItemServiceTest {
     }
 
     @Test
-    void shouldBeAbleUpdateAvailabilityOfAnItemFromFalseToTrue() throws ItemAccessException {
+    void shouldBeAbleUpdateAvailabilityOfAnItemFromFalseToTrue() throws ItemAccessException, ItemDoesNotExistException {
         String vendorEmail = "abc@gmail.com";
         long itemId = 1;
         String itemName = "Mango";
@@ -139,5 +140,16 @@ public class ItemServiceTest {
         when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
 
         assertThrows(ItemAccessException.class, () -> itemService.updateAvailability(vendorEmail, itemId));
+    }
+
+    @Test
+    void shouldThrowItemDoesNotExistExceptionWhenItemDoesNotExistWithId() {
+        String vendorEmail = "abc@gmail.com";
+        long itemId = 1;
+        Category userCategory = new Category();
+        when(userPrincipalService.findUserByEmail(vendorEmail)).thenReturn(user);
+        when(categoryRepository.findByUserId(user.getId())).thenReturn(userCategory);
+
+        assertThrows(ItemDoesNotExistException.class, () -> itemService.updateAvailability(vendorEmail, itemId));
     }
 }

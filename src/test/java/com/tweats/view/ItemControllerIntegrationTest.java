@@ -151,7 +151,7 @@ public class ItemControllerIntegrationTest {
         String itemName = "mango";
         Item item = new Item(itemName, categoryImage, itemPrice, category);
         Item savedItem = itemRepository.save(item);
-        mockMvc.perform(put("/item/"+savedItem.getId())
+        mockMvc.perform(put("/item/" + savedItem.getId())
                         .with(httpBasic("abc@example.com", "password")))
                 .andExpect(status().isOk());
     }
@@ -169,5 +169,12 @@ public class ItemControllerIntegrationTest {
         mockMvc.perform(put("/item/" + savedItem.getId())
                         .with(httpBasic("abc@example.com", "password")))
                 .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void shouldThrowItemDoesNotExistErrorWhenItemWithGivenIdDoesNotExist() throws Exception {
+        mockMvc.perform(put("/item/" + 1)
+                        .with(httpBasic("abc@example.com", "password")))
+                .andExpect(status().isNotFound());
     }
 }

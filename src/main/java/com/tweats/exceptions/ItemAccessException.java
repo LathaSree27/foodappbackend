@@ -2,6 +2,6 @@ package com.tweats.exceptions;
 
 public class ItemAccessException extends Exception {
     public ItemAccessException() {
-        super("Cannot update item of different category");
+        super("Can't update availability of an item of a different category");
     }
 }

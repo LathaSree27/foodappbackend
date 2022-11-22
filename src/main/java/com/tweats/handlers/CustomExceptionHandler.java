@@ -2,6 +2,7 @@ package com.tweats.handlers;
 
 import com.tweats.controller.response.ErrorResponse;
 import com.tweats.exceptions.ItemAccessException;
+import com.tweats.exceptions.ItemDoesNotExistException;
 import com.tweats.exceptions.NoItemsFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,7 +36,13 @@ public class CustomExceptionHandler {
 
     @ExceptionHandler(ItemAccessException.class)
     public ResponseEntity handleItemAccessException(ItemAccessException ex) {
-        ErrorResponse error = new ErrorResponse("Cannot access item!", Collections.singletonList(ex.getMessage()));
+        ErrorResponse error = new ErrorResponse("Item access denied!", Collections.singletonList(ex.getMessage()));
         return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(ItemDoesNotExistException.class)
+    public ResponseEntity handleItemDoesNotExistException(ItemDoesNotExistException ex) {
+        ErrorResponse error = new ErrorResponse("Item not found!", Collections.singletonList(ex.getMessage()));
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
 }

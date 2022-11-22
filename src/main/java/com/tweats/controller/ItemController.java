@@ -2,6 +2,7 @@ package com.tweats.controller;
 
 import com.tweats.controller.response.ItemListResponse;
 import com.tweats.exceptions.ItemAccessException;
+import com.tweats.exceptions.ItemDoesNotExistException;
 import com.tweats.exceptions.NoItemsFoundException;
 import com.tweats.exceptions.NotAnImageException;
 import com.tweats.service.ItemService;
@@ -44,7 +45,7 @@ public class ItemController {
 
 
     @PutMapping("{id}")
-    public void updateAvailability(Principal principal, @PathVariable long id) throws ItemAccessException {
+    public void updateAvailability(Principal principal, @PathVariable long id) throws ItemAccessException, ItemDoesNotExistException {
         itemService.updateAvailability(principal.getName(), id);
     }
 }
