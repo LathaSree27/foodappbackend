@@ -93,10 +93,22 @@ public class OrderControllerIntegrationTest {
         order.setDelivered(true);
         orderRepository.save(order);
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
         mockMvc.perform(
                         get("/order/completed")
                                 .param("categoryId", String.valueOf(category.getId()))
                                 .param("date", dateFormat.format(order.getDate())))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    void shouldThrowNoOrdersFoundErrorWhenThereIsNoCompletedOrdersAreFound() throws Exception {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+        mockMvc.perform(
+                        get("/order/completed")
+                                .param("categoryId", String.valueOf(category.getId()))
+                                .param("date", dateFormat.format(order.getDate())))
+                .andExpect(status().isNotFound());
     }
 }
