@@ -1,5 +1,7 @@
 fileignoreconfig:
 - filename: src/main/resources/db/migration/V2.1__AddCategoryIdColumnInOrderTable.sql
+  checksum: dba0e1d681e3da7594df0a0078dcf023a727a8a9d79312d2f70813432084334a
+- filename: src/main/resources/db/migration/V2.1__AddCategoryIdColumnInOrderTable.sql
   checksum: b49bbfb83cb052f7fe36be94b9586e973ebe2e91f87dd65dacf819255cf9677e
 - filename: src/main/resources/db/migration/V1.1__CreateRoleTable.sql
   checksum: 9005b89828a2c9130ae460fbb5e52e6cfc66ba59f6879dcbb6f77aeb85343f76
@@ -19,14 +21,12 @@ fileignoreconfig:
   checksum: cf3a942eea5bed4a0f8501c2b5931ec4ca6506f2bde3defc3e2d521449ea818b
 - filename: build.gradle
   checksum: 69669aa1267134275b8b780ae7fadc7bfb634542e713190b6098c7c8f20bbce7
-
 - filename: src/main/resources/db/migration/V1.3__CreateImageTable.sql
   checksum: 66e9ef66155dbc2226540dd58076177950af191fc4096dc9c7a477030138b3a3
 - filename: src/main/resources/db/migration/V1.4__CreateCategoryTable.sql
   checksum: 50e35f0b3d5ce0379024b0bf96cc9e939a473c3b4fa58053ad1c08cf26ec305d
 - filename: src/main/resources/db/migration/V1.5__CreateItemTable.sql
   checksum: 1bf9bf53e47d15403ab267033d09f4da32ec4acb789821ffd9d91922b57712bd
-
 - filename: README.md
   checksum: 20b41a0a3a69086bda36c365300333b500bbf3790913362568da94dc4b368b40
 - filename: src/main/java/com/tweats/tweats/users/User.java
@@ -39,5 +39,4 @@ fileignoreconfig:
   checksum: 705dfa05cddeaa38aaa3046399491edcf2a1862f69fc60af86e388c6299aea77
 - filename: src/main/resources/db/migration/V2.0__AlterColumnDataInImageTable.sql
   checksum: 9da5d9dd2467d4de224374196cacb262c51e151ba67519cc16f8eb1fe6770071
-
 version: ""
