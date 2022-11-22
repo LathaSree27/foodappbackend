@@ -21,7 +21,7 @@ public class Order {
     @Temporal(TemporalType.DATE)
     private Date date;
 
-    private boolean isDelivered;
+    private boolean isDelivered=false;
 
     @JoinColumn(name = "user_id")
     @OneToOne
@@ -34,11 +34,9 @@ public class Order {
     @OneToMany(mappedBy = "order")
     private Set<OrderedItem> orderedItems;
 
-    public Order(Date date, boolean isDelivered, User user, Category category, Set<OrderedItem> orderedItems) {
+    public Order(Date date, User user, Category category) {
         this.date = date;
-        this.isDelivered = isDelivered;
         this.user = user;
         this.category = category;
-        this.orderedItems = orderedItems;
     }
 }
