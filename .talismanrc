@@ -1,4 +1,6 @@
 fileignoreconfig:
+- filename: src/main/resources/db/migration/V2.1__AddCategoryIdColumnInOrderTable.sql
+  checksum: b49bbfb83cb052f7fe36be94b9586e973ebe2e91f87dd65dacf819255cf9677e
 - filename: src/main/resources/db/migration/V1.1__CreateRoleTable.sql
   checksum: 9005b89828a2c9130ae460fbb5e52e6cfc66ba59f6879dcbb6f77aeb85343f76
 - filename: src/main/resources/db/migration/V1.2__CreateUserTable.sql
