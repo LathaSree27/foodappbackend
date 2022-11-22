@@ -3,6 +3,7 @@ package com.tweats.service;
 import com.tweats.controller.response.CompletedOrdersResponse;
 import com.tweats.controller.response.OrderResponse;
 import com.tweats.controller.response.OrderedItemResponse;
+import com.tweats.exceptions.NoOrdersFoundException;
 import com.tweats.model.Item;
 import com.tweats.model.Order;
 import com.tweats.model.OrderedItem;
@@ -25,10 +26,11 @@ public class OrderService {
 
     private ImageService imageService;
 
-    public CompletedOrdersResponse getCompletedOrders(long categoryId, Date date) {
+    public CompletedOrdersResponse getCompletedOrders(long categoryId, Date date) throws NoOrdersFoundException {
         List<Order> orders = orderRepository.getAllCompletedOrdersByCategory(categoryId, date);
         BigDecimal revenue = new BigDecimal(0);
         int count = orders.size();
+        if(count==0) throw new NoOrdersFoundException();
         ArrayList<OrderResponse> orderResponses = new ArrayList<>();
         for (Order order : orders) {
             Set<OrderedItem> orderedItems = order.getOrderedItems();

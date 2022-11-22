@@ -1,5 +1,6 @@
 package com.tweats.controller;
 
+import com.tweats.exceptions.NoOrdersFoundException;
 import com.tweats.service.OrderService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,7 +22,7 @@ public class OrderControllerTest {
     }
 
     @Test
-    void shouldBeAbleToFetchAllCompletedOrdersWhenCategoryIdIsGiven() {
+    void shouldBeAbleToFetchAllCompletedOrdersWhenCategoryIdIsGiven() throws NoOrdersFoundException {
         long categoryId = 1;
         Date today = new Date();
         orderController.getCompletedOrders(categoryId, today);

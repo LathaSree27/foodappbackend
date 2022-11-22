@@ -3,6 +3,7 @@ package com.tweats.service;
 import com.tweats.controller.response.CompletedOrdersResponse;
 import com.tweats.controller.response.OrderResponse;
 import com.tweats.controller.response.OrderedItemResponse;
+import com.tweats.exceptions.NoOrdersFoundException;
 import com.tweats.model.*;
 import com.tweats.repo.OrderRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,6 +17,7 @@ import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.*;
 
 public class OrderServiceTest {
@@ -39,7 +41,7 @@ public class OrderServiceTest {
 
 
     @Test
-    void shouldBeAbleToFetchAllCompletedOrdersWhenCategoryIdAndDateIsGiven() {
+    void shouldBeAbleToFetchAllCompletedOrdersWhenCategoryIdAndDateIsGiven() throws NoOrdersFoundException {
         Date today = new Date();
         int count = 1;
         String itemName = "Mango";
@@ -67,6 +69,14 @@ public class OrderServiceTest {
 
         verify(orderRepository).getAllCompletedOrdersByCategory(category.getId(), today);
         assertThat(actualCompletedOrdersResponse, is(expectedCompletedOrdersResponse));
+
+    }
+
+    @Test
+    void shouldThrowNoOrdersFoundExceptionWhenThereAreNoCompletedOrders() {
+        long categoryId = category.getId();
+        Date today = new Date();
+        assertThrows(NoOrdersFoundException.class,()->orderService.getCompletedOrders(categoryId, today));
 
     }
 }
