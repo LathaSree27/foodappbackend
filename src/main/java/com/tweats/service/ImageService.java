@@ -4,6 +4,7 @@ import com.tweats.exceptions.NotAnImageException;
 import com.tweats.model.Image;
 import com.tweats.repo.ImageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -19,6 +20,9 @@ import java.util.Optional;
 public class ImageService {
 
     private final ImageRepository imageRepository;
+
+    @Value("${application.link}")
+    private String appLink;
 
     @Autowired
     public ImageService(ImageRepository imageRepository) {
@@ -37,6 +41,10 @@ public class ImageService {
 
     public Optional<Image> getImage(String imageId) {
         return imageRepository.findById(imageId);
+    }
+
+    public String getImageLink(Image image) {
+        return appLink + "/images/" + image.getId();
     }
 
 }

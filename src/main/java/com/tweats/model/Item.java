@@ -9,6 +9,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import java.math.BigDecimal;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -38,6 +39,9 @@ public class Item {
     @OneToOne
     @JoinColumn(name = "category_id")
     private Category category;
+
+    @OneToMany(mappedBy = "item")
+    private Set<OrderedItem> orderedItems;
 
     public Item(String name, Image image, BigDecimal price, Category category) {
         this.name = name;
