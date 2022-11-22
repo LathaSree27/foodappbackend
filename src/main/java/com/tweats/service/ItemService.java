@@ -82,12 +82,20 @@ public class ItemService {
         User vendor = userPrincipalService.findUserByEmail(vendorEmail);
         Category userCategory = categoryRepository.findByUserId(vendor.getId());
         Optional<Item> optionalItem = itemRepository.findById(itemId);
-        if (!optionalItem.isPresent()) throw new ItemDoesNotExistException();
-        Item item = optionalItem.get();
+        Item item = getItem(optionalItem);
         Category itemCategory = item.getCategory();
-        if (!userCategory.equals(itemCategory)) throw new ItemAccessException();
+        if (!isValidCategory(userCategory, itemCategory)) throw new ItemAccessException();
         item.set_available(item.is_available() ? false : true);
         itemRepository.save(item);
+    }
 
+    private Item getItem(Optional<Item> optionalItem) throws ItemDoesNotExistException {
+        if (!optionalItem.isPresent()) throw new ItemDoesNotExistException();
+        Item item = optionalItem.get();
+        return item;
+    }
+
+    private boolean isValidCategory(Category userCategory, Category itemCategory) {
+        return userCategory.equals(itemCategory);
     }
 }
