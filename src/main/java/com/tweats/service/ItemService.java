@@ -2,6 +2,7 @@ package com.tweats.service;
 
 import com.tweats.controller.response.ItemListResponse;
 import com.tweats.controller.response.ItemResponse;
+import com.tweats.exceptions.ItemAccessException;
 import com.tweats.exceptions.NoItemsFoundException;
 import com.tweats.exceptions.NotAnImageException;
 import com.tweats.model.Category;
@@ -73,5 +74,16 @@ public class ItemService {
 
     private String getItemImageLink(String itemImageId) {
         return appLink + "/images/" + itemImageId;
+    }
+
+    public void updateAvailability(String vendorEmail, long itemId) throws ItemAccessException {
+        User vendor = userPrincipalService.findUserByEmail(vendorEmail);
+        Category userCategory = categoryRepository.findByUserId(vendor.getId());
+        Item item = itemRepository.findById(itemId).get();
+        Category itemCategory = item.getCategory();
+        if (!userCategory.equals(itemCategory)) throw new ItemAccessException();
+        item.set_available(item.is_available() ? false : true);
+        itemRepository.save(item);
+
     }
 }

@@ -26,6 +26,7 @@ import java.util.List;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -58,6 +59,7 @@ public class ItemControllerIntegrationTest {
     private User vendor;
     private Image categoryImage;
     private Category category;
+    private BCryptPasswordEncoder encoder;
 
 
     @BeforeEach
@@ -67,7 +69,7 @@ public class ItemControllerIntegrationTest {
         imageRepository.deleteAll();
         userRepository.deleteAll();
         roleRepository.deleteAll();
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        encoder = new BCryptPasswordEncoder();
         vendor = userRepository.save(new User("abc", "abc@example.com", encoder.encode("password"), roleRepository.save(new Role("VENDOR"))));
         Image image = new Image("image.png", MediaType.IMAGE_JPEG_VALUE, "hello".getBytes(), 1L);
         categoryImage = imageRepository.save(image);
@@ -139,8 +141,33 @@ public class ItemControllerIntegrationTest {
 
     @Test
     void shouldThrowNoItemsFoundErrorWhenThereIsNoItemsInTheGivenCategoryId() throws Exception {
-
         mockMvc.perform(get("/item/" + category.getId()))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void shouldBeAbleToUpdateAvailabilityOfAnItemWhenVendorBelongsToThatParticularCategoryOfItem() throws Exception {
+        BigDecimal itemPrice = new BigDecimal(100);
+        String itemName = "mango";
+        Item item = new Item(itemName, categoryImage, itemPrice, category);
+        Item savedItem = itemRepository.save(item);
+        mockMvc.perform(put("/item/"+savedItem.getId())
+                        .with(httpBasic("abc@example.com", "password")))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void shouldThrowItemAccessErrorWhenVendorDoesNotBelongToTheCategoryOfItem() throws Exception {
+        User foodVendor = userRepository.save(new User("abc", "xyz@example.com", encoder.encode("password"), roleRepository.save(new Role("VENDOR"))));
+        Category food = new Category("food", categoryImage, true, foodVendor);
+        Category foodCategory = categoryRepository.save(food);
+        BigDecimal itemPrice = new BigDecimal(100);
+        String itemName = "manchuria";
+        Item item = new Item(itemName, categoryImage, itemPrice, foodCategory);
+        Item savedItem = itemRepository.save(item);
+
+        mockMvc.perform(put("/item/" + savedItem.getId())
+                        .with(httpBasic("abc@example.com", "password")))
+                .andExpect(status().isForbidden());
     }
 }

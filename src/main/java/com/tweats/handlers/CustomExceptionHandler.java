@@ -1,6 +1,7 @@
 package com.tweats.handlers;
 
 import com.tweats.controller.response.ErrorResponse;
+import com.tweats.exceptions.ItemAccessException;
 import com.tweats.exceptions.NoItemsFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,5 +31,11 @@ public class CustomExceptionHandler {
     public ResponseEntity handleNoItemsFoundException(NoItemsFoundException ex) {
         ErrorResponse error = new ErrorResponse("No items found!", Collections.singletonList(ex.getMessage()));
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(ItemAccessException.class)
+    public ResponseEntity handleItemAccessException(ItemAccessException ex) {
+        ErrorResponse error = new ErrorResponse("Cannot access item!", Collections.singletonList(ex.getMessage()));
+        return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
     }
 }

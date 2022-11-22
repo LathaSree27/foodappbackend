@@ -2,6 +2,7 @@ package com.tweats.service;
 
 import com.tweats.controller.response.ItemListResponse;
 import com.tweats.controller.response.ItemResponse;
+import com.tweats.exceptions.ItemAccessException;
 import com.tweats.exceptions.NoItemsFoundException;
 import com.tweats.exceptions.NotAnImageException;
 import com.tweats.model.Category;
@@ -21,6 +22,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -36,6 +38,7 @@ public class ItemServiceTest {
     private Principal principal;
     private UserPrincipalService userPrincipalService;
     private User user;
+    private Image image;
 
 
     @BeforeEach
@@ -48,6 +51,7 @@ public class ItemServiceTest {
         itemService = new ItemService(itemRepository, categoryRepository, imageService, userPrincipalService);
         category = mock(Category.class);
         principal = mock(Principal.class);
+        image = mock(Image.class);
     }
 
     @Test
@@ -56,10 +60,11 @@ public class ItemServiceTest {
         String itemName = "Mango";
         BigDecimal price = new BigDecimal(80);
         MockMultipartFile itemImageFile = new MockMultipartFile("itemImage.png", "ItemImage".getBytes(StandardCharsets.UTF_8));
-        Item item = new Item();
+        Item item = new Item(itemName, image, price, category);
         when(principal.getName()).thenReturn(userEmail);
         when(userPrincipalService.findUserByEmail(userEmail)).thenReturn(user);
         when(categoryRepository.findByUserId(user.getId())).thenReturn(category);
+        when(imageService.save(any())).thenReturn(image);
 
         itemService.save(itemName, price, itemImageFile, principal.getName());
 
@@ -101,5 +106,38 @@ public class ItemServiceTest {
         long categoryId = 1;
 
         assertThrows(NoItemsFoundException.class, () -> itemService.getItems(categoryId));
+    }
+
+    @Test
+    void shouldBeAbleUpdateAvailabilityOfAnItemFromFalseToTrue() throws ItemAccessException {
+        String vendorEmail = "abc@gmail.com";
+        long itemId = 1;
+        String itemName = "Mango";
+        BigDecimal price = new BigDecimal(80);
+        Item item = new Item(itemName, image, price, category);
+        item.setId(itemId);
+        when(userPrincipalService.findUserByEmail(vendorEmail)).thenReturn(user);
+        when(categoryRepository.findByUserId(user.getId())).thenReturn(category);
+        when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
+
+        itemService.updateAvailability(vendorEmail, itemId);
+
+        verify(itemRepository).save(item);
+        assertThat(itemRepository.findById(itemId).get().is_available(), is(true));
+    }
+
+    @Test
+    void shouldThrowItemAccessExceptionWhenVendorTriesToUpdateAvailabilityOfItemFromOtherCategory() {
+        String vendorEmail = "abc@gmail.com";
+        long itemId = 1;
+        String itemName = "Mango";
+        BigDecimal price = new BigDecimal(80);
+        Item item = new Item(itemName, image, price, category);
+        Category userCategory = new Category();
+        when(userPrincipalService.findUserByEmail(vendorEmail)).thenReturn(user);
+        when(categoryRepository.findByUserId(user.getId())).thenReturn(userCategory);
+        when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
+
+        assertThrows(ItemAccessException.class, () -> itemService.updateAvailability(vendorEmail, itemId));
     }
 }
