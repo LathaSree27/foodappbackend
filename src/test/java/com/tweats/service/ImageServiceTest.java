@@ -7,10 +7,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
-
 import java.io.IOException;
 import java.util.Optional;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -59,15 +57,4 @@ public class ImageServiceTest {
 
     }
 
-//    @Test
-//    void shouldThrowExceptionWhenImageIsNotFound() {
-//        String imageId = "Image@123";
-//        Image image = new Image();
-//        when(imageRepository.findById(imageId))
-//                .thenReturn(null);
-//        ImageService imageService = new ImageService(imageRepository);
-//
-//        assertThrows(ImageNotFoundException.class,()->imageService.getImage(imageId));
-
-//    }
 }

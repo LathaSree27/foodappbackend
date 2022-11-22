@@ -12,3 +12,5 @@ logging:
 server:
   servlet:
     context-path: /tweats/api/v1
+application:
+  link: http://localhost:8080/tweats/api/v1

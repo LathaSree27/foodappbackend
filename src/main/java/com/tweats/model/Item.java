@@ -1,47 +1,43 @@
 package com.tweats.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.annotations.ApiModelProperty;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import java.math.BigDecimal;
+import java.util.Objects;
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
 @Table(name = "item")
 public class Item {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @JsonProperty
-    @NotBlank(message = "Item name should be provided")
+    @NotBlank(message = "Item name can't be empty!")
     @Column(nullable = false)
-    @ApiModelProperty(name = "item name", value = "name of the item", required = true, example = "item_name", position = 1)
     private String name;
 
     @OneToOne
     @JoinColumn(name = "image_id")
     private Image image;
 
-    @JsonProperty
+    @Min(value = 0, message = "Price can't be negative!")
     @Column(nullable = false)
-    @ApiModelProperty(name = "item price", value = "price of item", required = true, example = "100", position = 3)
     private BigDecimal price;
 
-
-    @JsonProperty
     @Column(nullable = false)
-    @ApiModelProperty(name = "is_available", value = "is available", required = true, example = "true", position = 4)
     private boolean is_available;
 
     @OneToOne
     @JoinColumn(name = "category_id")
     private Category category;
-
-    public Item() {
-    }
 
     public Item(String name, Image image, BigDecimal price, Category category) {
         this.name = name;
@@ -51,39 +47,17 @@ public class Item {
         this.category = category;
     }
 
-    public long getId() {
-        return id;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Item item = (Item) o;
+        return id == item.id;
     }
 
-    public String getName() {
-        return name;
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 
-    public BigDecimal getPrice() {
-        return price;
-    }
-
-    public boolean isIs_available() {
-        return is_available;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setPrice(BigDecimal price) {
-        this.price = price;
-    }
-
-    public void setIs_available(boolean is_available) {
-        this.is_available = is_available;
-    }
-
-    public void setCategory(Category category) {
-        this.category = category;
-    }
 }
