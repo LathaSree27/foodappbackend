@@ -137,4 +137,12 @@ public class OrderControllerIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(actualActiveOrderResponse)));
     }
+
+    @Test
+    void shouldThrowNoOrdersFoundErrorWhenThereAreNoActiveOrdersFound() throws Exception {
+        mockMvc.perform(
+                get("/order/active")
+                        .param("categoryId",String.valueOf(category.getId())))
+                .andExpect(status().isNotFound());
+    }
 }
