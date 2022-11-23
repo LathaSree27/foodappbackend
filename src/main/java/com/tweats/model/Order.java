@@ -6,6 +6,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -38,5 +39,18 @@ public class Order {
         this.date = date;
         this.user = user;
         this.category = category;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Order order = (Order) o;
+        return id == order.id && isDelivered == order.isDelivered && Objects.equals(date, order.date) && Objects.equals(user, order.user) && Objects.equals(category, order.category) && Objects.equals(orderedItems, order.orderedItems);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, date, isDelivered, user, category, orderedItems);
     }
 }

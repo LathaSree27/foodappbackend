@@ -12,10 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -40,11 +37,14 @@ public class OrderServiceTest {
         categoryRepository = mock(CategoryRepository.class);
         imageService = mock(ImageService.class);
         orderRepository = mock(OrderRepository.class);
-        orderService = new OrderService(orderRepository, imageService, userPrincipalService, categoryRepository);
         order = mock(Order.class);
         category = mock(Category.class);
         image = mock(Image.class);
         user = mock(User.class);
+        when(userPrincipalService.findUserByEmail(user.getEmail())).thenReturn(user);
+        when(categoryRepository.findByUserId(user.getId())).thenReturn(category);
+        orderService = new OrderService(orderRepository, imageService, userPrincipalService, categoryRepository);
+
     }
 
 
@@ -92,7 +92,6 @@ public class OrderServiceTest {
 
     @Test
     void shouldBeAbleToFetchAllActiveOrdersWhenCategoryIdIsGiven() throws NoOrdersFoundException {
-        String vendorEmail = "abc@example.com";
         OrderService mockedOrderService = spy(orderService);
         Date today = new Date();
         int count = 1;
@@ -107,8 +106,6 @@ public class OrderServiceTest {
         orders.add(order);
         when(mockedOrderService.getCurrentDate()).thenReturn(today);
         when(orderRepository.getAllOrdersByCategoryDateAndStatus(category.getId(), today, false)).thenReturn(orders);
-        when(userPrincipalService.findUserByEmail(vendorEmail)).thenReturn(user);
-        when(categoryRepository.findByUserId(user.getId())).thenReturn(category);
         HashSet<OrderedItem> orderedItems = new HashSet<>();
         OrderedItem orderedItem = new OrderedItem(order, item, quantity);
         orderedItems.add(orderedItem);
@@ -120,7 +117,7 @@ public class OrderServiceTest {
         orderResponses.add(new OrderResponse(order.getId(), today, billAmount, orderedItemResponses));
         ActiveOrderResponse expectedActiveOrderResponse = new ActiveOrderResponse(count, orderResponses);
 
-        ActiveOrderResponse actualActiveOrders = mockedOrderService.getActiveOrders(vendorEmail);
+        ActiveOrderResponse actualActiveOrders = mockedOrderService.getActiveOrders(user.getEmail());
 
         verify(orderRepository).getAllOrdersByCategoryDateAndStatus(category.getId(), today, false);
         assertThat(actualActiveOrders, is(expectedActiveOrderResponse));
@@ -128,9 +125,16 @@ public class OrderServiceTest {
 
     @Test
     void shouldThrowNoOrderFoundExceptionWhenThereAreNoActiveOrdersFound() {
-        when(userPrincipalService.findUserByEmail(user.getEmail())).thenReturn(user);
-        when(categoryRepository.findByUserId(user.getId())).thenReturn(category);
-
         assertThrows(NoOrdersFoundException.class, () -> orderService.getActiveOrders(user.getEmail()));
+    }
+
+    @Test
+    void shouldCompleteTheOrderWhenOrderIsNotDelivered() {
+        when(orderRepository.findById(order.getId())).thenReturn(Optional.of(order));
+        order.setDelivered(true);
+
+        orderService.completeTheOrder(user.getEmail(), order.getId());
+
+        verify(orderRepository).save(order);
     }
 }

@@ -85,6 +85,8 @@ public class OrderService {
     }
 
     public void completeTheOrder(String vendorEmail, long orderId) {
-
+        Order order = orderRepository.findById(orderId).get();
+        order.setDelivered(true);
+        orderRepository.save(order);
     }
 }
