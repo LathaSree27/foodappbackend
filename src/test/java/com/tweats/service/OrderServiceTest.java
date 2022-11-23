@@ -1,5 +1,6 @@
 package com.tweats.service;
 
+import com.tweats.controller.response.ActiveOrderResponse;
 import com.tweats.controller.response.CompletedOrdersResponse;
 import com.tweats.controller.response.OrderResponse;
 import com.tweats.controller.response.OrderedItemResponse;
@@ -46,6 +47,7 @@ public class OrderServiceTest {
         int count = 1;
         String itemName = "Mango";
         BigDecimal revenue = new BigDecimal(100);
+        BigDecimal billAmount = new BigDecimal(100);
         ArrayList<OrderResponse> orderResponses = new ArrayList<>();
         ArrayList<OrderedItemResponse> orderedItemResponses = new ArrayList<>();
         long quantity = 2;
@@ -63,7 +65,7 @@ public class OrderServiceTest {
         when(imageService.getImageLink(image)).thenReturn(imageLink);
         when(order.getDate()).thenReturn(today);
         orderedItemResponses.add(new OrderedItemResponse(item.getId(), item.getName(), quantity, itemPrice, imageLink));
-        orderResponses.add(new OrderResponse(order.getId(), today, revenue, orderedItemResponses));
+        orderResponses.add(new OrderResponse(order.getId(), today, billAmount, orderedItemResponses));
         CompletedOrdersResponse expectedCompletedOrdersResponse = new CompletedOrdersResponse(count, revenue, orderResponses);
 
         CompletedOrdersResponse actualCompletedOrdersResponse = orderService.getCompletedOrders(category.getId(), today);
@@ -77,7 +79,40 @@ public class OrderServiceTest {
     void shouldThrowNoOrdersFoundExceptionWhenThereAreNoCompletedOrders() {
         long categoryId = category.getId();
         Date today = new Date();
-        assertThrows(NoOrdersFoundException.class, () -> orderService.getCompletedOrders(categoryId, today));
 
+        assertThrows(NoOrdersFoundException.class, () -> orderService.getCompletedOrders(categoryId, today));
+    }
+
+    @Test
+    void shouldBeAbleToFetchAllActiveOrdersWhenCategoryIdIsGiven() {
+        OrderService mockedOrderService = spy(orderService);
+        Date today = new Date();
+        int count = 1;
+        BigDecimal billAmount = new BigDecimal(100);
+        String itemName = "Mango";
+        ArrayList<OrderResponse> orderResponses = new ArrayList<>();
+        ArrayList<OrderedItemResponse> orderedItemResponses = new ArrayList<>();
+        long quantity = 2;
+        BigDecimal itemPrice = new BigDecimal(50);
+        Item item = new Item(itemName, image, itemPrice, category);
+        List<Order> orders = new ArrayList<>();
+        orders.add(order);
+        when(mockedOrderService.getCurrentDate()).thenReturn(today);
+        when(orderRepository.getAllOrdersByCategoryDateAndStatus(category.getId(), today, false)).thenReturn(orders);
+        HashSet<OrderedItem> orderedItems = new HashSet<>();
+        OrderedItem orderedItem = new OrderedItem(order, item, quantity);
+        orderedItems.add(orderedItem);
+        when(order.getOrderedItems()).thenReturn(orderedItems);
+        String imageLink = "http://localhost:8080/tweats/api/v1/images/" + item.getImage().getId();
+        when(imageService.getImageLink(image)).thenReturn(imageLink);
+        when(order.getDate()).thenReturn(today);
+        orderedItemResponses.add(new OrderedItemResponse(item.getId(), item.getName(), quantity, itemPrice, imageLink));
+        orderResponses.add(new OrderResponse(order.getId(), today, billAmount, orderedItemResponses));
+        ActiveOrderResponse expectedActiveOrderResponse = new ActiveOrderResponse(count, orderResponses);
+
+        ActiveOrderResponse actualActiveOrders = mockedOrderService.getActiveOrders(category.getId());
+
+        verify(orderRepository).getAllOrdersByCategoryDateAndStatus(category.getId(), today, false);
+        assertThat(actualActiveOrders, is(expectedActiveOrderResponse));
     }
 }

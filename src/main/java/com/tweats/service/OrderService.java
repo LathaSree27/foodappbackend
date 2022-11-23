@@ -1,5 +1,6 @@
 package com.tweats.service;
 
+import com.tweats.controller.response.ActiveOrderResponse;
 import com.tweats.controller.response.CompletedOrdersResponse;
 import com.tweats.controller.response.OrderResponse;
 import com.tweats.controller.response.OrderedItemResponse;
@@ -64,7 +65,16 @@ public class OrderService {
         return billAmount;
     }
 
-    public void getActiveOrders(long categoryId) {
+    public ActiveOrderResponse getActiveOrders(long categoryId) {
+        Date today = getCurrentDate();
+        List<Order> orders = orderRepository.getAllOrdersByCategoryDateAndStatus(categoryId, today, false);
+        int count = orders.size();
+        ArrayList<OrderResponse> orderResponses = new ArrayList<>();
+        createOrderResponse(orders, orderResponses);
+        return new ActiveOrderResponse(count, orderResponses);
+    }
 
+    public Date getCurrentDate() {
+        return new Date();
     }
 }
