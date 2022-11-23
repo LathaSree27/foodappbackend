@@ -27,6 +27,7 @@ import java.util.Set;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -137,4 +138,16 @@ public class OrderControllerIntegrationTest {
                                 .with(httpBasic(user.getEmail(), "password")))
                 .andExpect(status().isNotFound());
     }
+
+    @Test
+    void shouldBeAbleToCompleteTheOrderWhenOrderIdIsGiven() throws Exception {
+        order.setDelivered(false);
+        Order placedOrder = orderRepository.save(order);
+        mockMvc.perform(
+                        put("/order/complete")
+                                .with(httpBasic(user.getEmail(), "password"))
+                                .param("orderId",String.valueOf(placedOrder.getId())))
+                .andExpect(status().isNoContent());
+    }
+
 }

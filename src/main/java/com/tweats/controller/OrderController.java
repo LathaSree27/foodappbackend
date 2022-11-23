@@ -8,10 +8,8 @@ import com.tweats.exceptions.OrderNotFoundException;
 import com.tweats.service.OrderService;
 import lombok.AllArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.Date;
@@ -36,7 +34,10 @@ public class OrderController {
         return orderService.getActiveOrders(vendorEmail);
     }
 
-    public void completeTheOrder(Principal principal, long orderId) throws OrderNotFoundException, OrderCategoryMismatchException {
+   @PutMapping("complete")
+   @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void completeTheOrder(Principal principal,
+                                 @RequestParam(name = "orderId") long orderId) throws OrderNotFoundException, OrderCategoryMismatchException {
         String vendorEmail = principal.getName();
         orderService.completeTheOrder(vendorEmail,orderId);
     }
