@@ -25,4 +25,9 @@ public class OrderController {
             @RequestParam("date") @DateTimeFormat(pattern = "yyyy-MM-dd") Date date) throws NoOrdersFoundException {
         return orderService.getCompletedOrders(categoryId, date);
     }
+
+    public void getActiveOrders(long categoryId) {
+        orderService.getActiveOrders(categoryId);
+
+    }
 }

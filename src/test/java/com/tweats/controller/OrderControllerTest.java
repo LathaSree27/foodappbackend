@@ -14,19 +14,27 @@ public class OrderControllerTest {
 
     private OrderController orderController;
     private OrderService orderService;
+    private long categoryId;
 
     @BeforeEach
     void setUp() {
         orderService = mock(OrderService.class);
         orderController = new OrderController(orderService);
+        categoryId = 1;
     }
 
     @Test
-    void shouldBeAbleToFetchAllCompletedOrdersWhenCategoryIdIsGiven() throws NoOrdersFoundException {
-        long categoryId = 1;
+    void shouldBeAbleToFetchAllCompletedOrdersWhenCategoryIdAndDateIsGiven() throws NoOrdersFoundException {
         Date today = new Date();
         orderController.getCompletedOrders(categoryId, today);
 
         verify(orderService).getCompletedOrders(categoryId, today);
+    }
+
+    @Test
+    void shouldBeAbleToFetchAllActiveOrdersWhenCategoryIdIsGiven() {
+        orderController.getActiveOrders(categoryId);
+
+        verify(orderService).getActiveOrders(categoryId);
     }
 }

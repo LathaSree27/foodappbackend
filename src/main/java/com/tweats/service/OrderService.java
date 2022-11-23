@@ -63,4 +63,8 @@ public class OrderService {
         }
         return billAmount;
     }
+
+    public void getActiveOrders(long categoryId) {
+
+    }
 }
