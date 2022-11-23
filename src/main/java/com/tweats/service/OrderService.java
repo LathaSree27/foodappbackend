@@ -83,4 +83,8 @@ public class OrderService {
     public Date getCurrentDate() {
         return new Date();
     }
+
+    public void completeTheOrder(String vendorEmail, long orderId) {
+
+    }
 }

@@ -33,4 +33,9 @@ public class OrderController {
         String vendorEmail = principal.getName();
         return orderService.getActiveOrders(vendorEmail);
     }
+
+    public void completeTheOrder(Principal principal, long orderId) {
+        String vendorEmail = principal.getName();
+        orderService.completeTheOrder(vendorEmail,orderId);
+    }
 }

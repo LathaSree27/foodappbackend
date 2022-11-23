@@ -16,6 +16,7 @@ public class OrderControllerTest {
     private OrderService orderService;
 
     private long categoryId;
+
     private Principal principal;
 
     @BeforeEach
@@ -24,6 +25,8 @@ public class OrderControllerTest {
         orderService = mock(OrderService.class);
         orderController = new OrderController(orderService);
         categoryId = 1;
+        String vendorEmail = "abc@example.com";
+        when(principal.getName()).thenReturn(vendorEmail);
     }
 
     @Test
@@ -37,11 +40,17 @@ public class OrderControllerTest {
 
     @Test
     void shouldBeAbleToFetchAllActiveOrdersWhenCategoryIdIsGiven() throws NoOrdersFoundException {
-        String vendorEmail = "abc@example.com";
-        when(principal.getName()).thenReturn(vendorEmail);
 
         orderController.getActiveOrders(principal);
 
-        verify(orderService).getActiveOrders(vendorEmail);
+        verify(orderService).getActiveOrders(principal.getName());
+    }
+
+    @Test
+    void shouldBeAbleToCompleteOrderWhenOrderIdIsGiven() {
+        long orderId = 1;
+        orderController.completeTheOrder(principal, orderId);
+
+        verify(orderService).completeTheOrder(principal.getName(), orderId);
     }
 }
