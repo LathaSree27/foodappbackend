@@ -3,6 +3,7 @@ package com.tweats.controller;
 import com.tweats.controller.response.ActiveOrderResponse;
 import com.tweats.controller.response.CompletedOrdersResponse;
 import com.tweats.exceptions.NoOrdersFoundException;
+import com.tweats.exceptions.OrderNotFoundException;
 import com.tweats.service.OrderService;
 import lombok.AllArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -34,7 +35,7 @@ public class OrderController {
         return orderService.getActiveOrders(vendorEmail);
     }
 
-    public void completeTheOrder(Principal principal, long orderId) {
+    public void completeTheOrder(Principal principal, long orderId) throws OrderNotFoundException {
         String vendorEmail = principal.getName();
         orderService.completeTheOrder(vendorEmail,orderId);
     }

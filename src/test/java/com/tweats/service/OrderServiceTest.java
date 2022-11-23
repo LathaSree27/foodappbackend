@@ -5,6 +5,7 @@ import com.tweats.controller.response.CompletedOrdersResponse;
 import com.tweats.controller.response.OrderResponse;
 import com.tweats.controller.response.OrderedItemResponse;
 import com.tweats.exceptions.NoOrdersFoundException;
+import com.tweats.exceptions.OrderNotFoundException;
 import com.tweats.model.*;
 import com.tweats.repo.CategoryRepository;
 import com.tweats.repo.OrderRepository;
@@ -129,12 +130,17 @@ public class OrderServiceTest {
     }
 
     @Test
-    void shouldCompleteTheOrderWhenOrderIsNotDelivered() {
+    void shouldCompleteTheOrderWhenOrderIsNotDelivered() throws OrderNotFoundException {
         when(orderRepository.findById(order.getId())).thenReturn(Optional.of(order));
         order.setDelivered(true);
 
         orderService.completeTheOrder(user.getEmail(), order.getId());
 
         verify(orderRepository).save(order);
+    }
+
+    @Test
+    void shouldThrowOrderNotFoundExceptionWhenInvalidOrderIdIsGiven() {
+        assertThrows(OrderNotFoundException.class,()->orderService.completeTheOrder(user.getEmail(), order.getId()));
     }
 }

@@ -5,6 +5,7 @@ import com.tweats.controller.response.CompletedOrdersResponse;
 import com.tweats.controller.response.OrderResponse;
 import com.tweats.controller.response.OrderedItemResponse;
 import com.tweats.exceptions.NoOrdersFoundException;
+import com.tweats.exceptions.OrderNotFoundException;
 import com.tweats.model.*;
 import com.tweats.repo.CategoryRepository;
 import com.tweats.repo.OrderRepository;
@@ -84,8 +85,8 @@ public class OrderService {
         return new Date();
     }
 
-    public void completeTheOrder(String vendorEmail, long orderId) {
-        Order order = orderRepository.findById(orderId).get();
+    public void completeTheOrder(String vendorEmail, long orderId) throws OrderNotFoundException {
+        Order order = orderRepository.findById(orderId).orElseThrow(()-> new OrderNotFoundException());
         order.setDelivered(true);
         orderRepository.save(order);
     }
