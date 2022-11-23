@@ -27,7 +27,7 @@ public class Cart {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "cart",cascade = {CascadeType.MERGE, CascadeType.REMOVE})
+    @OneToMany(mappedBy = "cart", cascade = {CascadeType.MERGE, CascadeType.REMOVE})
     private Set<CartItem> cartItems;
 
     public Cart(Category category, User user) {
@@ -40,14 +40,14 @@ public class Cart {
         cartItems.add(cartItem);
     }
 
-    public CartItem getCartItem(Item item, long quantity){
-        for(CartItem cartItem : cartItems){
-            if(isCartItem(item, cartItem)) {
+    public CartItem getCartItem(Item item, long quantity) {
+        for (CartItem cartItem : cartItems) {
+            if (isCartItem(item, cartItem)) {
                 cartItem.updateQuantity(quantity);
                 return cartItem;
             }
         }
-        return new CartItem(this,item,quantity);
+        return new CartItem(this, item, quantity);
     }
 
     private boolean isCartItem(Item item, CartItem cartItem) {

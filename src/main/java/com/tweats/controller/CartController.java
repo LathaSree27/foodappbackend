@@ -15,8 +15,9 @@ import java.security.Principal;
 public class CartController {
 
     CartService cartService;
+
     @PostMapping
-    public void add(Principal principal, @RequestParam long itemId, @RequestParam long quantity){
+    public void add(Principal principal, @RequestParam long itemId, @RequestParam long quantity) {
         String userEmail = principal.getName();
         cartService.addItem(userEmail, itemId, quantity);
     }

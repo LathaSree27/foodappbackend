@@ -13,7 +13,6 @@ import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 public class CartServiceTest {
@@ -41,23 +40,23 @@ public class CartServiceTest {
     }
 
     @Test
-    void shouldBeAbleToSaveCartItem() {
+    void shouldBeAbleToSaveCartItemWhenUserAddsItemToCart() {
         String userEmail = "abc@gmail.com";
         long itemId = 1L;
         long quantity = 2L;
-        String item1Name = "Mango";
+        String itemName = "Mango";
         BigDecimal price = new BigDecimal(80);
-        Item item1 = new Item(item1Name, image, price, category);
+        Item item = new Item(itemName, image, price, category);
         when(userPrincipalService.findUserByEmail(userEmail)).thenReturn(user);
-        when(itemRepository.findById(itemId)).thenReturn(Optional.of(item1));
+        when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
         when(cartRepository.findCartByUserIdAndCategoryId(user.getId(), category.getId())).thenReturn(cart);
-        CartItem cartItem = new CartItem(cart, item1, quantity);
-        Set<CartItem> cartItems = new HashSet<>();
-        cartItems.add(cartItem);
+        CartItem cartItem = new CartItem(cart, item, quantity);
+        Set<CartItem> expectedCartItems = new HashSet<>();
+        expectedCartItems.add(cartItem);
 
         cartService.addItem(userEmail, itemId, quantity);
 
         verify(cartRepository).save(cart);
-        assertThat(cart.getCartItems(), is(cartItems));
+        assertThat(cart.getCartItems(), is(expectedCartItems));
     }
 }
