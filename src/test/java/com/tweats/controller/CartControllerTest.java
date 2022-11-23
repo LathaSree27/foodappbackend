@@ -1,5 +1,6 @@
 package com.tweats.controller;
 
+import com.tweats.exceptions.ItemDoesNotExistException;
 import com.tweats.service.CartService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,7 +23,7 @@ public class CartControllerTest {
     }
 
     @Test
-    void shouldBeAbleToAddItemToCart() {
+    void shouldBeAbleToAddItemToCart() throws ItemDoesNotExistException {
         long itemId = 1L;
         long quantity = 2L;
         String userEmail = "abc@gmail.com";

@@ -76,7 +76,7 @@ public class CartControllerIntegrationTest {
     }
 
     @Test
-    void shouldBeAbleToInvokeCartApi() throws Exception {
+    void shouldBeAbleToAddItemToCartWhenCartApiIsInvoked() throws Exception {
         BigDecimal itemPrice = new BigDecimal(100);
         String itemName = "manchuria";
         Item item = new Item(itemName, categoryImage, itemPrice, category);
@@ -86,5 +86,21 @@ public class CartControllerIntegrationTest {
                 .param("itemId", String.valueOf(savedItem.getId()))
                 .param("quantity", String.valueOf(1L))
                 .with(httpBasic("abc@gmail.com", "password"))).andExpect(status().isOk());
+    }
+
+    @Test
+    void shouldThrowItemDoesNotExistErrorWhenItemWithGivenIdDoesNotExist() throws Exception {
+        mockMvc.perform(post("/cart")
+                .param("itemId", "1")
+                .param("quantity", String.valueOf(1L))
+                .with(httpBasic("abc@gmail.com", "password"))).andExpect(status().isNotFound());
+    }
+
+    @Test
+    void shouldThrowNegativeQuantityErrorWhenItemQuantityIsGivenNegative() throws Exception {
+        mockMvc.perform(post("/cart")
+                .param("itemId", "1")
+                .param("quantity", String.valueOf(-1L))
+                .with(httpBasic("abc@gmail.com", "password"))).andExpect(status().isBadRequest());
     }
 }

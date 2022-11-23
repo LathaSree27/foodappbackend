@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.validation.constraints.Min;
 import java.util.Objects;
 
 @Entity
@@ -26,6 +27,7 @@ public class CartItem {
     @JoinColumn(name = "item_id")
     private Item item;
 
+    @Min(value = 0, message = "quantity cannot be negative")
     private long quantity;
 
     public CartItem(Cart cart, Item item, long quantity) {

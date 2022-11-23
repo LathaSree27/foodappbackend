@@ -1,5 +1,6 @@
 package com.tweats.service;
 
+import com.tweats.exceptions.ItemDoesNotExistException;
 import com.tweats.model.*;
 import com.tweats.repo.CartRepository;
 import com.tweats.repo.ItemRepository;
@@ -13,6 +14,7 @@ import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 public class CartServiceTest {
@@ -40,7 +42,7 @@ public class CartServiceTest {
     }
 
     @Test
-    void shouldBeAbleToSaveCartItemWhenUserAddsItemToCart() {
+    void shouldBeAbleToSaveCartItemWhenUserAddsItemToCart() throws ItemDoesNotExistException {
         String userEmail = "abc@gmail.com";
         long itemId = 1L;
         long quantity = 2L;
@@ -58,5 +60,15 @@ public class CartServiceTest {
 
         verify(cartRepository).save(cart);
         assertThat(cart.getCartItems(), is(expectedCartItems));
+    }
+
+    @Test
+    void shouldThrowItemDoesNotExistExceptionWhenItemWithTheGivenIdDoesNotExist() {
+        String userEmail = "abc@gmail.com";
+        long itemId = 1L;
+        long quantity = 2L;
+        when(userPrincipalService.findUserByEmail(userEmail)).thenReturn(user);
+
+        assertThrows(ItemDoesNotExistException.class, () -> cartService.addItem(userEmail, itemId, quantity));
     }
 }
