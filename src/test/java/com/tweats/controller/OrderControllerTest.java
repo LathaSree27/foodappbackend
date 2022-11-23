@@ -1,5 +1,7 @@
 package com.tweats.controller;
 
+import com.tweats.controller.response.ActiveOrderResponse;
+import com.tweats.controller.response.CompletedOrdersResponse;
 import com.tweats.exceptions.NoOrdersFoundException;
 import com.tweats.service.OrderService;
 import org.junit.jupiter.api.BeforeEach;
@@ -8,7 +10,9 @@ import org.junit.jupiter.api.Test;
 import java.security.Principal;
 import java.util.Date;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.*;
+import static org.hamcrest.Matchers.*;
 
 public class OrderControllerTest {
 
@@ -32,18 +36,24 @@ public class OrderControllerTest {
     @Test
     void shouldBeAbleToFetchAllCompletedOrdersWhenCategoryIdAndDateIsGiven() throws NoOrdersFoundException {
         Date today = new Date();
+        CompletedOrdersResponse expectedCompletedOrdersResponse = new CompletedOrdersResponse();
+        when(orderService.getCompletedOrders(categoryId,today)).thenReturn(expectedCompletedOrdersResponse);
 
-        orderController.getCompletedOrders(categoryId, today);
+        CompletedOrdersResponse actualCompletedOrdersResponse = orderController.getCompletedOrders(categoryId, today);
 
         verify(orderService).getCompletedOrders(categoryId, today);
+        assertThat(actualCompletedOrdersResponse,is(expectedCompletedOrdersResponse));
     }
 
     @Test
     void shouldBeAbleToFetchAllActiveOrdersWhenCategoryIdIsGiven() throws NoOrdersFoundException {
+        ActiveOrderResponse expectedActiveOrderResponse = new ActiveOrderResponse();
+        when(orderService.getActiveOrders(principal.getName())).thenReturn(expectedActiveOrderResponse);
 
-        orderController.getActiveOrders(principal);
+        ActiveOrderResponse actualActiveOrderResponse = orderController.getActiveOrders(principal);
 
         verify(orderService).getActiveOrders(principal.getName());
+        assertThat(actualActiveOrderResponse,is(expectedActiveOrderResponse));
     }
 
     @Test

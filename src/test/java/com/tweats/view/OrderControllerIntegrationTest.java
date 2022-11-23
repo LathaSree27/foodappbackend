@@ -56,12 +56,6 @@ public class OrderControllerIntegrationTest {
     @Autowired
     RoleRepository roleRepository;
 
-    @Autowired
-    OrderService orderService;
-
-    @Autowired
-    ObjectMapper objectMapper;
-
     private Category category;
     private Order order;
     private User user;
@@ -106,15 +100,13 @@ public class OrderControllerIntegrationTest {
         order.setDelivered(true);
         orderRepository.save(order);
         Date date = order.getDate();
-        CompletedOrdersResponse actualCompletedOrderResponse = orderService.getCompletedOrders(category.getId(), date);
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
         mockMvc.perform(
                         get("/order/completed")
                                 .param("categoryId", String.valueOf(category.getId()))
                                 .param("date", dateFormat.format(date)))
-                .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(actualCompletedOrderResponse)));
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -132,12 +124,10 @@ public class OrderControllerIntegrationTest {
     void shouldBeAbleToGetActiveOrdersWhenCategoryIdIsGiven() throws Exception {
         order.setDelivered(false);
         orderRepository.save(order);
-        ActiveOrderResponse actualActiveOrderResponse = orderService.getActiveOrders(user.getEmail());
         mockMvc.perform(
                         get("/order/active")
                                 .with(httpBasic(user.getEmail(), "password")))
-                .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(actualActiveOrderResponse)));
+                .andExpect(status().isOk());
     }
 
     @Test
