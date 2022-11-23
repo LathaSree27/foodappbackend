@@ -65,10 +65,11 @@ public class OrderService {
         return billAmount;
     }
 
-    public ActiveOrderResponse getActiveOrders(long categoryId) {
+    public ActiveOrderResponse getActiveOrders(long categoryId) throws NoOrdersFoundException {
         Date today = getCurrentDate();
         List<Order> orders = orderRepository.getAllOrdersByCategoryDateAndStatus(categoryId, today, false);
         int count = orders.size();
+        if (count == 0) throw new NoOrdersFoundException();
         ArrayList<OrderResponse> orderResponses = new ArrayList<>();
         createOrderResponse(orders, orderResponses);
         return new ActiveOrderResponse(count, orderResponses);

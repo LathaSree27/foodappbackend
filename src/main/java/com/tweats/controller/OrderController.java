@@ -26,7 +26,7 @@ public class OrderController {
         return orderService.getCompletedOrders(categoryId, date);
     }
 
-    public void getActiveOrders(long categoryId) {
+    public void getActiveOrders(long categoryId) throws NoOrdersFoundException {
         orderService.getActiveOrders(categoryId);
 
     }

@@ -84,7 +84,7 @@ public class OrderServiceTest {
     }
 
     @Test
-    void shouldBeAbleToFetchAllActiveOrdersWhenCategoryIdIsGiven() {
+    void shouldBeAbleToFetchAllActiveOrdersWhenCategoryIdIsGiven() throws NoOrdersFoundException {
         OrderService mockedOrderService = spy(orderService);
         Date today = new Date();
         int count = 1;
@@ -114,5 +114,10 @@ public class OrderServiceTest {
 
         verify(orderRepository).getAllOrdersByCategoryDateAndStatus(category.getId(), today, false);
         assertThat(actualActiveOrders, is(expectedActiveOrderResponse));
+    }
+
+    @Test
+    void shouldThrowNoOrderFoundExceptionWhenThereAreNoActiveOrdersFound() {
+        assertThrows(NoOrdersFoundException.class,()->orderService.getActiveOrders(category.getId()));
     }
 }

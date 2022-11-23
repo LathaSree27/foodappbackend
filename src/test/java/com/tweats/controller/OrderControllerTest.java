@@ -32,7 +32,7 @@ public class OrderControllerTest {
     }
 
     @Test
-    void shouldBeAbleToFetchAllActiveOrdersWhenCategoryIdIsGiven() {
+    void shouldBeAbleToFetchAllActiveOrdersWhenCategoryIdIsGiven() throws NoOrdersFoundException {
         orderController.getActiveOrders(categoryId);
 
         verify(orderService).getActiveOrders(categoryId);
