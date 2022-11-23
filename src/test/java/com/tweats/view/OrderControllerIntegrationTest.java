@@ -150,4 +150,13 @@ public class OrderControllerIntegrationTest {
                 .andExpect(status().isNoContent());
     }
 
+    @Test
+    void shouldThrowOrderNotFoundErrorWhenTheGivenOrderIsNotPlaced() throws Exception {
+        long orderId = 1;
+        mockMvc.perform(
+                        get("/order/active")
+                                .with(httpBasic(user.getEmail(), "password"))
+                                .param("orderId",String.valueOf(orderId)))
+                .andExpect(status().isNotFound());
+    }
 }

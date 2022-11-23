@@ -3,6 +3,7 @@ package com.tweats.handlers;
 import com.tweats.controller.response.ErrorResponse;
 import com.tweats.exceptions.NoItemsFoundException;
 import com.tweats.exceptions.NoOrdersFoundException;
+import com.tweats.exceptions.OrderNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -36,6 +37,12 @@ public class CustomExceptionHandler {
     @ExceptionHandler(NoOrdersFoundException.class)
     public ResponseEntity handleNoOrdersFoundException(NoOrdersFoundException ex){
         ErrorResponse error = new ErrorResponse("No orders found!", Collections.singletonList(ex.getMessage()));
+        return new ResponseEntity(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(OrderNotFoundException.class)
+    public ResponseEntity handleOrderNotFoundException(OrderNotFoundException ex){
+        ErrorResponse error = new ErrorResponse("The requested order does not exist!", Collections.singletonList(ex.getMessage()));
         return new ResponseEntity(error, HttpStatus.NOT_FOUND);
     }
 }
