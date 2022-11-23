@@ -1,8 +1,12 @@
 package com.tweats.view;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tweats.TweatsApplication;
+import com.tweats.controller.response.ActiveOrderResponse;
+import com.tweats.controller.response.CompletedOrdersResponse;
 import com.tweats.model.*;
 import com.tweats.repo.*;
+import com.tweats.service.OrderService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,6 +26,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(classes = TweatsApplication.class)
@@ -49,6 +54,12 @@ public class OrderControllerIntegrationTest {
 
     @Autowired
     RoleRepository roleRepository;
+
+    @Autowired
+    OrderService orderService;
+
+    @Autowired
+    ObjectMapper objectMapper;
 
     private Category category;
     private Order order;
@@ -92,13 +103,16 @@ public class OrderControllerIntegrationTest {
     void shouldBeAbleToGetCompletedOrdersWhenCategoryIdAndDateIsGiven() throws Exception {
         order.setDelivered(true);
         orderRepository.save(order);
+        Date date = order.getDate();
+        CompletedOrdersResponse actualCompletedOrderResponse = orderService.getCompletedOrders(category.getId(), date);
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
         mockMvc.perform(
                         get("/order/completed")
                                 .param("categoryId", String.valueOf(category.getId()))
-                                .param("date", dateFormat.format(order.getDate())))
-                .andExpect(status().isOk());
+                                .param("date", dateFormat.format(date)))
+                .andExpect(status().isOk())
+                .andExpect(content().json(objectMapper.writeValueAsString(actualCompletedOrderResponse)));
     }
 
     @Test
@@ -110,5 +124,17 @@ public class OrderControllerIntegrationTest {
                                 .param("categoryId", String.valueOf(category.getId()))
                                 .param("date", dateFormat.format(order.getDate())))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void shouldBeAbleToGetActiveOrdersWhenCategoryIdIsGiven() throws Exception {
+        order.setDelivered(false);
+        orderRepository.save(order);
+        ActiveOrderResponse actualActiveOrderResponse = orderService.getActiveOrders(category.getId());
+        mockMvc.perform(
+                        get("/order/active")
+                                .param("categoryId", String.valueOf(category.getId())))
+                .andExpect(status().isOk())
+                .andExpect(content().json(objectMapper.writeValueAsString(actualActiveOrderResponse)));
     }
 }

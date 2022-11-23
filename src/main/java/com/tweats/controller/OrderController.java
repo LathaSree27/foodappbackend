@@ -1,5 +1,6 @@
 package com.tweats.controller;
 
+import com.tweats.controller.response.ActiveOrderResponse;
 import com.tweats.controller.response.CompletedOrdersResponse;
 import com.tweats.exceptions.NoOrdersFoundException;
 import com.tweats.service.OrderService;
@@ -26,8 +27,9 @@ public class OrderController {
         return orderService.getCompletedOrders(categoryId, date);
     }
 
-    public void getActiveOrders(long categoryId) throws NoOrdersFoundException {
-        orderService.getActiveOrders(categoryId);
-
+    @GetMapping("active")
+    public ActiveOrderResponse getActiveOrders(
+            @RequestParam(name = "categoryId") long categoryId) throws NoOrdersFoundException {
+        return orderService.getActiveOrders(categoryId);
     }
 }
