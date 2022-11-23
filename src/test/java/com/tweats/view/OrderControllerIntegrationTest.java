@@ -25,6 +25,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -63,6 +64,7 @@ public class OrderControllerIntegrationTest {
 
     private Category category;
     private Order order;
+    private User user;
 
     @BeforeEach
     public void before() {
@@ -73,7 +75,7 @@ public class OrderControllerIntegrationTest {
         userRepository.deleteAll();
         roleRepository.deleteAll();
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        User user = userRepository.save(new User("abc", "abc@example.com", encoder.encode("password"), roleRepository.save(new Role("CUSTOMER"))));
+        user = userRepository.save(new User("abc", "abc@example.com", encoder.encode("password"), roleRepository.save(new Role("CUSTOMER"))));
         Image image = new Image("image.png", MediaType.IMAGE_JPEG_VALUE, "hello".getBytes(), 1L);
         Image categoryImage = imageRepository.save(image);
         Category juice = new Category("Juice", categoryImage, true, user);
@@ -130,10 +132,10 @@ public class OrderControllerIntegrationTest {
     void shouldBeAbleToGetActiveOrdersWhenCategoryIdIsGiven() throws Exception {
         order.setDelivered(false);
         orderRepository.save(order);
-        ActiveOrderResponse actualActiveOrderResponse = orderService.getActiveOrders(category.getId());
+        ActiveOrderResponse actualActiveOrderResponse = orderService.getActiveOrders(user.getEmail());
         mockMvc.perform(
                         get("/order/active")
-                                .param("categoryId", String.valueOf(category.getId())))
+                                .with(httpBasic(user.getEmail(), "password")))
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(actualActiveOrderResponse)));
     }
@@ -141,8 +143,8 @@ public class OrderControllerIntegrationTest {
     @Test
     void shouldThrowNoOrdersFoundErrorWhenThereAreNoActiveOrdersFound() throws Exception {
         mockMvc.perform(
-                get("/order/active")
-                        .param("categoryId",String.valueOf(category.getId())))
+                        get("/order/active")
+                                .with(httpBasic(user.getEmail(), "password")))
                 .andExpect(status().isNotFound());
     }
 }

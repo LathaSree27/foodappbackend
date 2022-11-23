@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.security.Principal;
 import java.util.Date;
 
 @RestController
@@ -28,8 +29,8 @@ public class OrderController {
     }
 
     @GetMapping("active")
-    public ActiveOrderResponse getActiveOrders(
-            @RequestParam(name = "categoryId") long categoryId) throws NoOrdersFoundException {
-        return orderService.getActiveOrders(categoryId);
+    public ActiveOrderResponse getActiveOrders(Principal principal) throws NoOrdersFoundException {
+        String vendorEmail = principal.getName();
+        return orderService.getActiveOrders(vendorEmail);
     }
 }

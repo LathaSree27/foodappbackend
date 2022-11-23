@@ -5,9 +5,8 @@ import com.tweats.controller.response.CompletedOrdersResponse;
 import com.tweats.controller.response.OrderResponse;
 import com.tweats.controller.response.OrderedItemResponse;
 import com.tweats.exceptions.NoOrdersFoundException;
-import com.tweats.model.Item;
-import com.tweats.model.Order;
-import com.tweats.model.OrderedItem;
+import com.tweats.model.*;
+import com.tweats.repo.CategoryRepository;
 import com.tweats.repo.OrderRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,6 +25,10 @@ public class OrderService {
     private OrderRepository orderRepository;
 
     private ImageService imageService;
+
+    private UserPrincipalService userPrincipalService;
+
+    private CategoryRepository categoryRepository;
 
     public CompletedOrdersResponse getCompletedOrders(long categoryId, Date date) throws NoOrdersFoundException {
         List<Order> orders = orderRepository.getAllOrdersByCategoryDateAndStatus(categoryId, date, true);
@@ -65,9 +68,11 @@ public class OrderService {
         return billAmount;
     }
 
-    public ActiveOrderResponse getActiveOrders(long categoryId) throws NoOrdersFoundException {
+    public ActiveOrderResponse getActiveOrders(String vendorEmail) throws NoOrdersFoundException {
+        User vendor = userPrincipalService.findUserByEmail(vendorEmail);
+        Category category = categoryRepository.findByUserId(vendor.getId());
         Date today = getCurrentDate();
-        List<Order> orders = orderRepository.getAllOrdersByCategoryDateAndStatus(categoryId, today, false);
+        List<Order> orders = orderRepository.getAllOrdersByCategoryDateAndStatus(category.getId(), today, false);
         int count = orders.size();
         if (count == 0) throw new NoOrdersFoundException();
         ArrayList<OrderResponse> orderResponses = new ArrayList<>();
