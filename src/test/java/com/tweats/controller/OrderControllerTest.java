@@ -3,6 +3,7 @@ package com.tweats.controller;
 import com.tweats.controller.response.ActiveOrderResponse;
 import com.tweats.controller.response.CompletedOrdersResponse;
 import com.tweats.exceptions.NoOrdersFoundException;
+import com.tweats.exceptions.OrderCategoryMismatchException;
 import com.tweats.exceptions.OrderNotFoundException;
 import com.tweats.service.OrderService;
 import org.junit.jupiter.api.BeforeEach;
@@ -58,10 +59,11 @@ public class OrderControllerTest {
     }
 
     @Test
-    void shouldBeAbleToCompleteOrderWhenOrderIdIsGiven() throws OrderNotFoundException {
+    void shouldBeAbleToCompleteOrderWhenOrderIdIsGiven() throws OrderNotFoundException, OrderCategoryMismatchException {
         long orderId = 1;
         orderController.completeTheOrder(principal, orderId);
 
         verify(orderService).completeTheOrder(principal.getName(), orderId);
     }
+
 }

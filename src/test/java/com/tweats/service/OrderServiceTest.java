@@ -5,6 +5,7 @@ import com.tweats.controller.response.CompletedOrdersResponse;
 import com.tweats.controller.response.OrderResponse;
 import com.tweats.controller.response.OrderedItemResponse;
 import com.tweats.exceptions.NoOrdersFoundException;
+import com.tweats.exceptions.OrderCategoryMismatchException;
 import com.tweats.exceptions.OrderNotFoundException;
 import com.tweats.model.*;
 import com.tweats.repo.CategoryRepository;
@@ -130,8 +131,9 @@ public class OrderServiceTest {
     }
 
     @Test
-    void shouldCompleteTheOrderWhenOrderIsNotDelivered() throws OrderNotFoundException {
+    void shouldCompleteTheOrderWhenOrderIsNotDelivered() throws OrderNotFoundException, OrderCategoryMismatchException {
         when(orderRepository.findById(order.getId())).thenReturn(Optional.of(order));
+        when(order.getCategory()).thenReturn(category);
         order.setDelivered(true);
 
         orderService.completeTheOrder(user.getEmail(), order.getId());
@@ -141,6 +143,12 @@ public class OrderServiceTest {
 
     @Test
     void shouldThrowOrderNotFoundExceptionWhenInvalidOrderIdIsGiven() {
-        assertThrows(OrderNotFoundException.class,()->orderService.completeTheOrder(user.getEmail(), order.getId()));
+        assertThrows(OrderNotFoundException.class, () -> orderService.completeTheOrder(user.getEmail(), order.getId()));
+    }
+
+    @Test
+    void shouldThrowOrderCategoryMismatchExceptionWhenGivenOrderDoesNotBelongToVendorCategory() {
+        when(orderRepository.findById(order.getId())).thenReturn(Optional.of(order));
+        assertThrows(OrderCategoryMismatchException.class, () -> orderService.completeTheOrder(user.getEmail(), order.getId()));
     }
 }
