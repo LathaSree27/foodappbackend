@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -15,6 +16,11 @@ public class OrderResponse {
     private Date date;
     private BigDecimal billAmount;
     private List<OrderedItemResponse> items;
+
+    public String getDate() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        return dateFormat.format(date);
+    }
 
     @Override
     public boolean equals(Object o) {

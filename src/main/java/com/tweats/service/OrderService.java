@@ -27,27 +27,24 @@ public class OrderService {
     private ImageService imageService;
 
     public CompletedOrdersResponse getCompletedOrders(long categoryId, Date date) throws NoOrdersFoundException {
-        List<Order> orders = orderRepository.getAllCompletedOrdersByCategory(categoryId, date);
-        BigDecimal revenue = new BigDecimal(0);
+        List<Order> orders = orderRepository.getAllOrdersByCategoryDateAndStatus(categoryId, date, true);
         int count = orders.size();
-        if(count==0) throw new NoOrdersFoundException();
+        if (count == 0) throw new NoOrdersFoundException();
+        BigDecimal revenue = orderRepository.getRevenueOfCompletedOrdersByCategoryIdAndDate(categoryId, date);
         ArrayList<OrderResponse> orderResponses = new ArrayList<>();
-        revenue = getRevenue(orders, revenue, orderResponses);
-
+        createOrderResponse(orders, orderResponses);
         return new CompletedOrdersResponse(count, revenue, orderResponses);
 
     }
 
-    private BigDecimal getRevenue(List<Order> orders, BigDecimal revenue, ArrayList<OrderResponse> orderResponses) {
+    private void createOrderResponse(List<Order> orders, ArrayList<OrderResponse> orderResponses) {
         for (Order order : orders) {
             Set<OrderedItem> orderedItems = order.getOrderedItems();
             List<OrderedItemResponse> orderedItemResponses = new ArrayList<>();
             BigDecimal billAmount = new BigDecimal(0);
             billAmount = getBillAmount(orderedItems, orderedItemResponses, billAmount);
             orderResponses.add(new OrderResponse(order.getId(), order.getDate(), billAmount, orderedItemResponses));
-            revenue = revenue.add(billAmount);
         }
-        return revenue;
     }
 
     private BigDecimal getBillAmount(Set<OrderedItem> orderedItems, List<OrderedItemResponse> orderedItemResponses, BigDecimal billAmount) {

@@ -53,7 +53,8 @@ public class OrderServiceTest {
         Item item = new Item(itemName, image, itemPrice, category);
         List<Order> orders = new ArrayList<>();
         orders.add(order);
-        when(orderRepository.getAllCompletedOrdersByCategory(category.getId(), today)).thenReturn(orders);
+        when(orderRepository.getAllOrdersByCategoryDateAndStatus(category.getId(), today, true)).thenReturn(orders);
+        when(orderRepository.getRevenueOfCompletedOrdersByCategoryIdAndDate(category.getId(), today)).thenReturn(revenue);
         HashSet<OrderedItem> orderedItems = new HashSet<>();
         OrderedItem orderedItem = new OrderedItem(order, item, quantity);
         orderedItems.add(orderedItem);
@@ -67,7 +68,7 @@ public class OrderServiceTest {
 
         CompletedOrdersResponse actualCompletedOrdersResponse = orderService.getCompletedOrders(category.getId(), today);
 
-        verify(orderRepository).getAllCompletedOrdersByCategory(category.getId(), today);
+        verify(orderRepository).getAllOrdersByCategoryDateAndStatus(category.getId(), today, true);
         assertThat(actualCompletedOrdersResponse, is(expectedCompletedOrdersResponse));
 
     }
@@ -76,7 +77,7 @@ public class OrderServiceTest {
     void shouldThrowNoOrdersFoundExceptionWhenThereAreNoCompletedOrders() {
         long categoryId = category.getId();
         Date today = new Date();
-        assertThrows(NoOrdersFoundException.class,()->orderService.getCompletedOrders(categoryId, today));
+        assertThrows(NoOrdersFoundException.class, () -> orderService.getCompletedOrders(categoryId, today));
 
     }
 }
