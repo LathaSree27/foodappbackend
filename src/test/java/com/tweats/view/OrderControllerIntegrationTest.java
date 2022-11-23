@@ -1,12 +1,8 @@
 package com.tweats.view;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tweats.TweatsApplication;
-import com.tweats.controller.response.ActiveOrderResponse;
-import com.tweats.controller.response.CompletedOrdersResponse;
 import com.tweats.model.*;
 import com.tweats.repo.*;
-import com.tweats.service.OrderService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,7 +24,6 @@ import java.util.Set;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(classes = TweatsApplication.class)
@@ -60,6 +55,8 @@ public class OrderControllerIntegrationTest {
     private Category category;
     private Order order;
     private User user;
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
+    private User otherVendor;
 
     @BeforeEach
     public void before() {
@@ -69,8 +66,8 @@ public class OrderControllerIntegrationTest {
         imageRepository.deleteAll();
         userRepository.deleteAll();
         roleRepository.deleteAll();
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        user = userRepository.save(new User("abc", "abc@example.com", encoder.encode("password"), roleRepository.save(new Role("CUSTOMER"))));
+        bCryptPasswordEncoder = new BCryptPasswordEncoder();
+        user = userRepository.save(new User("abc", "abc@example.com", bCryptPasswordEncoder.encode("password"), roleRepository.save(new Role("VENDOR"))));
         Image image = new Image("image.png", MediaType.IMAGE_JPEG_VALUE, "hello".getBytes(), 1L);
         Image categoryImage = imageRepository.save(image);
         Category juice = new Category("Juice", categoryImage, true, user);
@@ -84,6 +81,9 @@ public class OrderControllerIntegrationTest {
         orderedItems.add(new OrderedItem(order, mango, 2));
         orderedItems.add(new OrderedItem(order, apple, 4));
         order.setOrderedItems(orderedItems);
+        otherVendor = userRepository.save(new User("xyz", "xyz@example.com", bCryptPasswordEncoder.encode("password"), roleRepository.save(new Role("VENDOR"))));
+        Category food = new Category("Food", categoryImage, true, otherVendor);
+        categoryRepository.save(food);
     }
 
     @AfterEach
@@ -146,7 +146,7 @@ public class OrderControllerIntegrationTest {
         mockMvc.perform(
                         put("/order/complete")
                                 .with(httpBasic(user.getEmail(), "password"))
-                                .param("orderId",String.valueOf(placedOrder.getId())))
+                                .param("orderId", String.valueOf(placedOrder.getId())))
                 .andExpect(status().isNoContent());
     }
 
@@ -154,9 +154,20 @@ public class OrderControllerIntegrationTest {
     void shouldThrowOrderNotFoundErrorWhenTheGivenOrderIsNotPlaced() throws Exception {
         long orderId = 1;
         mockMvc.perform(
-                        get("/order/active")
+                        put("/order/complete")
                                 .with(httpBasic(user.getEmail(), "password"))
-                                .param("orderId",String.valueOf(orderId)))
+                                .param("orderId", String.valueOf(orderId)))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void shouldThrowOrderCategoryMismatchErrorWhenTheGivenOrderDoesNotBelongToVendorCategory() throws Exception {
+        order.setDelivered(false);
+        Order placedOrder = orderRepository.save(order);
+        mockMvc.perform(
+                        put("/order/complete")
+                                .with(httpBasic(otherVendor.getEmail(), "password"))
+                                .param("orderId", String.valueOf(placedOrder.getId())))
+                .andExpect(status().isBadRequest());
     }
 }

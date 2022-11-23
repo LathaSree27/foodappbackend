@@ -34,11 +34,11 @@ public class OrderController {
         return orderService.getActiveOrders(vendorEmail);
     }
 
-   @PutMapping("complete")
-   @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PutMapping("complete")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void completeTheOrder(Principal principal,
                                  @RequestParam(name = "orderId") long orderId) throws OrderNotFoundException, OrderCategoryMismatchException {
         String vendorEmail = principal.getName();
-        orderService.completeTheOrder(vendorEmail,orderId);
+        orderService.completeTheOrder(vendorEmail, orderId);
     }
 }

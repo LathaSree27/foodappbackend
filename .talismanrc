@@ -1,4 +1,6 @@
 fileignoreconfig:
+- filename: src/test/java/com/tweats/view/OrderControllerIntegrationTest.java
+  checksum: 564a06e2c383a61e30be9853e97822893705fe50bd2d38c549eed9c84ff8236b
 - filename: src/main/resources/db/migration/V2.1__AddCategoryIdColumnInOrderTable.sql
   checksum: dba0e1d681e3da7594df0a0078dcf023a727a8a9d79312d2f70813432084334a
 - filename: src/main/resources/db/migration/V2.1__AddCategoryIdColumnInOrderTable.sql
