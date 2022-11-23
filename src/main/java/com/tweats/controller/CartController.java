@@ -27,4 +27,9 @@ public class CartController {
         String userEmail = principal.getName();
         cartService.addItem(userEmail, itemId, quantity);
     }
+
+    public void getCartItems(Principal principal, long categoryId) {
+        String userEmail = principal.getName();
+        cartService.cartItems(userEmail, categoryId);
+    }
 }

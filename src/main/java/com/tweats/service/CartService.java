@@ -34,4 +34,7 @@ public class CartService {
         cart.addCartItems(cartItem);
         cartRepository.save(cart);
     }
+
+    public void cartItems(String userEmail, long categoryId) {
+    }
 }

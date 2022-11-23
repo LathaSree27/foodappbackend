@@ -33,4 +33,15 @@ public class CartControllerTest {
 
         verify(cartService).addItem(userEmail, itemId, quantity);
     }
+
+    @Test
+    void shouldBeAbleToGetCartItemsWhenCategoryIdIsGiven() {
+        long categoryId = 1L;
+        String userEmail = "abc@gmail.com";
+        when(principal.getName()).thenReturn(userEmail);
+
+        cartController.getCartItems(principal, categoryId);
+
+        verify(cartService).cartItems(userEmail, categoryId);
+    }
 }
