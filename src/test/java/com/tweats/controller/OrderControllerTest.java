@@ -3,6 +3,7 @@ package com.tweats.controller;
 import com.tweats.controller.response.ActiveOrderResponse;
 import com.tweats.controller.response.CompletedOrdersResponse;
 import com.tweats.exceptions.NoOrdersFoundException;
+import com.tweats.exceptions.OrderCancelledException;
 import com.tweats.exceptions.OrderCategoryMismatchException;
 import com.tweats.exceptions.OrderNotFoundException;
 import com.tweats.service.OrderService;
@@ -59,7 +60,7 @@ public class OrderControllerTest {
     }
 
     @Test
-    void shouldBeAbleToCompleteOrderWhenOrderIdIsGiven() throws OrderNotFoundException, OrderCategoryMismatchException {
+    void shouldBeAbleToCompleteOrderWhenOrderIdIsGiven() throws OrderNotFoundException, OrderCategoryMismatchException, OrderCancelledException {
         long orderId = 1;
         orderController.completeTheOrder(principal, orderId);
 

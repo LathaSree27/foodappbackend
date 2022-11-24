@@ -3,6 +3,7 @@ package com.tweats.controller;
 import com.tweats.controller.response.ActiveOrderResponse;
 import com.tweats.controller.response.CompletedOrdersResponse;
 import com.tweats.exceptions.NoOrdersFoundException;
+import com.tweats.exceptions.OrderCancelledException;
 import com.tweats.exceptions.OrderCategoryMismatchException;
 import com.tweats.exceptions.OrderNotFoundException;
 import com.tweats.service.OrderService;
@@ -37,7 +38,7 @@ public class OrderController {
     @PutMapping("complete")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void completeTheOrder(Principal principal,
-                                 @RequestParam(name = "orderId") long orderId) throws OrderNotFoundException, OrderCategoryMismatchException {
+                                 @RequestParam(name = "orderId") long orderId) throws OrderNotFoundException, OrderCategoryMismatchException, OrderCancelledException {
         String vendorEmail = principal.getName();
         orderService.completeTheOrder(vendorEmail, orderId);
     }

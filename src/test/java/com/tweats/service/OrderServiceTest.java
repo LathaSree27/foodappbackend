@@ -5,6 +5,7 @@ import com.tweats.controller.response.CompletedOrdersResponse;
 import com.tweats.controller.response.OrderResponse;
 import com.tweats.controller.response.OrderedItemResponse;
 import com.tweats.exceptions.NoOrdersFoundException;
+import com.tweats.exceptions.OrderCancelledException;
 import com.tweats.exceptions.OrderCategoryMismatchException;
 import com.tweats.exceptions.OrderNotFoundException;
 import com.tweats.model.*;
@@ -123,7 +124,7 @@ public class OrderServiceTest {
     }
 
     @Test
-    void shouldCompleteTheOrderWhenOrderIsNotDelivered() throws OrderNotFoundException, OrderCategoryMismatchException {
+    void shouldCompleteTheOrderWhenOrderIsNotDelivered() throws OrderNotFoundException, OrderCategoryMismatchException, OrderCancelledException {
         when(orderRepository.findById(order.getId())).thenReturn(Optional.of(order));
         when(order.getCategory()).thenReturn(category);
         order.setStatus(OrderStatus.DELIVERED);
@@ -142,5 +143,14 @@ public class OrderServiceTest {
     void shouldThrowOrderCategoryMismatchExceptionWhenGivenOrderDoesNotBelongToVendorCategory() {
         when(orderRepository.findById(order.getId())).thenReturn(Optional.of(order));
         assertThrows(OrderCategoryMismatchException.class, () -> orderService.completeTheOrder(user.getEmail(), order.getId()));
+    }
+
+    @Test
+    void shouldThrowOrderCancelledExceptionWhenGivenOrderIsCanceled() {
+        when(orderRepository.findById(order.getId())).thenReturn(Optional.of(order));
+        when(order.getCategory()).thenReturn(category);
+        when(order.getStatus()).thenReturn(OrderStatus.CANCELED);
+
+        assertThrows(OrderCancelledException.class,()-> orderService.completeTheOrder(user.getEmail(), order.getId()));
     }
 }

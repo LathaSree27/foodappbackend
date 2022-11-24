@@ -5,6 +5,7 @@ import com.tweats.controller.response.CompletedOrdersResponse;
 import com.tweats.controller.response.OrderResponse;
 import com.tweats.controller.response.OrderedItemResponse;
 import com.tweats.exceptions.NoOrdersFoundException;
+import com.tweats.exceptions.OrderCancelledException;
 import com.tweats.exceptions.OrderCategoryMismatchException;
 import com.tweats.exceptions.OrderNotFoundException;
 import com.tweats.model.*;
@@ -82,12 +83,12 @@ public class OrderService {
         return new ActiveOrderResponse(count, orderResponses);
     }
 
-    public void completeTheOrder(String vendorEmail, long orderId) throws OrderNotFoundException, OrderCategoryMismatchException {
+    public void completeTheOrder(String vendorEmail, long orderId) throws OrderNotFoundException, OrderCategoryMismatchException, OrderCancelledException {
         Order order = orderRepository.findById(orderId).orElseThrow(() -> new OrderNotFoundException());
         User vendor = userPrincipalService.findUserByEmail(vendorEmail);
         Category category = categoryRepository.findByUserId(vendor.getId());
         if (!category.equals(order.getCategory())) throw new OrderCategoryMismatchException();
-
+        if(order.getStatus().equals(OrderStatus.CANCELED)) throw new OrderCancelledException();
         order.setStatus(OrderStatus.DELIVERED);
         orderRepository.save(order);
     }
