@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -71,14 +70,15 @@ public class CartService {
     }
 
     private Cart getCart(long userId, long categoryId) throws NoCategoryFoundException {
-        return cartRepository.findCartByUserIdAndCategoryId(userId, categoryId).orElseThrow(() -> new NoCategoryFoundException());
+        return cartRepository.findCartByUserIdAndCategoryId(userId, categoryId).orElseThrow(NoCategoryFoundException::new);
     }
 
     private String getImageLink(CartItem cartItem) {
         return appLink + "/images/" + (cartItem.getItem().getId());
     }
 
-    public void updateCartItemQuantity(long cartItemId, BigDecimal quantity) {
-
+    public void updateCartItemQuantity(long cartItemId, long quantity) {
+        CartItem cartItem = cartRepository.getCartItemById(cartItemId);
+        cartItem.setQuantity(quantity);
     }
 }

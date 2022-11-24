@@ -6,7 +6,6 @@ import com.tweats.service.CartService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.math.BigDecimal;
 import java.security.Principal;
 
 import static org.mockito.Mockito.*;
@@ -49,8 +48,8 @@ public class CartControllerTest {
 
     @Test
     void shouldBeAbleToUpdateQuantityOfCartItemWhenQuantityIsGiven() {
-        long cartItemId = 2l;
-        BigDecimal quantity = BigDecimal.valueOf(30);
+        long cartItemId = 2L;
+        long quantity = 30L;
 
         cartController.updateQuantity(cartItemId, quantity);
 

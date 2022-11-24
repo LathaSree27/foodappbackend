@@ -1,6 +1,7 @@
 package com.tweats.repo;
 
 import com.tweats.model.Cart;
+import com.tweats.model.CartItem;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -15,4 +16,8 @@ public interface CartRepository extends JpaRepository<Cart, Long> {
 
     @Query(value = "SELECT SUM(c.QUANTITY*i.PRICE) FROM CART_ITEM c JOIN ITEM i ON c.ITEM_ID = i.ID WHERE CART_ID = ?1 GROUP BY CART_ID ", nativeQuery = true)
     BigDecimal getBillAmount(Long id);
+
+
+    @Query(value = "SELECT * FROM CART_ITEM c WHERE ID = ?1", nativeQuery = true)
+    CartItem getCartItemById(long cartItemId);
 }

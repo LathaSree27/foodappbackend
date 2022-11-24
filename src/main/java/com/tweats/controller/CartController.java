@@ -10,7 +10,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.Min;
-import java.math.BigDecimal;
 import java.security.Principal;
 
 @RestController
@@ -37,7 +36,7 @@ public class CartController {
         return cartService.cartItems(userEmail, categoryId);
     }
 
-    public void updateQuantity(long cartItemId, BigDecimal quantity) {
+    public void updateQuantity(long cartItemId, long quantity) {
         cartService.updateCartItemQuantity(cartItemId, quantity);
     }
 }

@@ -109,4 +109,17 @@ public class CartServiceTest {
         long categoryId = 2l;
         assertThrows(NoCategoryFoundException.class, () -> cartService.cartItems(userEmail, categoryId));
     }
+
+    @Test
+    void shouldBeAbleToUpdateQuantityOfACartItemWhenCartItemIdAndQuantityAreGiven() {
+        long cartItemId = 2l;
+        long quantity = 5L;
+        Item item = mock(Item.class);
+        CartItem cartItem = new CartItem(cart, item, 2L);
+        when(cartRepository.getCartItemById(cartItemId)).thenReturn(cartItem);
+
+        cartService.updateCartItemQuantity(cartItemId, quantity);
+
+        assertThat(cartItem.getQuantity(), is(quantity));
+    }
 }
