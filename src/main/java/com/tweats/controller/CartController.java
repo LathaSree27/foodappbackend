@@ -4,11 +4,9 @@ import com.tweats.controller.response.CartResponse;
 import com.tweats.exceptions.ItemDoesNotExistException;
 import com.tweats.service.CartService;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.Min;
 import java.security.Principal;
@@ -29,9 +27,11 @@ public class CartController {
         cartService.addItem(userEmail, itemId, quantity);
     }
 
-    public CartResponse getCartItems(Principal principal, long categoryId) {
+    @GetMapping("{categoryId}")
+    @ResponseStatus(HttpStatus.OK)
+    public CartResponse getCartItems(Principal principal,
+                                     @PathVariable long categoryId) {
         String userEmail = principal.getName();
-        CartResponse cartResponse = cartService.cartItems(userEmail, categoryId);
-        return cartResponse;
+        return cartService.cartItems(userEmail, categoryId);
     }
 }
