@@ -10,6 +10,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.Min;
+import java.math.BigDecimal;
 import java.security.Principal;
 
 @RestController
@@ -34,5 +35,9 @@ public class CartController {
                                      @PathVariable long categoryId) throws NoCategoryFoundException {
         String userEmail = principal.getName();
         return cartService.cartItems(userEmail, categoryId);
+    }
+
+    public void updateQuantity(long cartItemId, BigDecimal quantity) {
+        cartService.updateCartItemQuantity(cartItemId, quantity);
     }
 }

@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -77,4 +78,7 @@ public class CartService {
         return appLink + "/images/" + (cartItem.getItem().getId());
     }
 
+    public void updateCartItemQuantity(long cartItemId, BigDecimal quantity) {
+
+    }
 }
