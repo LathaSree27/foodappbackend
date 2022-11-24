@@ -1,5 +1,6 @@
 package com.tweats.controller;
 
+import com.tweats.controller.response.CartResponse;
 import com.tweats.exceptions.ItemDoesNotExistException;
 import com.tweats.service.CartService;
 import lombok.AllArgsConstructor;
@@ -28,8 +29,9 @@ public class CartController {
         cartService.addItem(userEmail, itemId, quantity);
     }
 
-    public void getCartItems(Principal principal, long categoryId) {
+    public CartResponse getCartItems(Principal principal, long categoryId) {
         String userEmail = principal.getName();
-        cartService.cartItems(userEmail, categoryId);
+        CartResponse cartResponse = cartService.cartItems(userEmail, categoryId);
+        return cartResponse;
     }
 }
