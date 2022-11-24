@@ -8,8 +8,10 @@ import com.tweats.exceptions.NoOrdersFoundException;
 import com.tweats.exceptions.OrderCategoryMismatchException;
 import com.tweats.exceptions.OrderNotFoundException;
 import com.tweats.model.*;
+import com.tweats.model.constants.OrderStatus;
 import com.tweats.repo.CategoryRepository;
 import com.tweats.repo.OrderRepository;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -23,18 +25,21 @@ import static org.mockito.Mockito.*;
 
 public class OrderServiceTest {
 
-    private OrderService orderService;
-    private Order order;
-    private Category category;
-    private OrderRepository orderRepository;
-    private Image image;
-    private ImageService imageService;
-    private UserPrincipalService userPrincipalService;
-    private CategoryRepository categoryRepository;
-    private User user;
+    private int count;
+    private ArrayList<OrderResponse> orderResponses;
+    private List<Order> orders;
+    private Date today;
+    private final OrderService orderService;
+    private final Order order;
+    private final Category category;
+    private final OrderRepository orderRepository;
+    private final Image image;
+    private final ImageService imageService;
+    private final UserPrincipalService userPrincipalService;
+    private final CategoryRepository categoryRepository;
+    private final User user;
 
-    @BeforeEach
-    void setUp() {
+    public OrderServiceTest() {
         userPrincipalService = mock(UserPrincipalService.class);
         categoryRepository = mock(CategoryRepository.class);
         imageService = mock(ImageService.class);
@@ -43,43 +48,51 @@ public class OrderServiceTest {
         category = mock(Category.class);
         image = mock(Image.class);
         user = mock(User.class);
-        when(userPrincipalService.findUserByEmail(user.getEmail())).thenReturn(user);
-        when(categoryRepository.findByUserId(user.getId())).thenReturn(category);
         orderService = new OrderService(orderRepository, imageService, userPrincipalService, categoryRepository);
-
     }
 
-
-    @Test
-    void shouldBeAbleToFetchAllCompletedOrdersWhenCategoryIdAndDateIsGiven() throws NoOrdersFoundException {
-        Date today = new Date();
-        int count = 1;
-        String itemName = "Mango";
-        BigDecimal revenue = new BigDecimal(100);
+    private void prepareData() {
+        count = 1;
+        today = new Date();
+        orders = new ArrayList<>();
+        orderResponses = new ArrayList<>();
         BigDecimal billAmount = new BigDecimal(100);
-        ArrayList<OrderResponse> orderResponses = new ArrayList<>();
+        String itemName = "Mango";
+        HashSet<OrderedItem> orderedItems = new HashSet<>();
         ArrayList<OrderedItemResponse> orderedItemResponses = new ArrayList<>();
         long quantity = 2;
         BigDecimal itemPrice = new BigDecimal(50);
+        String imageLink = "http://localhost:8080/tweats/api/v1/images/" + image.getId();
+
         Item item = new Item(itemName, image, itemPrice, category);
-        List<Order> orders = new ArrayList<>();
         orders.add(order);
-        when(orderRepository.getAllOrdersByCategoryDateAndStatus(category.getId(), today, true)).thenReturn(orders);
-        when(orderRepository.getRevenueOfCompletedOrdersByCategoryIdAndDate(category.getId(), today)).thenReturn(revenue);
-        HashSet<OrderedItem> orderedItems = new HashSet<>();
         OrderedItem orderedItem = new OrderedItem(order, item, quantity);
         orderedItems.add(orderedItem);
-        when(order.getOrderedItems()).thenReturn(orderedItems);
-        String imageLink = "http://localhost:8080/tweats/api/v1/images/" + item.getImage().getId();
-        when(imageService.getImageLink(image)).thenReturn(imageLink);
-        when(order.getDate()).thenReturn(today);
         orderedItemResponses.add(new OrderedItemResponse(item.getId(), item.getName(), quantity, itemPrice, imageLink));
         orderResponses.add(new OrderResponse(order.getId(), today, billAmount, orderedItemResponses));
+
+        when(order.getOrderedItems()).thenReturn(orderedItems);
+        when(imageService.getImageLink(image)).thenReturn(imageLink);
+        when(order.getDate()).thenReturn(today);
+    }
+
+    @BeforeEach
+    void setUp() {
+        when(userPrincipalService.findUserByEmail(user.getEmail())).thenReturn(user);
+        when(categoryRepository.findByUserId(user.getId())).thenReturn(category);
+    }
+
+    @Test
+    void shouldBeAbleToFetchAllCompletedOrdersWhenCategoryIdAndDateIsGiven() throws NoOrdersFoundException {
+        prepareData();
+        BigDecimal revenue = new BigDecimal(100);
         CompletedOrdersResponse expectedCompletedOrdersResponse = new CompletedOrdersResponse(count, revenue, orderResponses);
+        when(orderRepository.getAllCompletedOrdersByCategoryAndDate(category.getId(), today, OrderStatus.DELIVERED.name())).thenReturn(orders);
+        when(orderRepository.getRevenueOfCompletedOrdersByCategoryIdAndDate(category.getId(), today, OrderStatus.DELIVERED.name())).thenReturn(revenue);
 
         CompletedOrdersResponse actualCompletedOrdersResponse = orderService.getCompletedOrders(category.getId(), today);
 
-        verify(orderRepository).getAllOrdersByCategoryDateAndStatus(category.getId(), today, true);
+        verify(orderRepository).getAllCompletedOrdersByCategoryAndDate(category.getId(), today, OrderStatus.DELIVERED.name());
         assertThat(actualCompletedOrdersResponse, is(expectedCompletedOrdersResponse));
 
     }
@@ -94,34 +107,13 @@ public class OrderServiceTest {
 
     @Test
     void shouldBeAbleToFetchAllActiveOrdersWhenCategoryIdIsGiven() throws NoOrdersFoundException {
-        OrderService mockedOrderService = spy(orderService);
-        Date today = new Date();
-        int count = 1;
-        BigDecimal billAmount = new BigDecimal(100);
-        String itemName = "Mango";
-        ArrayList<OrderResponse> orderResponses = new ArrayList<>();
-        ArrayList<OrderedItemResponse> orderedItemResponses = new ArrayList<>();
-        long quantity = 2;
-        BigDecimal itemPrice = new BigDecimal(50);
-        Item item = new Item(itemName, image, itemPrice, category);
-        List<Order> orders = new ArrayList<>();
-        orders.add(order);
-        when(mockedOrderService.getCurrentDate()).thenReturn(today);
-        when(orderRepository.getAllOrdersByCategoryDateAndStatus(category.getId(), today, false)).thenReturn(orders);
-        HashSet<OrderedItem> orderedItems = new HashSet<>();
-        OrderedItem orderedItem = new OrderedItem(order, item, quantity);
-        orderedItems.add(orderedItem);
-        when(order.getOrderedItems()).thenReturn(orderedItems);
-        String imageLink = "http://localhost:8080/tweats/api/v1/images/" + item.getImage().getId();
-        when(imageService.getImageLink(image)).thenReturn(imageLink);
-        when(order.getDate()).thenReturn(today);
-        orderedItemResponses.add(new OrderedItemResponse(item.getId(), item.getName(), quantity, itemPrice, imageLink));
-        orderResponses.add(new OrderResponse(order.getId(), today, billAmount, orderedItemResponses));
+        prepareData();
         ActiveOrderResponse expectedActiveOrderResponse = new ActiveOrderResponse(count, orderResponses);
+        when(orderRepository.getAllActiveOrdersByCategoryId(category.getId(), OrderStatus.PLACED.name())).thenReturn(orders);
 
-        ActiveOrderResponse actualActiveOrders = mockedOrderService.getActiveOrders(user.getEmail());
+        ActiveOrderResponse actualActiveOrders = orderService.getActiveOrders(user.getEmail());
 
-        verify(orderRepository).getAllOrdersByCategoryDateAndStatus(category.getId(), today, false);
+        verify(orderRepository).getAllActiveOrdersByCategoryId(category.getId(), OrderStatus.PLACED.name());
         assertThat(actualActiveOrders, is(expectedActiveOrderResponse));
     }
 
@@ -134,7 +126,7 @@ public class OrderServiceTest {
     void shouldCompleteTheOrderWhenOrderIsNotDelivered() throws OrderNotFoundException, OrderCategoryMismatchException {
         when(orderRepository.findById(order.getId())).thenReturn(Optional.of(order));
         when(order.getCategory()).thenReturn(category);
-        order.setDelivered(true);
+        order.setStatus(OrderStatus.DELIVERED);
 
         orderService.completeTheOrder(user.getEmail(), order.getId());
 

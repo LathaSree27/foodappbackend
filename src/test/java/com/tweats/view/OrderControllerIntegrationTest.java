@@ -2,6 +2,7 @@ package com.tweats.view;
 
 import com.tweats.TweatsApplication;
 import com.tweats.model.*;
+import com.tweats.model.constants.OrderStatus;
 import com.tweats.repo.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -98,7 +99,7 @@ public class OrderControllerIntegrationTest {
 
     @Test
     void shouldBeAbleToGetCompletedOrdersWhenCategoryIdAndDateIsGiven() throws Exception {
-        order.setDelivered(true);
+        order.setStatus(OrderStatus.DELIVERED);
         orderRepository.save(order);
         Date date = order.getDate();
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -123,7 +124,7 @@ public class OrderControllerIntegrationTest {
 
     @Test
     void shouldBeAbleToGetActiveOrdersWhenCategoryIdIsGiven() throws Exception {
-        order.setDelivered(false);
+        order.setStatus(OrderStatus.PLACED);
         orderRepository.save(order);
         mockMvc.perform(
                         get("/order/active")
@@ -141,7 +142,7 @@ public class OrderControllerIntegrationTest {
 
     @Test
     void shouldBeAbleToCompleteTheOrderWhenOrderIdIsGiven() throws Exception {
-        order.setDelivered(false);
+        order.setStatus(OrderStatus.PLACED);
         Order placedOrder = orderRepository.save(order);
         mockMvc.perform(
                         put("/order/complete")
@@ -162,7 +163,7 @@ public class OrderControllerIntegrationTest {
 
     @Test
     void shouldThrowOrderCategoryMismatchErrorWhenTheGivenOrderDoesNotBelongToVendorCategory() throws Exception {
-        order.setDelivered(false);
+        order.setStatus(OrderStatus.PLACED);
         Order placedOrder = orderRepository.save(order);
         mockMvc.perform(
                         put("/order/complete")

@@ -1,5 +1,6 @@
 package com.tweats.model;
 
+import com.tweats.model.constants.OrderStatus;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -22,7 +23,8 @@ public class Order {
     @Temporal(TemporalType.DATE)
     private Date date;
 
-    private boolean isDelivered=false;
+    @Enumerated(EnumType.STRING)
+    private OrderStatus status;
 
     @JoinColumn(name = "user_id")
     @OneToOne
@@ -46,11 +48,11 @@ public class Order {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Order order = (Order) o;
-        return id == order.id && isDelivered == order.isDelivered && Objects.equals(date, order.date) && Objects.equals(user, order.user) && Objects.equals(category, order.category) && Objects.equals(orderedItems, order.orderedItems);
+        return id == order.id && date.equals(order.date) && status.equals(order.status) && user.equals(order.user) && category.equals(order.category) && orderedItems.equals(order.orderedItems);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, date, isDelivered, user, category, orderedItems);
+        return Objects.hash(id, date, status, user, category, orderedItems);
     }
 }

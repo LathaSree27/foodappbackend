@@ -8,6 +8,7 @@ import com.tweats.exceptions.NoOrdersFoundException;
 import com.tweats.exceptions.OrderCategoryMismatchException;
 import com.tweats.exceptions.OrderNotFoundException;
 import com.tweats.model.*;
+import com.tweats.model.constants.OrderStatus;
 import com.tweats.repo.CategoryRepository;
 import com.tweats.repo.OrderRepository;
 import lombok.AllArgsConstructor;
@@ -33,10 +34,10 @@ public class OrderService {
     private CategoryRepository categoryRepository;
 
     public CompletedOrdersResponse getCompletedOrders(long categoryId, Date date) throws NoOrdersFoundException {
-        List<Order> orders = orderRepository.getAllOrdersByCategoryDateAndStatus(categoryId, date, true);
+        List<Order> orders = orderRepository.getAllCompletedOrdersByCategoryAndDate(categoryId, date, OrderStatus.DELIVERED.name());
         int count = orders.size();
         if (count == 0) throw new NoOrdersFoundException();
-        BigDecimal revenue = orderRepository.getRevenueOfCompletedOrdersByCategoryIdAndDate(categoryId, date);
+        BigDecimal revenue = orderRepository.getRevenueOfCompletedOrdersByCategoryIdAndDate(categoryId, date,OrderStatus.DELIVERED.name());
         ArrayList<OrderResponse> orderResponses = new ArrayList<>();
         createOrderResponse(orders, orderResponses);
         return new CompletedOrdersResponse(count, revenue, orderResponses);
@@ -73,17 +74,12 @@ public class OrderService {
     public ActiveOrderResponse getActiveOrders(String vendorEmail) throws NoOrdersFoundException {
         User vendor = userPrincipalService.findUserByEmail(vendorEmail);
         Category category = categoryRepository.findByUserId(vendor.getId());
-        Date today = getCurrentDate();
-        List<Order> orders = orderRepository.getAllOrdersByCategoryDateAndStatus(category.getId(), today, false);
+        List<Order> orders = orderRepository.getAllActiveOrdersByCategoryId(category.getId(), OrderStatus.PLACED.name());
         int count = orders.size();
         if (count == 0) throw new NoOrdersFoundException();
         ArrayList<OrderResponse> orderResponses = new ArrayList<>();
         createOrderResponse(orders, orderResponses);
         return new ActiveOrderResponse(count, orderResponses);
-    }
-
-    public Date getCurrentDate() {
-        return new Date();
     }
 
     public void completeTheOrder(String vendorEmail, long orderId) throws OrderNotFoundException, OrderCategoryMismatchException {
@@ -92,7 +88,7 @@ public class OrderService {
         Category category = categoryRepository.findByUserId(vendor.getId());
         if (!category.equals(order.getCategory())) throw new OrderCategoryMismatchException();
 
-        order.setDelivered(true);
+        order.setStatus(OrderStatus.DELIVERED);
         orderRepository.save(order);
     }
 }
