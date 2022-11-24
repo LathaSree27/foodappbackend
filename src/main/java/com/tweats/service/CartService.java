@@ -3,6 +3,7 @@ package com.tweats.service;
 import com.tweats.controller.response.CartItemResponse;
 import com.tweats.controller.response.CartResponse;
 import com.tweats.exceptions.ItemDoesNotExistException;
+import com.tweats.exceptions.NoCategoryFoundException;
 import com.tweats.model.Cart;
 import com.tweats.model.CartItem;
 import com.tweats.model.Item;
@@ -37,30 +38,39 @@ public class CartService {
         this.cartRepository = cartRepository;
     }
 
-    public void addItem(String userEmail, long itemId, long quantity) throws ItemDoesNotExistException {
-        User user = userPrincipalService.findUserByEmail(userEmail);
+    public void addItem(String userEmail, long itemId, long quantity) throws ItemDoesNotExistException, NoCategoryFoundException {
+        User user = getUserByEmail(userEmail);
         long userId = user.getId();
         Optional<Item> optionalItem = itemRepository.findById(itemId);
         if (!optionalItem.isPresent()) throw new ItemDoesNotExistException();
         Item item = optionalItem.get();
         long categoryId = item.getCategory().getId();
-        Cart cart = cartRepository.findCartByUserIdAndCategoryId(userId, categoryId);
+        Cart cart = getCart(userId, categoryId);
         CartItem cartItem = cart.getCartItem(item, quantity);
         cart.addCartItems(cartItem);
         cartRepository.save(cart);
     }
 
-    public CartResponse cartItems(String email, long categoryId) {
-        User user = userPrincipalService.findUserByEmail(email);
-        Cart cart = cartRepository.findCartByUserIdAndCategoryId(user.getId(), categoryId);
+    public CartResponse cartItems(String email, long categoryId) throws NoCategoryFoundException {
+        User user = getUserByEmail(email);
+        long userId = user.getId();
+        Cart cart = getCart(userId, categoryId);
         Set<CartItem> cartItems = cart.getCartItems();
         List<CartItemResponse> cartItemResponseList = new ArrayList<>();
         for (CartItem cartItem : cartItems) {
-            CartItemResponse cartItemResponse = new CartItemResponse(cartItem.getId(), cartItem.getItem().getName(), cartItem.getQuantity(), cartItem.getItem().getPrice(), getImageLink(cartItem),cartItem.getItem().is_available());
+            CartItemResponse cartItemResponse = new CartItemResponse(cartItem.getId(), cartItem.getItem().getName(), cartItem.getQuantity(), cartItem.getItem().getPrice(), getImageLink(cartItem), cartItem.getItem().is_available());
             cartItemResponseList.add(cartItemResponse);
         }
         CartResponse cartResponse = new CartResponse(cart.getId(), cartRepository.getBillAmount(cart.getId()), cartItemResponseList);
         return cartResponse;
+    }
+
+    private User getUserByEmail(String userEmail) {
+        return userPrincipalService.findUserByEmail(userEmail);
+    }
+
+    private Cart getCart(long userId, long categoryId) throws NoCategoryFoundException {
+        return cartRepository.findCartByUserIdAndCategoryId(userId, categoryId).orElseThrow(() -> new NoCategoryFoundException());
     }
 
     private String getImageLink(CartItem cartItem) {

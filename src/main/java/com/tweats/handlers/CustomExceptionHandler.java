@@ -3,6 +3,7 @@ package com.tweats.handlers;
 import com.tweats.controller.response.ErrorResponse;
 import com.tweats.exceptions.ItemAccessException;
 import com.tweats.exceptions.ItemDoesNotExistException;
+import com.tweats.exceptions.NoCategoryFoundException;
 import com.tweats.exceptions.NoItemsFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -43,6 +44,12 @@ public class CustomExceptionHandler {
     @ExceptionHandler(ItemDoesNotExistException.class)
     public ResponseEntity handleItemDoesNotExistException(ItemDoesNotExistException ex) {
         ErrorResponse error = new ErrorResponse("Item not found!", Collections.singletonList(ex.getMessage()));
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(NoCategoryFoundException.class)
+    public ResponseEntity handleNoCategoryFoundException(NoCategoryFoundException ex) {
+        ErrorResponse error = new ErrorResponse("Category Not Found!", Collections.singletonList(ex.getMessage()));
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
 }

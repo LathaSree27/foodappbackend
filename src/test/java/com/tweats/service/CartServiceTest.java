@@ -3,6 +3,7 @@ package com.tweats.service;
 import com.tweats.controller.response.CartItemResponse;
 import com.tweats.controller.response.CartResponse;
 import com.tweats.exceptions.ItemDoesNotExistException;
+import com.tweats.exceptions.NoCategoryFoundException;
 import com.tweats.model.*;
 import com.tweats.repo.CartRepository;
 import com.tweats.repo.ItemRepository;
@@ -41,7 +42,7 @@ public class CartServiceTest {
     }
 
     @Test
-    void shouldBeAbleToSaveCartItemWhenUserAddsItemToCart() throws ItemDoesNotExistException {
+    void shouldBeAbleToSaveCartItemWhenUserAddsItemToCart() throws ItemDoesNotExistException, NoCategoryFoundException {
         String userEmail = "abc@gmail.com";
         long itemId = 1L;
         long quantity = 2L;
@@ -53,7 +54,7 @@ public class CartServiceTest {
         expectedCartItems.add(cartItem);
         when(userPrincipalService.findUserByEmail(userEmail)).thenReturn(user);
         when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
-        when(cartRepository.findCartByUserIdAndCategoryId(user.getId(), category.getId())).thenReturn(cart);
+        when(cartRepository.findCartByUserIdAndCategoryId(user.getId(), category.getId())).thenReturn(Optional.of(cart));
 
         cartService.addItem(userEmail, itemId, quantity);
 
@@ -72,7 +73,7 @@ public class CartServiceTest {
     }
 
     @Test
-    void shouldBeAbleToGetCartItemsWhenUserEmailAndAValidCategoryIdIsGiven() {
+    void shouldBeAbleToGetCartItemsWhenUserEmailAndAValidCategoryIdIsGiven() throws NoCategoryFoundException {
         String appLink = "http://localhost:8080/tweats/api/v1";
         cartService.setAppLink(appLink);
         String userEmail = "abc@gamil.com";
@@ -88,16 +89,24 @@ public class CartServiceTest {
         cart.setCartItems(cartItems);
         cart.setId(2L);
         BigDecimal billAmount = new BigDecimal(160);
-        CartItemResponse cartItemResponse = new CartItemResponse(cartItem.getId(), cartItem.getItem().getName(), cartItem.getQuantity(), cartItem.getItem().getPrice(), appLink + "/images/" + (cartItem.getItem().getId()),cartItem.getItem().is_available());
+        CartItemResponse cartItemResponse = new CartItemResponse(cartItem.getId(), cartItem.getItem().getName(), cartItem.getQuantity(), cartItem.getItem().getPrice(), appLink + "/images/" + (cartItem.getItem().getId()), cartItem.getItem().is_available());
         List<CartItemResponse> cartItemResponseList = new ArrayList<>();
         cartItemResponseList.add(cartItemResponse);
         when(userPrincipalService.findUserByEmail(userEmail)).thenReturn(user);
-        when(cartRepository.findCartByUserIdAndCategoryId(user.getId(), categoryId)).thenReturn(cart);
+        when(cartRepository.findCartByUserIdAndCategoryId(user.getId(), categoryId)).thenReturn(Optional.of(cart));
         when(cartRepository.getBillAmount(cart.getId())).thenReturn(billAmount);
         CartResponse expectedCartResponse = new CartResponse(cart.getId(), cartRepository.getBillAmount(cart.getId()), cartItemResponseList);
 
         CartResponse actualCartResponse = cartService.cartItems(userEmail, categoryId);
 
         assertThat(actualCartResponse, is(expectedCartResponse));
+    }
+
+    @Test
+    void shouldThrowNoCategoryFoundExceptionWhenCategoryDoesNotExistsWithGivenId() {
+        String userEmail = "abc@gmail.com";
+        when(userPrincipalService.findUserByEmail(userEmail)).thenReturn(user);
+        long categoryId = 2l;
+        assertThrows(NoCategoryFoundException.class, () -> cartService.cartItems(userEmail, categoryId));
     }
 }

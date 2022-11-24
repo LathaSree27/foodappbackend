@@ -18,8 +18,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.math.BigDecimal;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(classes = TweatsApplication.class)
@@ -107,8 +107,15 @@ public class CartControllerIntegrationTest {
 
     @Test
     void shouldBeAbleToGetCartItemsFromCartWhenCartApiIsInvoked() throws Exception {
-        mockMvc.perform(get("/cart/"+ category.getId())
-                        .with(httpBasic("abc@gmail.com","password")))
+        mockMvc.perform(get("/cart/" + category.getId())
+                        .with(httpBasic("abc@gmail.com", "password")))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    void shouldThrowCategoryNotFoundErrorWhenCategoryDoestNotExistsWithGivenId() throws Exception {
+        mockMvc.perform(get("/cart/" + 370)
+                        .with(httpBasic("abc@gmail.com", "password")))
+                .andExpect(status().isNotFound());
     }
 }

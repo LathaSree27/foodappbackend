@@ -1,6 +1,7 @@
 package com.tweats.controller;
 
 import com.tweats.exceptions.ItemDoesNotExistException;
+import com.tweats.exceptions.NoCategoryFoundException;
 import com.tweats.service.CartService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,7 +24,7 @@ public class CartControllerTest {
     }
 
     @Test
-    void shouldBeAbleToAddItemToCart() throws ItemDoesNotExistException {
+    void shouldBeAbleToAddItemToCart() throws ItemDoesNotExistException, NoCategoryFoundException {
         long itemId = 1L;
         long quantity = 2L;
         String userEmail = "abc@gmail.com";
@@ -35,7 +36,7 @@ public class CartControllerTest {
     }
 
     @Test
-    void shouldBeAbleToGetCartItemsWhenCategoryIdIsGiven() {
+    void shouldBeAbleToGetCartItemsWhenCategoryIdIsGiven() throws NoCategoryFoundException {
         long categoryId = 1L;
         String userEmail = "abc@gmail.com";
         when(principal.getName()).thenReturn(userEmail);
