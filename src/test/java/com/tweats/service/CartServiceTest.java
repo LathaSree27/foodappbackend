@@ -5,6 +5,7 @@ import com.tweats.controller.response.CartResponse;
 import com.tweats.exceptions.ItemDoesNotExistException;
 import com.tweats.exceptions.NoCategoryFoundException;
 import com.tweats.model.*;
+import com.tweats.repo.CartItemRepository;
 import com.tweats.repo.CartRepository;
 import com.tweats.repo.ItemRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,13 +29,15 @@ public class CartServiceTest {
     private Category category;
     private Cart cart;
     private Image image;
+    private CartItemRepository cartItemRepository;
 
     @BeforeEach
     void setUp() {
         userPrincipalService = mock(UserPrincipalService.class);
         itemRepository = mock(ItemRepository.class);
         cartRepository = mock(CartRepository.class);
-        cartService = new CartService(userPrincipalService, itemRepository, cartRepository);
+        cartItemRepository = mock(CartItemRepository.class);
+        cartService = new CartService(userPrincipalService, itemRepository, cartRepository, cartItemRepository);
         user = mock(User.class);
         category = mock(Category.class);
         cart = new Cart(category, user);
@@ -116,7 +119,8 @@ public class CartServiceTest {
         long quantity = 5L;
         Item item = mock(Item.class);
         CartItem cartItem = new CartItem(cart, item, 2L);
-        when(cartRepository.getCartItemById(cartItemId)).thenReturn(cartItem);
+        when(cartItemRepository.findById(cartItemId)).thenReturn(Optional.of(cartItem));
+
 
         cartService.updateCartItemQuantity(cartItemId, quantity);
 

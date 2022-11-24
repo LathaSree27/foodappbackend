@@ -16,10 +16,13 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(classes = TweatsApplication.class)
@@ -41,6 +44,8 @@ public class CartControllerIntegrationTest {
     private CategoryRepository categoryRepository;
     @Autowired
     private CartRepository cartRepository;
+    @Autowired
+    private CartItemRepository cartItemRepository;
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     private Category category;
     private Cart cart;
@@ -49,6 +54,7 @@ public class CartControllerIntegrationTest {
 
     @BeforeEach
     void setUp() {
+        cartItemRepository.deleteAll();
         cartRepository.deleteAll();
         itemRepository.deleteAll();
         categoryRepository.deleteAll();
@@ -68,6 +74,7 @@ public class CartControllerIntegrationTest {
 
     @AfterEach
     public void after() {
+        cartItemRepository.deleteAll();
         cartRepository.deleteAll();
         itemRepository.deleteAll();
         categoryRepository.deleteAll();
@@ -117,5 +124,25 @@ public class CartControllerIntegrationTest {
         mockMvc.perform(get("/cart/" + 370)
                         .with(httpBasic("abc@gmail.com", "password")))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void shouldBeAbleToUpdateQuantityOfCartItemWhenCartUpdateApiIsInvoked() throws Exception {
+        String itemName = "mango";
+        Item item = new Item(itemName, categoryImage, new BigDecimal(2), category);
+        itemRepository.save(item);
+        long quantity = 1;
+        CartItem cartItem = new CartItem(cart, item, quantity);
+        Set<CartItem> cartItems = new HashSet<>();
+        cartItems.add(cartItem);
+        cart.setCartItems(cartItems);
+        Cart cart = cartRepository.save(this.cart);
+        List<CartItem> cartItemList = new ArrayList<>(cart.getCartItems());
+        CartItem savedCartItem = cartItemList.get(0);
+
+        mockMvc.perform(put("/cart/update/" + savedCartItem.getId())
+                        .param("quantity", String.valueOf(2))
+                        .with(httpBasic("abc@gmail.com", "password")))
+                .andExpect(status().isOk());
     }
 }

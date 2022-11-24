@@ -8,6 +8,7 @@ import com.tweats.model.Cart;
 import com.tweats.model.CartItem;
 import com.tweats.model.Item;
 import com.tweats.model.User;
+import com.tweats.repo.CartItemRepository;
 import com.tweats.repo.CartRepository;
 import com.tweats.repo.ItemRepository;
 import lombok.Setter;
@@ -29,13 +30,16 @@ public class CartService {
 
     CartRepository cartRepository;
 
+    CartItemRepository cartItemRepository;
+
     @Value("${application.link}")
     private String appLink;
 
-    public CartService(UserPrincipalService userPrincipalService, ItemRepository itemRepository, CartRepository cartRepository) {
+    public CartService(UserPrincipalService userPrincipalService, ItemRepository itemRepository, CartRepository cartRepository, CartItemRepository cartItemRepository) {
         this.userPrincipalService = userPrincipalService;
         this.itemRepository = itemRepository;
         this.cartRepository = cartRepository;
+        this.cartItemRepository = cartItemRepository;
     }
 
     public void addItem(String userEmail, long itemId, long quantity) throws ItemDoesNotExistException, NoCategoryFoundException {
@@ -78,7 +82,8 @@ public class CartService {
     }
 
     public void updateCartItemQuantity(long cartItemId, long quantity) {
-        CartItem cartItem = cartRepository.getCartItemById(cartItemId);
+        CartItem cartItem = cartItemRepository.findById(cartItemId).get();
         cartItem.setQuantity(quantity);
+        cartItemRepository.save(cartItem);
     }
 }

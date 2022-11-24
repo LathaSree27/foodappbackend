@@ -29,14 +29,16 @@ public class CartController {
     }
 
     @GetMapping("{categoryId}")
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(code = HttpStatus.OK)
     public CartResponse getCartItems(Principal principal,
                                      @PathVariable long categoryId) throws NoCategoryFoundException {
         String userEmail = principal.getName();
         return cartService.cartItems(userEmail, categoryId);
     }
 
-    public void updateQuantity(long cartItemId, long quantity) {
+    @PutMapping("/update/{cartItemId}")
+    @ResponseStatus(code = HttpStatus.OK)
+    public void updateQuantity(@PathVariable long cartItemId, @RequestParam(name = "quantity") long quantity) {
         cartService.updateCartItemQuantity(cartItemId, quantity);
     }
 }
