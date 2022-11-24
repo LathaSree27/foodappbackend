@@ -127,6 +127,7 @@ public class OrderServiceTest {
     void shouldCompleteTheOrderWhenOrderIsNotDelivered() throws OrderNotFoundException, OrderCategoryMismatchException, OrderCancelledException {
         when(orderRepository.findById(order.getId())).thenReturn(Optional.of(order));
         when(order.getCategory()).thenReturn(category);
+        when(order.getStatus()).thenReturn(OrderStatus.PLACED);
         order.setStatus(OrderStatus.DELIVERED);
 
         orderService.completeTheOrder(user.getEmail(), order.getId());

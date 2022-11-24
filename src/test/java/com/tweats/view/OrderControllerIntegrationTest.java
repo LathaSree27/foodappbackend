@@ -171,4 +171,15 @@ public class OrderControllerIntegrationTest {
                                 .param("orderId", String.valueOf(placedOrder.getId())))
                 .andExpect(status().isBadRequest());
     }
+
+    @Test
+    void shouldThrowOrderCanceledErrorWhenTheGivenOrderAlreadyCanceled() throws Exception {
+        order.setStatus(OrderStatus.CANCELED);
+        Order placedOrder = orderRepository.save(order);
+        mockMvc.perform(
+                        put("/order/complete")
+                                .with(httpBasic(user.getEmail(), "password"))
+                                .param("orderId", String.valueOf(placedOrder.getId())))
+                .andExpect(status().isBadRequest());
+    }
 }

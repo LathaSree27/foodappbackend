@@ -1,10 +1,7 @@
 package com.tweats.handlers;
 
 import com.tweats.controller.response.ErrorResponse;
-import com.tweats.exceptions.NoItemsFoundException;
-import com.tweats.exceptions.NoOrdersFoundException;
-import com.tweats.exceptions.OrderCategoryMismatchException;
-import com.tweats.exceptions.OrderNotFoundException;
+import com.tweats.exceptions.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -50,6 +47,12 @@ public class CustomExceptionHandler {
     @ExceptionHandler(OrderCategoryMismatchException.class)
     public ResponseEntity handleOrderCategoryMismatchException(OrderCategoryMismatchException ex) {
         ErrorResponse error = new ErrorResponse("Requested order does not belong to this category!", Collections.singletonList(ex.getMessage()));
+        return new ResponseEntity(error, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(OrderCancelledException.class)
+    public ResponseEntity handleOrderCancelledException(OrderCancelledException ex) {
+        ErrorResponse error = new ErrorResponse("Requested order is cancelled already!", Collections.singletonList(ex.getMessage()));
         return new ResponseEntity(error, HttpStatus.BAD_REQUEST);
     }
 }
