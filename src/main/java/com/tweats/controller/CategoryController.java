@@ -19,7 +19,7 @@ import java.security.Principal;
 import java.util.List;
 
 @RestController
-@RequestMapping("/category")
+@RequestMapping("category")
 @Validated
 @AllArgsConstructor
 public class CategoryController {
@@ -33,14 +33,14 @@ public class CategoryController {
         categoryService.save(name, imageFile, user_email);
     }
 
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(code = HttpStatus.OK)
+    @GetMapping("vendor")
     public VendorCategoryResponse fetchCategory(Principal principal) throws NoCategoryFoundException, UserNotFoundException {
         String userEmail = principal.getName();
         Category category = categoryService.getCategory(userEmail);
         return new VendorCategoryResponse(category.getId());
     }
 
+    @GetMapping
     public List<CategoryResponse> fetchAllCategories() throws NoCategoryFoundException {
         return categoryService.getAllCategories();
     }

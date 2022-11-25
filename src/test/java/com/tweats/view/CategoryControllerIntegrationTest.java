@@ -21,6 +21,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -33,6 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(classes = TweatsApplication.class)
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
+@WithMockUser
 public class CategoryControllerIntegrationTest {
 
 
@@ -102,7 +104,7 @@ public class CategoryControllerIntegrationTest {
         Category juice = categoryRepository.save(new Category("juice", categoryImage, vendor));
         VendorCategoryResponse vendorCategoryResponse = new VendorCategoryResponse(juice.getId());
 
-        mockMvc.perform(get("/category")
+        mockMvc.perform(get("/category/vendor")
                         .with((httpBasic("abc@example.com", "password"))))
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(vendorCategoryResponse)));
@@ -111,7 +113,7 @@ public class CategoryControllerIntegrationTest {
 
     @Test
     void shouldThrowNoCategoryFoundErrorWhenVendorIsNotAssignedWithCategory() throws Exception {
-        mockMvc.perform(get("/category")
+        mockMvc.perform(get("/category/vendor")
                         .with((httpBasic("abc@example.com", "password"))))
                 .andExpect(status().isNotFound());
     }
@@ -156,6 +158,7 @@ public class CategoryControllerIntegrationTest {
                         .with((httpBasic("abc@example.com", "password"))))
                 .andExpect(status().isForbidden());
     }
+
     @Test
     public void shouldNotBeAbleToSaveCategoryWhenInvalidCategoryDetailsAreProvided() throws Exception {
         MockMultipartFile mockMultipartFile = new MockMultipartFile("file", "image.png", MediaType.IMAGE_JPEG_VALUE, "hello".getBytes());
@@ -163,10 +166,11 @@ public class CategoryControllerIntegrationTest {
         mockMvc.perform(MockMvcRequestBuilders.multipart("/category")
                         .file(mockMultipartFile)
                         .param("name", "")
-                        .param("user_email","")
+                        .param("user_email", "")
                         .with((httpBasic("abc@example.com", "password"))))
                 .andExpect(status().isBadRequest());
     }
+
     @Test
     public void shouldNotBeAbleToSaveCategoryWhenInvalidEmailIdIsProvided() throws Exception {
         MockMultipartFile mockMultipartFile = new MockMultipartFile("file", "image.png", MediaType.IMAGE_JPEG_VALUE, "hello".getBytes());
@@ -174,9 +178,19 @@ public class CategoryControllerIntegrationTest {
         mockMvc.perform(MockMvcRequestBuilders.multipart("/category")
                         .file(mockMultipartFile)
                         .param("name", "juice")
-                        .param("user_email","abc")
+                        .param("user_email", "abc")
                         .with((httpBasic("abc@example.com", "password"))))
                 .andExpect(status().isBadRequest());
     }
 
+    @Test
+    void shouldBeAbleToGetAllCategories() throws Exception {
+        MockMultipartFile mockMultipartFileCategory = new MockMultipartFile("file", "image.png", MediaType.IMAGE_JPEG_VALUE, "hello".getBytes());
+        Image categoryImage = imageService.save(mockMultipartFileCategory);
+        categoryRepository.save(new Category("juice", categoryImage, vendor));
+
+        mockMvc.perform(
+                get("/category")
+        ).andExpect(status().isOk());
+    }
 }
