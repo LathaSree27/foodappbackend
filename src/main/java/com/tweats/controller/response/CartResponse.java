@@ -1,6 +1,7 @@
 package com.tweats.controller.response;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 
 import java.math.BigDecimal;
@@ -9,6 +10,7 @@ import java.util.Objects;
 
 @AllArgsConstructor
 @Getter
+@Builder
 public class CartResponse {
     private long id;
     private BigDecimal billAmount;

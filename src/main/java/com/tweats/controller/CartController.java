@@ -24,7 +24,8 @@ public class CartController {
     @PostMapping
     public void add(Principal principal,
                     @RequestParam long itemId,
-                    @Min(value = 0, message = "quantity cannot be negative") @RequestParam long quantity) throws ItemDoesNotExistException, NoCategoryFoundException {
+                    @Min(value = 0, message = "quantity cannot be negative")
+                    @RequestParam long quantity) throws ItemDoesNotExistException, NoCategoryFoundException {
         String userEmail = principal.getName();
         cartService.addItem(userEmail, itemId, quantity);
     }

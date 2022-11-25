@@ -1,6 +1,9 @@
 package com.tweats.view;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tweats.TweatsApplication;
+import com.tweats.controller.response.CartItemResponse;
+import com.tweats.controller.response.CartResponse;
 import com.tweats.model.*;
 import com.tweats.repo.*;
 import org.junit.jupiter.api.AfterEach;
@@ -46,6 +49,8 @@ public class CartControllerIntegrationTest {
     private CartRepository cartRepository;
     @Autowired
     private CartItemRepository cartItemRepository;
+    @Autowired
+    ObjectMapper objectMapper;
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     private Category category;
     private Cart cart;
@@ -114,8 +119,17 @@ public class CartControllerIntegrationTest {
 
     @Test
     void shouldBeAbleToGetCartItemsFromCartWhenCartApiIsInvoked() throws Exception {
+        String appLink = "http://localhost:8080/tweats/api/v1";
+        CartItemResponse mango = CartItemResponse.builder().id(1).name("Mango").quantity(2).price(new BigDecimal(50)).imageLink(appLink + "/images/" + 1).build();
+        ArrayList<CartItemResponse> cartItemResponses = new ArrayList<>();
+        cartItemResponses.add(mango);
+        CartResponse cartResponse = CartResponse.builder().id(2).billAmount(new BigDecimal(100)).cartItemResponses(cartItemResponses).build();
+        String jsonContent = objectMapper.writeValueAsString(cartResponse);
+
         mockMvc.perform(get("/cart/" + category.getId())
-                        .with(httpBasic("abc@gmail.com", "password")))
+                        .with(httpBasic("abc@gmail.com", "password"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonContent))
                 .andExpect(status().isOk());
     }
 

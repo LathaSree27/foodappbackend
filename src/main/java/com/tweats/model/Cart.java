@@ -14,10 +14,11 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 public class Cart {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    private Long id;
+    private long id;
 
     @OneToOne
     @JoinColumn(name = "category_id")

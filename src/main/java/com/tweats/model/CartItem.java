@@ -3,7 +3,6 @@ package com.tweats.model;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import javax.persistence.*;
 import javax.validation.constraints.Min;
 import java.util.Objects;
@@ -14,10 +13,11 @@ import java.util.Objects;
 @Setter
 @NoArgsConstructor
 public class CartItem {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    private Long id;
+    private long id;
 
     @ManyToOne
     @JoinColumn(name = "cart_id")

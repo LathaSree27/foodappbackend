@@ -26,7 +26,9 @@ import java.util.Set;
 @Transactional
 @Setter
 public class CartService {
+
     UserPrincipalService userPrincipalService;
+
     ItemRepository itemRepository;
 
     CartRepository cartRepository;
@@ -47,7 +49,7 @@ public class CartService {
         User user = getUserByEmail(userEmail);
         long userId = user.getId();
         Optional<Item> optionalItem = itemRepository.findById(itemId);
-        if (!optionalItem.isPresent()) throw new ItemDoesNotExistException();
+        if (optionalItem.isEmpty()) throw new ItemDoesNotExistException();
         Item item = optionalItem.get();
         long categoryId = item.getCategory().getId();
         Cart cart = getCart(userId, categoryId);
@@ -60,14 +62,18 @@ public class CartService {
         User user = getUserByEmail(email);
         long userId = user.getId();
         Cart cart = getCart(userId, categoryId);
-        Set<CartItem> cartItems = cart.getCartItems();
-        List<CartItemResponse> cartItemResponseList = new ArrayList<>();
-        for (CartItem cartItem : cartItems) {
-            CartItemResponse cartItemResponse = new CartItemResponse(cartItem.getId(), cartItem.getItem().getName(), cartItem.getQuantity(), cartItem.getItem().getPrice(), getImageLink(cartItem), cartItem.getItem().is_available());
-            cartItemResponseList.add(cartItemResponse);
-        }
-        CartResponse cartResponse = new CartResponse(cart.getId(), cartRepository.getBillAmount(cart.getId()), cartItemResponseList);
-        return cartResponse;
+        return getCartResponse(cart);
+    }
+
+    public void updateCartItemQuantity(long cartItemId, long quantity) throws CartItemNotFoundException {
+        CartItem cartItem = getCartItem(cartItemId);
+        cartItem.setQuantity(quantity);
+        cartItemRepository.save(cartItem);
+    }
+
+    public void deleteCartItem(long cartItemId) throws CartItemNotFoundException {
+        getCartItem(cartItemId);
+        cartItemRepository.deleteById(cartItemId);
     }
 
     private User getUserByEmail(String userEmail) {
@@ -82,17 +88,17 @@ public class CartService {
         return appLink + "/images/" + (cartItem.getItem().getId());
     }
 
-    public void updateCartItemQuantity(long cartItemId, long quantity) throws CartItemNotFoundException {
-        Optional<CartItem> optionalCartItem = cartItemRepository.findById(cartItemId);
-        if (optionalCartItem.isEmpty()) throw new CartItemNotFoundException();
-        CartItem cartItem = optionalCartItem.get();
-        cartItem.setQuantity(quantity);
-        cartItemRepository.save(cartItem);
+    private CartResponse getCartResponse(Cart cart) {
+        Set<CartItem> cartItems = cart.getCartItems();
+        List<CartItemResponse> cartItemResponseList = new ArrayList<>();
+        for (CartItem cartItem : cartItems) {
+            CartItemResponse cartItemResponse = new CartItemResponse(cartItem.getId(), cartItem.getItem().getName(), cartItem.getQuantity(), cartItem.getItem().getPrice(), getImageLink(cartItem), cartItem.getItem().is_available());
+            cartItemResponseList.add(cartItemResponse);
+        }
+        return new CartResponse(cart.getId(), cartRepository.getBillAmount(cart.getId()), cartItemResponseList);
     }
 
-    public void deleteCartItem(long cartItemId) throws CartItemNotFoundException {
-        Optional<CartItem> optionalCartItem = cartItemRepository.findById(cartItemId);
-        if (optionalCartItem.isEmpty()) throw new CartItemNotFoundException();
-        cartItemRepository.deleteById(cartItemId);
+    private CartItem getCartItem(long cartItemId) throws CartItemNotFoundException {
+        return cartItemRepository.findById(cartItemId).orElseThrow(CartItemNotFoundException::new);
     }
 }

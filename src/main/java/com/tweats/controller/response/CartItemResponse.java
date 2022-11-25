@@ -1,6 +1,7 @@
 package com.tweats.controller.response;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 
 import java.math.BigDecimal;
@@ -8,13 +9,13 @@ import java.util.Objects;
 
 @AllArgsConstructor
 @Getter
+@Builder
 public class CartItemResponse {
     private long id;
     private String name;
     private long quantity;
     private BigDecimal price;
     private String imageLink;
-
     private boolean isAvailable;
 
     @Override
