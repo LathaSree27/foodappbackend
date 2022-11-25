@@ -1,4 +1,4 @@
-package com.tweats.controller;
+package com.tweats.view;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tweats.TweatsApplication;
