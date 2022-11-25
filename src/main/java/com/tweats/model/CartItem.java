@@ -26,7 +26,6 @@ public class CartItem {
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "item_id")
     private Item item;
-
     @Min(value = 0, message = "quantity cannot be negative")
     private long quantity;
 

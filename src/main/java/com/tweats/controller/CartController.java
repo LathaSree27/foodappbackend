@@ -39,7 +39,8 @@ public class CartController {
 
     @PutMapping("/update/{cartItemId}")
     @ResponseStatus(code = HttpStatus.OK)
-    public void updateQuantity(@PathVariable long cartItemId, @RequestParam(name = "quantity") long quantity) throws CartItemNotFoundException {
+    public void updateQuantity(@PathVariable long cartItemId,
+                               @RequestParam(name = "quantity") @Min(value = 0, message = "Quantity can't be negative!") long quantity) throws CartItemNotFoundException {
         cartService.updateCartItemQuantity(cartItemId, quantity);
     }
 }
