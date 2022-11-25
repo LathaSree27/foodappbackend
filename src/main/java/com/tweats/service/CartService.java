@@ -2,6 +2,7 @@ package com.tweats.service;
 
 import com.tweats.controller.response.CartItemResponse;
 import com.tweats.controller.response.CartResponse;
+import com.tweats.exceptions.CartItemNotFoundException;
 import com.tweats.exceptions.ItemDoesNotExistException;
 import com.tweats.exceptions.NoCategoryFoundException;
 import com.tweats.model.Cart;
@@ -81,8 +82,10 @@ public class CartService {
         return appLink + "/images/" + (cartItem.getItem().getId());
     }
 
-    public void updateCartItemQuantity(long cartItemId, long quantity) {
-        CartItem cartItem = cartItemRepository.findById(cartItemId).get();
+    public void updateCartItemQuantity(long cartItemId, long quantity) throws CartItemNotFoundException {
+        Optional<CartItem> optionalCartItem = cartItemRepository.findById(cartItemId);
+        if (optionalCartItem.isEmpty()) throw new CartItemNotFoundException();
+        CartItem cartItem = optionalCartItem.get();
         cartItem.setQuantity(quantity);
         cartItemRepository.save(cartItem);
     }

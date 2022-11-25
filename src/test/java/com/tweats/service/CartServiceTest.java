@@ -2,6 +2,7 @@ package com.tweats.service;
 
 import com.tweats.controller.response.CartItemResponse;
 import com.tweats.controller.response.CartResponse;
+import com.tweats.exceptions.CartItemNotFoundException;
 import com.tweats.exceptions.ItemDoesNotExistException;
 import com.tweats.exceptions.NoCategoryFoundException;
 import com.tweats.model.*;
@@ -114,7 +115,7 @@ public class CartServiceTest {
     }
 
     @Test
-    void shouldBeAbleToUpdateQuantityOfACartItemWhenCartItemIdAndQuantityAreGiven() {
+    void shouldBeAbleToUpdateQuantityOfACartItemWhenCartItemIdAndQuantityAreGiven() throws CartItemNotFoundException {
         long cartItemId = 2l;
         long quantity = 5L;
         Item item = mock(Item.class);
@@ -125,5 +126,13 @@ public class CartServiceTest {
         cartService.updateCartItemQuantity(cartItemId, quantity);
 
         assertThat(cartItem.getQuantity(), is(quantity));
+    }
+
+    @Test
+    void shouldThrowCartItemNotFoundExceptionWhenCartItemDoesNotExistsWithGivenId() {
+        long cartItemId = 2l;
+        long quantity = 4l;
+        assertThrows(CartItemNotFoundException.class, () -> cartService.updateCartItemQuantity(cartItemId, quantity));
+
     }
 }

@@ -1,6 +1,7 @@
 package com.tweats.controller;
 
 import com.tweats.controller.response.CartResponse;
+import com.tweats.exceptions.CartItemNotFoundException;
 import com.tweats.exceptions.ItemDoesNotExistException;
 import com.tweats.exceptions.NoCategoryFoundException;
 import com.tweats.service.CartService;
@@ -38,7 +39,7 @@ public class CartController {
 
     @PutMapping("/update/{cartItemId}")
     @ResponseStatus(code = HttpStatus.OK)
-    public void updateQuantity(@PathVariable long cartItemId, @RequestParam(name = "quantity") long quantity) {
+    public void updateQuantity(@PathVariable long cartItemId, @RequestParam(name = "quantity") long quantity) throws CartItemNotFoundException {
         cartService.updateCartItemQuantity(cartItemId, quantity);
     }
 }

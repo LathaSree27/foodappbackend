@@ -1,5 +1,6 @@
 package com.tweats.controller;
 
+import com.tweats.exceptions.CartItemNotFoundException;
 import com.tweats.exceptions.ItemDoesNotExistException;
 import com.tweats.exceptions.NoCategoryFoundException;
 import com.tweats.service.CartService;
@@ -47,7 +48,7 @@ public class CartControllerTest {
     }
 
     @Test
-    void shouldBeAbleToUpdateQuantityOfCartItemWhenQuantityIsGiven() {
+    void shouldBeAbleToUpdateQuantityOfCartItemWhenQuantityIsGiven() throws CartItemNotFoundException {
         long cartItemId = 2L;
         long quantity = 30L;
 

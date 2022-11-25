@@ -145,4 +145,14 @@ public class CartControllerIntegrationTest {
                         .with(httpBasic("abc@gmail.com", "password")))
                 .andExpect(status().isOk());
     }
+
+    @Test
+    void shouldThrowCartItemNotFoundErrorWhenCartItemDoesNotExistsWithGivenId() throws Exception {
+        long cartItemId = 2l;
+        long quantity = 4l;
+        mockMvc.perform(put("/cart/update/" + cartItemId)
+                        .param("quantity", String.valueOf(quantity))
+                        .with(httpBasic("abc@gmail.com", "password")))
+                .andExpect(status().isNotFound());
+    }
 }
