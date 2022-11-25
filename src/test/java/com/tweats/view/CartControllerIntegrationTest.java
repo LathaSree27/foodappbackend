@@ -148,8 +148,9 @@ public class CartControllerIntegrationTest {
 
     @Test
     void shouldThrowCartItemNotFoundErrorWhenCartItemDoesNotExistsWithGivenId() throws Exception {
-        long cartItemId = 2l;
-        long quantity = 4l;
+        long cartItemId = 2L;
+        long quantity = 4L;
+
         mockMvc.perform(put("/cart/update/" + cartItemId)
                         .param("quantity", String.valueOf(quantity))
                         .with(httpBasic("abc@gmail.com", "password")))
@@ -158,11 +159,25 @@ public class CartControllerIntegrationTest {
 
     @Test
     void shouldThrowValidationErrorWhenGivenQuantityIsNegative() throws Exception {
-        long cartItemId = 2l;
-        long quantity = -4l;
+        long cartItemId = 2L;
+        long quantity = -4L;
+
         mockMvc.perform(put("/cart/update/" + cartItemId)
                         .param("quantity", String.valueOf(quantity))
                         .with(httpBasic("abc@gmail.com", "password")))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldBeAbleToDeleteCartItemWhenIdIsGiven() throws Exception {
+        String itemName = "mango";
+        Item item = new Item(itemName, categoryImage, new BigDecimal(2), category);
+        itemRepository.save(item);
+        long quantity = 1;
+        CartItem cartItem = new CartItem(cart, item, quantity);
+        CartItem savedCartItem = cartItemRepository.save(cartItem);
+
+        mockMvc.perform(delete("/cart/delete/"+ savedCartItem.getId()))
+                .andExpect(status().isOk());
     }
 }

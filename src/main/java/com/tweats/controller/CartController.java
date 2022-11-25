@@ -40,11 +40,13 @@ public class CartController {
     @PutMapping("/update/{cartItemId}")
     @ResponseStatus(code = HttpStatus.OK)
     public void updateQuantity(@PathVariable long cartItemId,
-                               @RequestParam(name = "quantity") @Min(value = 0, message = "Quantity can't be negative!") long quantity) throws CartItemNotFoundException {
+                               @RequestParam(value = "quantity") @Min(value = 0, message = "Quantity can't be negative!") long quantity) throws CartItemNotFoundException {
         cartService.updateCartItemQuantity(cartItemId, quantity);
     }
 
-    public void deleteCartItem(long cartItemId) {
+    @DeleteMapping("/delete/{cartItemId}")
+    @ResponseStatus(code = HttpStatus.OK)
+    public void deleteCartItem(@PathVariable long cartItemId) {
         cartService.deleteCartItem(cartItemId);
     }
 }
