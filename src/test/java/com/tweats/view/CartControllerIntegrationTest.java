@@ -175,9 +175,22 @@ public class CartControllerIntegrationTest {
         itemRepository.save(item);
         long quantity = 1;
         CartItem cartItem = new CartItem(cart, item, quantity);
-        CartItem savedCartItem = cartItemRepository.save(cartItem);
+        Set<CartItem> cartItems = new HashSet<>();
+        cartItems.add(cartItem);
+        cart.setCartItems(cartItems);
+        Cart cart = cartRepository.save(this.cart);
+        List<CartItem> cartItemList = new ArrayList<>(cart.getCartItems());
+        CartItem savedCartItem = cartItemList.get(0);
 
-        mockMvc.perform(delete("/cart/delete/"+ savedCartItem.getId()))
+        mockMvc.perform(delete("/cart/delete/" + savedCartItem.getId()))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    void shouldThrowCartItemNotFoundErrorWhenCartItemDoesNotExistWithGivenId() throws Exception {
+        long cartItemId = 2L;
+
+        mockMvc.perform(delete("/cart/delete/" + cartItemId))
+                .andExpect(status().isNotFound());
     }
 }

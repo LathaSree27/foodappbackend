@@ -2,6 +2,7 @@ package com.tweats.handlers;
 
 import com.tweats.controller.response.ErrorResponse;
 import com.tweats.exceptions.*;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -24,6 +25,12 @@ public class CustomExceptionHandler {
         }
         ErrorResponse error = new ErrorResponse("Validation Failed", details);
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(EmptyResultDataAccessException.class)
+    public ResponseEntity handleEmptyResultDataAccessException(EmptyResultDataAccessException ex) {
+        ErrorResponse error = new ErrorResponse("CartItem not found!", Collections.singletonList("CartItem with given id does not exist!"));
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(NoItemsFoundException.class)

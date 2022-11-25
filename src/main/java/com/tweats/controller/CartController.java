@@ -46,7 +46,7 @@ public class CartController {
 
     @DeleteMapping("/delete/{cartItemId}")
     @ResponseStatus(code = HttpStatus.OK)
-    public void deleteCartItem(@PathVariable long cartItemId) {
+    public void deleteCartItem(@PathVariable long cartItemId) throws CartItemNotFoundException {
         cartService.deleteCartItem(cartItemId);
     }
 }

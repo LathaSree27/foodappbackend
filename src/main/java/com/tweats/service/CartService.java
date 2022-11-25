@@ -90,7 +90,9 @@ public class CartService {
         cartItemRepository.save(cartItem);
     }
 
-    public void deleteCartItem(long cartItemId) {
+    public void deleteCartItem(long cartItemId) throws CartItemNotFoundException {
+        Optional<CartItem> optionalCartItem = cartItemRepository.findById(cartItemId);
+        if (optionalCartItem.isEmpty()) throw new CartItemNotFoundException();
         cartItemRepository.deleteById(cartItemId);
     }
 }

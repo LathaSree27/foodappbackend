@@ -58,7 +58,7 @@ public class CartControllerTest {
     }
 
     @Test
-    void shouldBeAbleToDeleteCartItemWhenIdIsGiven() {
+    void shouldBeAbleToDeleteCartItemWhenIdIsGiven() throws CartItemNotFoundException {
         long cartItemId = 2l;
 
         cartController.deleteCartItem(cartItemId);

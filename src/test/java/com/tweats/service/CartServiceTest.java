@@ -87,7 +87,7 @@ public class CartServiceTest {
         Image itemImage = mock(Image.class);
         Item mango = new Item(firstItemName, itemImage, firstItemPrice, category);
         HashSet<CartItem> cartItems = new HashSet<>();
-        CartItem cartItem = new CartItem(cart, mango, 2l);
+        CartItem cartItem = new CartItem(cart, mango, 2L);
         cartItems.add(cartItem);
         cartItem.setId(2L);
         cart.setCartItems(cartItems);
@@ -110,13 +110,13 @@ public class CartServiceTest {
     void shouldThrowNoCategoryFoundExceptionWhenCategoryDoesNotExistsWithGivenId() {
         String userEmail = "abc@gmail.com";
         when(userPrincipalService.findUserByEmail(userEmail)).thenReturn(user);
-        long categoryId = 2l;
+        long categoryId = 2L;
         assertThrows(NoCategoryFoundException.class, () -> cartService.cartItems(userEmail, categoryId));
     }
 
     @Test
     void shouldBeAbleToUpdateQuantityOfACartItemWhenCartItemIdAndQuantityAreGiven() throws CartItemNotFoundException {
-        long cartItemId = 2l;
+        long cartItemId = 2L;
         long quantity = 5L;
         Item item = mock(Item.class);
         CartItem cartItem = new CartItem(cart, item, 2L);
@@ -130,18 +130,27 @@ public class CartServiceTest {
 
     @Test
     void shouldThrowCartItemNotFoundExceptionWhenCartItemDoesNotExistsWithGivenId() {
-        long cartItemId = 2l;
-        long quantity = 4l;
+        long cartItemId = 2L;
+        long quantity = 4L;
 
         assertThrows(CartItemNotFoundException.class, () -> cartService.updateCartItemQuantity(cartItemId, quantity));
     }
 
     @Test
-    void shouldBeAbleToDeleteCartItemWhenIdIsGiven() {
-        long cartItemId = 2l;
+    void shouldBeAbleToDeleteCartItemWhenIdIsGiven() throws CartItemNotFoundException {
+        long cartItemId = 2L;
+        CartItem cartItem = mock(CartItem.class);
+        when(cartItemRepository.findById(cartItemId)).thenReturn(Optional.of(cartItem));
 
         cartService.deleteCartItem(cartItemId);
 
         verify(cartItemRepository).deleteById(cartItemId);
+    }
+
+    @Test
+    void shouldThrowCartItemNotFoundExceptionWhenCartItemDoesNotExistWithGivenId() {
+        long cartItemId = 2L;
+
+        assertThrows(CartItemNotFoundException.class, ()->cartService.deleteCartItem(cartItemId));
     }
 }
