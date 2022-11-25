@@ -38,7 +38,7 @@ public class OrderService {
         List<Order> orders = orderRepository.getAllCompletedOrdersByCategoryAndDate(categoryId, date, OrderStatus.DELIVERED.name());
         int count = orders.size();
         if (count == 0) throw new NoOrdersFoundException();
-        BigDecimal revenue = orderRepository.getRevenueOfCompletedOrdersByCategoryIdAndDate(categoryId, date,OrderStatus.DELIVERED.name());
+        BigDecimal revenue = orderRepository.getRevenueOfCompletedOrdersByCategoryIdAndDate(categoryId, date, OrderStatus.DELIVERED.name());
         ArrayList<OrderResponse> orderResponses = new ArrayList<>();
         createOrderResponse(orders, orderResponses);
         return new CompletedOrdersResponse(count, revenue, orderResponses);
@@ -88,8 +88,12 @@ public class OrderService {
         User vendor = userPrincipalService.findUserByEmail(vendorEmail);
         Category category = categoryRepository.findByUserId(vendor.getId());
         if (!category.equals(order.getCategory())) throw new OrderCategoryMismatchException();
-        if(order.getStatus().equals(OrderStatus.CANCELED)) throw new OrderCancelledException();
+        if (order.getStatus().equals(OrderStatus.CANCELED)) throw new OrderCancelledException();
         order.setStatus(OrderStatus.DELIVERED);
         orderRepository.save(order);
+    }
+
+    public void orderAnItem(String userEmail, long itemId, long quantity) {
+
     }
 }

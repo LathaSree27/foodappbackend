@@ -14,8 +14,8 @@ import java.security.Principal;
 import java.util.Date;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.*;
-import static org.hamcrest.Matchers.*;
 
 public class OrderControllerTest {
 
@@ -40,12 +40,12 @@ public class OrderControllerTest {
     void shouldBeAbleToFetchAllCompletedOrdersWhenCategoryIdAndDateIsGiven() throws NoOrdersFoundException {
         Date today = new Date();
         CompletedOrdersResponse expectedCompletedOrdersResponse = new CompletedOrdersResponse();
-        when(orderService.getCompletedOrders(categoryId,today)).thenReturn(expectedCompletedOrdersResponse);
+        when(orderService.getCompletedOrders(categoryId, today)).thenReturn(expectedCompletedOrdersResponse);
 
         CompletedOrdersResponse actualCompletedOrdersResponse = orderController.getCompletedOrders(categoryId, today);
 
         verify(orderService).getCompletedOrders(categoryId, today);
-        assertThat(actualCompletedOrdersResponse,is(expectedCompletedOrdersResponse));
+        assertThat(actualCompletedOrdersResponse, is(expectedCompletedOrdersResponse));
     }
 
     @Test
@@ -56,15 +56,25 @@ public class OrderControllerTest {
         ActiveOrderResponse actualActiveOrderResponse = orderController.getActiveOrders(principal);
 
         verify(orderService).getActiveOrders(principal.getName());
-        assertThat(actualActiveOrderResponse,is(expectedActiveOrderResponse));
+        assertThat(actualActiveOrderResponse, is(expectedActiveOrderResponse));
     }
 
     @Test
     void shouldBeAbleToCompleteOrderWhenOrderIdIsGiven() throws OrderNotFoundException, OrderCategoryMismatchException, OrderCancelledException {
         long orderId = 1;
+
         orderController.completeTheOrder(principal, orderId);
 
         verify(orderService).completeTheOrder(principal.getName(), orderId);
     }
 
+    @Test
+    void shouldBeAbleToOrderOneItemWhenItemAndQuantityIsGiven() {
+        long itemId = 1;
+        long quantity = 3;
+
+        orderController.orderAnItem(principal, itemId, quantity);
+
+        verify(orderService).orderAnItem(principal.getName(), itemId, quantity);
+    }
 }

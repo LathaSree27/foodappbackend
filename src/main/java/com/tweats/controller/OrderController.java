@@ -42,4 +42,8 @@ public class OrderController {
         String vendorEmail = principal.getName();
         orderService.completeTheOrder(vendorEmail, orderId);
     }
+
+    public void orderAnItem(Principal principal, long itemId, long quantity) {
+        orderService.orderAnItem(principal.getName(), itemId, quantity);
+    }
 }
