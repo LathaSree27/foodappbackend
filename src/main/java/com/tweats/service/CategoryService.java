@@ -1,5 +1,6 @@
 package com.tweats.service;
 
+import com.tweats.controller.response.CategoryResponse;
 import com.tweats.exceptions.*;
 import com.tweats.model.Category;
 import com.tweats.model.Image;
@@ -11,6 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -47,5 +50,24 @@ public class CategoryService {
         if (optionalCategory.isPresent()) return optionalCategory.get();
 
         throw new NoCategoryFoundException();
+    }
+
+    public List<CategoryResponse> getAllCategories() {
+        List<Category> categories = categoryRepository.findAll();
+        ArrayList<CategoryResponse> categoryResponses = new ArrayList<>();
+        for (Category category : categories) {
+            categoryResponses.add(getCategoryResponse(category));
+        }
+        return categoryResponses;
+    }
+
+    private CategoryResponse getCategoryResponse(Category category) {
+        return CategoryResponse
+                .builder()
+                .id(category.getId())
+                .categoryName(category.getName())
+                .imageLink("http://localhost:8080/tweats/api/v1/images/" + category.getImage().getId())
+                .isOpen(category.isOpen())
+                .build();
     }
 }

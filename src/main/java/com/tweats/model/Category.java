@@ -27,8 +27,8 @@ public class Category {
     @JoinColumn(name = "image_id")
     private Image image;
 
-    @Column(nullable = false)
-    private boolean is_open;
+    @Column(nullable = false, name = "is_open")
+    private boolean isOpen = false;
     @OneToOne
     @JoinColumn(name = "user_id")
     private User user;
@@ -36,7 +36,6 @@ public class Category {
     public Category(String name, Image image, User user) {
         this.name = name;
         this.image = image;
-        this.is_open = false;
         this.user = user;
     }
 
