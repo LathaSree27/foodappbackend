@@ -193,4 +193,11 @@ public class CategoryControllerIntegrationTest {
                 get("/category")
         ).andExpect(status().isOk());
     }
+
+    @Test
+    void shouldThrowNoCategoryFoundErrorWhenNoCategoriesAreAvailable() throws Exception {
+        mockMvc.perform(
+                get("/category")
+        ).andExpect(status().isNotFound());
+    }
 }
