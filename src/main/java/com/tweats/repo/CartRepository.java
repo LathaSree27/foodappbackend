@@ -15,5 +15,4 @@ public interface CartRepository extends JpaRepository<Cart, Long> {
 
     @Query(value = "SELECT SUM(c.QUANTITY*i.PRICE) FROM CART_ITEM c JOIN ITEM i ON c.ITEM_ID = i.ID WHERE CART_ID = ?1 GROUP BY CART_ID ", nativeQuery = true)
     BigDecimal getBillAmount(Long id);
-
 }

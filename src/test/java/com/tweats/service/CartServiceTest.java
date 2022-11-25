@@ -132,7 +132,16 @@ public class CartServiceTest {
     void shouldThrowCartItemNotFoundExceptionWhenCartItemDoesNotExistsWithGivenId() {
         long cartItemId = 2l;
         long quantity = 4l;
-        assertThrows(CartItemNotFoundException.class, () -> cartService.updateCartItemQuantity(cartItemId, quantity));
 
+        assertThrows(CartItemNotFoundException.class, () -> cartService.updateCartItemQuantity(cartItemId, quantity));
+    }
+
+    @Test
+    void shouldBeAbleToDeleteCartItemWhenIdIsGiven() {
+        long cartItemId = 2l;
+
+        cartService.deleteCartItem(cartItemId);
+
+        verify(cartItemRepository).deleteById(cartItemId);
     }
 }
