@@ -89,4 +89,8 @@ public class CartService {
         cartItem.setQuantity(quantity);
         cartItemRepository.save(cartItem);
     }
+
+    public void deleteCartItem(long cartItemId) {
+
+    }
 }

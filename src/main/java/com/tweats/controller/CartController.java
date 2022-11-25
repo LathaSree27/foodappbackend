@@ -43,4 +43,8 @@ public class CartController {
                                @RequestParam(name = "quantity") @Min(value = 0, message = "Quantity can't be negative!") long quantity) throws CartItemNotFoundException {
         cartService.updateCartItemQuantity(cartItemId, quantity);
     }
+
+    public void deleteCartItem(long cartItemId) {
+        cartService.deleteCartItem(cartItemId);
+    }
 }

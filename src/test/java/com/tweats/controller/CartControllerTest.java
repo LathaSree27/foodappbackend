@@ -56,4 +56,13 @@ public class CartControllerTest {
 
         verify(cartService).updateCartItemQuantity(cartItemId, quantity);
     }
+
+    @Test
+    void shouldBeAbleToDeleteCartItemWhenIdIsGiven() {
+        long cartItemId = 2l;
+
+        cartController.deleteCartItem(cartItemId);
+
+        verify(cartService).deleteCartItem(cartItemId);
+    }
 }
