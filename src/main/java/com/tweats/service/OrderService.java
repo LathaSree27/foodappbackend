@@ -11,6 +11,7 @@ import com.tweats.exceptions.OrderNotFoundException;
 import com.tweats.model.*;
 import com.tweats.model.constants.OrderStatus;
 import com.tweats.repo.CategoryRepository;
+import com.tweats.repo.ItemRepository;
 import com.tweats.repo.OrderRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -33,6 +34,8 @@ public class OrderService {
     private UserPrincipalService userPrincipalService;
 
     private CategoryRepository categoryRepository;
+
+    private ItemRepository itemRepository;
 
     public CompletedOrdersResponse getCompletedOrders(long categoryId, Date date) throws NoOrdersFoundException {
         List<Order> orders = orderRepository.getAllCompletedOrdersByCategoryAndDate(categoryId, date, OrderStatus.DELIVERED.name());
@@ -94,6 +97,16 @@ public class OrderService {
     }
 
     public void orderAnItem(String userEmail, long itemId, long quantity) {
+        User user = userPrincipalService.findUserByEmail(userEmail);
+        Item item = itemRepository.findById(itemId).get();
+        Date today = getCurrentDate();
+        Order order = new Order(today, user, item.getCategory());
+        order.AddOrderedItems(new OrderedItem(order, item, quantity));
+        orderRepository.save(order);
 
+    }
+
+    public Date getCurrentDate() {
+        return new Date();
     }
 }

@@ -11,8 +11,8 @@ import com.tweats.exceptions.OrderNotFoundException;
 import com.tweats.model.*;
 import com.tweats.model.constants.OrderStatus;
 import com.tweats.repo.CategoryRepository;
+import com.tweats.repo.ItemRepository;
 import com.tweats.repo.OrderRepository;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -26,10 +26,8 @@ import static org.mockito.Mockito.*;
 
 public class OrderServiceTest {
 
-    private int count;
-    private ArrayList<OrderResponse> orderResponses;
-    private List<Order> orders;
-    private Date today;
+    private final ItemRepository itemRepository;
+    private Item item;
     private final OrderService orderService;
     private final Order order;
     private final Category category;
@@ -49,14 +47,12 @@ public class OrderServiceTest {
         category = mock(Category.class);
         image = mock(Image.class);
         user = mock(User.class);
-        orderService = new OrderService(orderRepository, imageService, userPrincipalService, categoryRepository);
+        item = mock(Item.class);
+        itemRepository = mock(ItemRepository.class);
+        orderService = new OrderService(orderRepository, imageService, userPrincipalService, categoryRepository, itemRepository);
     }
 
-    private void prepareData() {
-        count = 1;
-        today = new Date();
-        orders = new ArrayList<>();
-        orderResponses = new ArrayList<>();
+    private void prepareData(int count, Date date, List<Order> orders, List<OrderResponse> orderResponses) {
         BigDecimal billAmount = new BigDecimal(100);
         String itemName = "Mango";
         HashSet<OrderedItem> orderedItems = new HashSet<>();
@@ -70,11 +66,11 @@ public class OrderServiceTest {
         OrderedItem orderedItem = new OrderedItem(order, item, quantity);
         orderedItems.add(orderedItem);
         orderedItemResponses.add(new OrderedItemResponse(item.getId(), item.getName(), quantity, itemPrice, imageLink));
-        orderResponses.add(new OrderResponse(order.getId(), today, billAmount, orderedItemResponses));
+        orderResponses.add(new OrderResponse(order.getId(), date, billAmount, orderedItemResponses));
 
         when(order.getOrderedItems()).thenReturn(orderedItems);
         when(imageService.getImageLink(image)).thenReturn(imageLink);
-        when(order.getDate()).thenReturn(today);
+        when(order.getDate()).thenReturn(date);
     }
 
     @BeforeEach
@@ -85,7 +81,11 @@ public class OrderServiceTest {
 
     @Test
     void shouldBeAbleToFetchAllCompletedOrdersWhenCategoryIdAndDateIsGiven() throws NoOrdersFoundException {
-        prepareData();
+        int count = 1;
+        Date today = new Date();
+        List<Order> orders = new ArrayList<>();
+        List<OrderResponse> orderResponses = new ArrayList<>();
+        prepareData(count, today, orders, orderResponses);
         BigDecimal revenue = new BigDecimal(100);
         CompletedOrdersResponse expectedCompletedOrdersResponse = new CompletedOrdersResponse(count, revenue, orderResponses);
         when(orderRepository.getAllCompletedOrdersByCategoryAndDate(category.getId(), today, OrderStatus.DELIVERED.name())).thenReturn(orders);
@@ -108,7 +108,11 @@ public class OrderServiceTest {
 
     @Test
     void shouldBeAbleToFetchAllActiveOrdersWhenCategoryIdIsGiven() throws NoOrdersFoundException {
-        prepareData();
+        int count = 1;
+        Date today = new Date();
+        List<Order> orders = new ArrayList<>();
+        List<OrderResponse> orderResponses = new ArrayList<>();
+        prepareData(count, today, orders, orderResponses);
         ActiveOrderResponse expectedActiveOrderResponse = new ActiveOrderResponse(count, orderResponses);
         when(orderRepository.getAllActiveOrdersByCategoryId(category.getId(), OrderStatus.PLACED.name())).thenReturn(orders);
 
@@ -152,6 +156,23 @@ public class OrderServiceTest {
         when(order.getCategory()).thenReturn(category);
         when(order.getStatus()).thenReturn(OrderStatus.CANCELED);
 
-        assertThrows(OrderCancelledException.class,()-> orderService.completeTheOrder(user.getEmail(), order.getId()));
+        assertThrows(OrderCancelledException.class, () -> orderService.completeTheOrder(user.getEmail(), order.getId()));
+    }
+
+    @Test
+    void shouldBeAbleToOrderAnItemWhenItemIdQuantityAndUserEmailIsGiven() {
+        long quantity = 2;
+        Date today = new Date();
+        Order savedOrder = new Order(today, user, category);
+        savedOrder.AddOrderedItems(new OrderedItem(savedOrder, item, quantity));
+        OrderService spiedOrderService = spy(orderService);
+        when(spiedOrderService.getCurrentDate()).thenReturn(today);
+        when(userPrincipalService.findUserByEmail(user.getEmail())).thenReturn(user);
+        when(itemRepository.findById(item.getId())).thenReturn(Optional.of(item));
+        when(item.getCategory()).thenReturn(category);
+
+        spiedOrderService.orderAnItem(user.getEmail(), item.getId(), quantity);
+
+        verify(orderRepository).save(savedOrder);
     }
 }

@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -24,7 +25,7 @@ public class Order {
     private Date date;
 
     @Enumerated(EnumType.STRING)
-    private OrderStatus status;
+    private OrderStatus status = OrderStatus.PLACED;
 
     @JoinColumn(name = "user_id")
     @OneToOne
@@ -37,10 +38,15 @@ public class Order {
     @OneToMany(mappedBy = "order")
     private Set<OrderedItem> orderedItems;
 
+    public void AddOrderedItems(OrderedItem orderedItem) {
+        this.orderedItems.add(orderedItem);
+    }
+
     public Order(Date date, User user, Category category) {
         this.date = date;
         this.user = user;
         this.category = category;
+        this.orderedItems = new HashSet<>();
     }
 
     @Override
@@ -48,7 +54,7 @@ public class Order {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Order order = (Order) o;
-        return id == order.id && date.equals(order.date) && status.equals(order.status) && user.equals(order.user) && category.equals(order.category) && orderedItems.equals(order.orderedItems);
+        return id == order.id && date.equals(order.date) && status == order.status && user.equals(order.user) && category.equals(order.category) && orderedItems.equals(order.orderedItems);
     }
 
     @Override
