@@ -41,7 +41,7 @@ public class CategoryController {
         return new VendorCategoryResponse(category.getId());
     }
 
-    public List<CategoryResponse> fetchAllCategories() {
+    public List<CategoryResponse> fetchAllCategories() throws NoCategoryFoundException {
         return categoryService.getAllCategories();
     }
 }

@@ -1,6 +1,7 @@
 package com.tweats.controller;
 
 import com.tweats.controller.response.CategoryResponse;
+import com.tweats.exceptions.NoCategoryFoundException;
 import com.tweats.service.CategoryService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,7 +28,7 @@ public class CategoryControllerTest {
 
 
     @Test
-    void shouldBeAbleToReturnAllCategoriesWhenUserLoggedIn() {
+    void shouldBeAbleToReturnAllCategoriesWhenUserLoggedIn() throws NoCategoryFoundException {
         List<CategoryResponse> expectedCategoryResponses = new ArrayList<>();
         List<CategoryResponse> actualCategoryResponses = categoryController.fetchAllCategories();
 

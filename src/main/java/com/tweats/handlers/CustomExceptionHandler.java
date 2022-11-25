@@ -32,7 +32,7 @@ public class CustomExceptionHandler {
 
     @ExceptionHandler(NoCategoryFoundException.class)
     public ResponseEntity handlerNoCategoryFoundException(NoCategoryFoundException ex) {
-        ErrorResponse errorResponse = new ErrorResponse("No suitable category is found for this vendor", Collections.singletonList(ex.getMessage()));
+        ErrorResponse errorResponse = new ErrorResponse("No category found!!", Collections.singletonList(ex.getMessage()));
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 

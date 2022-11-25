@@ -14,10 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -108,23 +105,27 @@ public class CategoryServiceTest {
     }
 
     @Test
-    void shouldBeAbleToGetAllCategories() {
+    void shouldBeAbleToGetAllCategories() throws NoCategoryFoundException {
         String categoryName = "Juice";
         when(category.getImage()).thenReturn(image);
         when(category.getName()).thenReturn(categoryName);
-        List<CategoryResponse> expectedCategories = new ArrayList<>(Arrays.asList(CategoryResponse
+        List<CategoryResponse> expectedCategories = new ArrayList<>(List.of(CategoryResponse
                 .builder()
                 .id(category.getId())
                 .categoryName(category.getName())
                 .imageLink("http://localhost:8080/tweats/api/v1/images/" + category.getImage().getId())
                 .isOpen(category.isOpen())
                 .build()));
-        when(categoryRepository.findAll()).thenReturn(new ArrayList<>(Arrays.asList(category)));
+        when(categoryRepository.findAll()).thenReturn(new ArrayList<>(List.of(category)));
 
         List<CategoryResponse> actualCategories = categoryService.getAllCategories();
 
         verify(categoryRepository).findAll();
         assertThat(actualCategories,is(expectedCategories));
+    }
 
+    @Test
+    void shouldThrowNoCategoryFoundExceptionWhenThereIsNoCategory() {
+        assertThrows(NoCategoryFoundException.class,()->categoryService.getAllCategories());
     }
 }

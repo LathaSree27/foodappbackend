@@ -52,13 +52,18 @@ public class CategoryService {
         throw new NoCategoryFoundException();
     }
 
-    public List<CategoryResponse> getAllCategories() {
+    public List<CategoryResponse> getAllCategories() throws NoCategoryFoundException {
         List<Category> categories = categoryRepository.findAll();
+        if (isEmpty(categories)) throw new NoCategoryFoundException();
         ArrayList<CategoryResponse> categoryResponses = new ArrayList<>();
         for (Category category : categories) {
             categoryResponses.add(getCategoryResponse(category));
         }
         return categoryResponses;
+    }
+
+    private boolean isEmpty(List<Category> categories) {
+        return categories.size() == 0;
     }
 
     private CategoryResponse getCategoryResponse(Category category) {
