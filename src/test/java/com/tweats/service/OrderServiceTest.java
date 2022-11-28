@@ -188,6 +188,7 @@ public class OrderServiceTest {
         when(cartService.getCart(user.getId(), category.getId())).thenReturn(cart);
         when(userPrincipalService.findUserByEmail(user.getEmail())).thenReturn(user);
         when(spiedOrderService.getCurrentDate()).thenReturn(today);
+        when(item.is_available()).thenReturn(true);
 
         spiedOrderService.placeOrder(user.getEmail(), category.getId());
 
@@ -203,5 +204,23 @@ public class OrderServiceTest {
         when(cartService.getCart(user.getId(), category.getId())).thenReturn(cart);
 
         assertThrows(EmptyCartException.class, () -> orderService.placeOrder(user.getEmail(), category.getId()));
+    }
+
+    @Test
+    void shouldThrowEmptyCartExceptionWhenAllCartItemsAreNotAvailable() throws UserNotFoundException, NoCategoryFoundException {
+        long quantity = 1;
+        Date today = new Date();
+        Cart cart = new Cart(category, user);
+        cart.addCartItem(new CartItem(cart, item, quantity));
+        Order savedOrder = new Order(today, user, category);
+        List<CartItem> cartItems = new ArrayList<>(cart.getCartItems());
+        CartItem cartItem = cartItems.get(0);
+        savedOrder.addOrderedItem(new OrderedItem(order, cartItem.getItem(), cartItem.getQuantity()));
+        OrderService spiedOrderService = spy(orderService);
+        when(cartService.getCart(user.getId(), category.getId())).thenReturn(cart);
+        when(userPrincipalService.findUserByEmail(user.getEmail())).thenReturn(user);
+        when(spiedOrderService.getCurrentDate()).thenReturn(today);
+
+        assertThrows(EmptyCartException.class, () -> spiedOrderService.placeOrder(user.getEmail(), category.getId()));
     }
 }

@@ -111,8 +111,10 @@ public class OrderService {
         if (cartItems.isEmpty()) throw new EmptyCartException();
         Order order = new Order(getCurrentDate(), user, cart.getCategory());
         for (CartItem cartItem : cartItems) {
-            order.addOrderedItem(new OrderedItem(order, cartItem.getItem(), cartItem.getQuantity()));
+            Item item = cartItem.getItem();
+            if (item.is_available()) order.addOrderedItem(new OrderedItem(order, item, cartItem.getQuantity()));
         }
+        if (order.getOrderedItems().isEmpty()) throw new EmptyCartException();
         orderRepository.save(order);
         cartService.emptyCart(cart);
     }
