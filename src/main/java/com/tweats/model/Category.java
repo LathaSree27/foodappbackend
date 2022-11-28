@@ -1,8 +1,17 @@
 package com.tweats.model;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import java.util.Objects;
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
 @Table(name = "category")
 public class Category {
 
@@ -11,62 +20,36 @@ public class Category {
     private long id;
 
     @Column(nullable = false)
+    @NotBlank(message = "category name cannot be empty!")
     private String name;
 
     @OneToOne
     @JoinColumn(name = "image_id")
     private Image image;
 
-
-
-    @Column(nullable = false)
-    private boolean is_open;
+    @Column(nullable = false, name = "is_open")
+    private boolean isOpen = false;
 
     @OneToOne
     @JoinColumn(name = "user_id")
     private User user;
 
-    public Category() {
-    }
-
-    public Category(String name, Image image, boolean is_open, User user) {
+    public Category(String name, Image image, User user) {
         this.name = name;
         this.image = image;
-        this.is_open = is_open;
         this.user = user;
     }
 
-    public long getId() {
-        return id;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Category category = (Category) o;
+        return id == category.id;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public boolean isIs_open() {
-        return is_open;
-    }
-
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setIs_open(boolean is_open) {
-        this.is_open = is_open;
-    }
-
-
-    public void setUser(User user) {
-        this.user = user;
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

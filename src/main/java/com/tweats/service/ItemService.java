@@ -41,7 +41,7 @@ public class ItemService {
         this.userPrincipalService = userPrincipalService;
     }
 
-    public void save(String name, BigDecimal price, MultipartFile itemImageFile, String userEmail) throws IOException, NotAnImageException, ImageSizeExceededException {
+    public void save(String name, BigDecimal price, MultipartFile itemImageFile, String userEmail) throws IOException, NotAnImageException, ImageSizeExceededException, UserNotFoundException {
         Image itemImage = imageService.save(itemImageFile);
         User vendor = userPrincipalService.findUserByEmail(userEmail);
         Category category = categoryRepository.findByUserId(vendor.getId());
@@ -75,7 +75,7 @@ public class ItemService {
         return appLink + "/images/" + itemImageId;
     }
 
-    public void updateAvailability(String vendorEmail, long itemId) throws ItemAccessException, ItemDoesNotExistException {
+    public void updateAvailability(String vendorEmail, long itemId) throws ItemAccessException, ItemDoesNotExistException, UserNotFoundException {
         User vendor = userPrincipalService.findUserByEmail(vendorEmail);
         Category userCategory = categoryRepository.findByUserId(vendor.getId());
         Optional<Item> optionalItem = itemRepository.findById(itemId);

@@ -60,7 +60,7 @@ public class UserControllerIntegrationTest {
     @Test
     public void shouldThrowErrorWhenUserCredentialsIsInvalid() throws Exception {
         mockMvc.perform(get("/login")
-                .with((httpBasic("abc@gmail.com", "Password@123"))))
+                        .with((httpBasic("abc@gmail.com", "Password@123"))))
                 .andExpect(status().isUnauthorized());
     }
 }

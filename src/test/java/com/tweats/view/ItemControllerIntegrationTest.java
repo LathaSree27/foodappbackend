@@ -73,7 +73,7 @@ public class ItemControllerIntegrationTest {
         vendor = userRepository.save(new User("abc", "abc@example.com", encoder.encode("password"), roleRepository.save(new Role("VENDOR"))));
         Image image = new Image("image.png", MediaType.IMAGE_JPEG_VALUE, "hello".getBytes(), 1L);
         categoryImage = imageRepository.save(image);
-        Category juice = new Category("Juice", categoryImage, true, vendor);
+        Category juice = new Category("Juice", categoryImage, vendor);
         category = categoryRepository.save(juice);
     }
 
@@ -159,7 +159,7 @@ public class ItemControllerIntegrationTest {
     @Test
     void shouldThrowItemAccessErrorWhenVendorDoesNotBelongToTheCategoryOfItem() throws Exception {
         User foodVendor = userRepository.save(new User("abc", "xyz@example.com", encoder.encode("password"), roleRepository.save(new Role("VENDOR"))));
-        Category food = new Category("food", categoryImage, true, foodVendor);
+        Category food = new Category("food", categoryImage, foodVendor);
         Category foodCategory = categoryRepository.save(food);
         BigDecimal itemPrice = new BigDecimal(100);
         String itemName = "manchuria";

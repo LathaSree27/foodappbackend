@@ -1,5 +1,6 @@
 package com.tweats.controller;
 
+import com.tweats.exceptions.UserNotFoundException;
 import com.tweats.service.UserPrincipalService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,7 +19,7 @@ public class UserController {
     }
 
     @GetMapping("/login")
-    public Map<String, Object> login(Principal principal){
+    public Map<String, Object> login(Principal principal) throws UserNotFoundException {
         String email = principal.getName();
         Map<String, Object> userDetails = new HashMap<>();
         userDetails.put("email", email);

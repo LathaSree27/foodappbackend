@@ -53,7 +53,7 @@ public class ItemServiceTest {
     }
 
     @Test
-    void shouldBeAbleToAddItemWhenItemIsGiven() throws IOException, NotAnImageException, ImageSizeExceededException {
+    void shouldBeAbleToAddItemWhenItemIsGiven() throws IOException, NotAnImageException, ImageSizeExceededException, UserNotFoundException {
         String userEmail = "abc@gmail.com";
         String itemName = "Mango";
         BigDecimal price = new BigDecimal(80);
@@ -107,7 +107,7 @@ public class ItemServiceTest {
     }
 
     @Test
-    void shouldBeAbleUpdateAvailabilityOfAnItemFromFalseToTrue() throws ItemAccessException, ItemDoesNotExistException {
+    void shouldBeAbleUpdateAvailabilityOfAnItemFromFalseToTrue() throws ItemAccessException, ItemDoesNotExistException, UserNotFoundException {
         String vendorEmail = "abc@gmail.com";
         long itemId = 1;
         String itemName = "Mango";
@@ -125,7 +125,7 @@ public class ItemServiceTest {
     }
 
     @Test
-    void shouldThrowItemAccessExceptionWhenVendorTriesToUpdateAvailabilityOfItemFromOtherCategory() {
+    void shouldThrowItemAccessExceptionWhenVendorTriesToUpdateAvailabilityOfItemFromOtherCategory() throws UserNotFoundException {
         String vendorEmail = "abc@gmail.com";
         long itemId = 1;
         String itemName = "Mango";
@@ -140,7 +140,7 @@ public class ItemServiceTest {
     }
 
     @Test
-    void shouldThrowItemDoesNotExistExceptionWhenItemDoesNotExistWithId() {
+    void shouldThrowItemDoesNotExistExceptionWhenItemDoesNotExistWithId() throws UserNotFoundException {
         String vendorEmail = "abc@gmail.com";
         long itemId = 1;
         Category userCategory = new Category();

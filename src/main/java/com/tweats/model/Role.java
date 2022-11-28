@@ -1,16 +1,21 @@
 package com.tweats.model;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
+@Setter
+@Getter
+@NoArgsConstructor
 @Table(name = "role")
-public class Role{
+public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-
-    public Role() {
-    }
 
     private String name;
 
@@ -18,19 +23,16 @@ public class Role{
         this.name = name;
     }
 
-    public long getId() {
-        return id;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Role role = (Role) o;
+        return name.equals(role.name);
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+    @Override
+    public int hashCode() {
+        return Objects.hash(name);
     }
 }

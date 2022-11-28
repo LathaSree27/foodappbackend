@@ -75,4 +75,27 @@ public class CustomExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(NoCategoryFoundException.class)
+    public ResponseEntity handlerNoCategoryFoundException(NoCategoryFoundException ex) {
+        ErrorResponse errorResponse = new ErrorResponse("No category found!!", Collections.singletonList(ex.getMessage()));
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(NotAVendorException.class)
+    public ResponseEntity handlerNotAVendorException(NotAVendorException ex) {
+        ErrorResponse errorResponse = new ErrorResponse("Not a Vendor!", Collections.singletonList(ex.getMessage()));
+        return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity handlerUserNotFoundException(UserNotFoundException ex) {
+        ErrorResponse errorResponse = new ErrorResponse("User does not Exist!", Collections.singletonList(ex.getMessage()));
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(CategoryAlreadyAssignedException.class)
+    public ResponseEntity handlerCategoryAlreadyAssignedException(CategoryAlreadyAssignedException ex) {
+        ErrorResponse errorResponse = new ErrorResponse("Category already Assigned!", Collections.singletonList(ex.getMessage()));
+        return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
+    }
 }

@@ -1,9 +1,6 @@
 package com.tweats.controller;
 
-import com.tweats.exceptions.ImageNotFoundException;
-import com.tweats.exceptions.ItemAccessException;
-import com.tweats.exceptions.ItemDoesNotExistException;
-import com.tweats.exceptions.NoItemsFoundException;
+import com.tweats.exceptions.*;
 import com.tweats.service.ItemService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,7 +23,7 @@ public class ItemControllerTest {
     }
 
     @Test
-    void shouldBeAbleToUpdateAvailabilityOfItem() throws ItemAccessException, ItemDoesNotExistException {
+    void shouldBeAbleToUpdateAvailabilityOfItem() throws ItemAccessException, ItemDoesNotExistException, UserNotFoundException {
         long itemId = 1;
         String vendorEmail = "abc@gmail.com";
         when(principal.getName()).thenReturn(vendorEmail);

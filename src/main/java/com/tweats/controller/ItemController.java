@@ -28,7 +28,7 @@ public class ItemController {
     public void save(Principal principal,
                      @RequestParam(value = "name") @NotBlank(message = "Item name can't be empty!") String name,
                      @RequestParam(value = "price") @Min(value = 0, message = "Price can't be negative!") BigDecimal price,
-                     @RequestParam(value = "file") MultipartFile itemImageFile) throws IOException, NotAnImageException, ImageSizeExceededException {
+                     @RequestParam(value = "file") MultipartFile itemImageFile) throws IOException, NotAnImageException, ImageSizeExceededException, UserNotFoundException {
         String userEmail = principal.getName();
         itemService.save(name, price, itemImageFile, userEmail);
     }
@@ -42,7 +42,7 @@ public class ItemController {
 
 
     @PutMapping("{id}")
-    public void updateAvailability(Principal principal, @PathVariable long id) throws ItemAccessException, ItemDoesNotExistException {
+    public void updateAvailability(Principal principal, @PathVariable long id) throws ItemAccessException, ItemDoesNotExistException, UserNotFoundException {
         itemService.updateAvailability(principal.getName(), id);
     }
 }
