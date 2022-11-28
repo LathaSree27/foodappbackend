@@ -35,8 +35,7 @@ public class CategoryController {
 
     @GetMapping("vendor")
     public VendorCategoryResponse fetchCategory(Principal principal) throws NoCategoryFoundException, UserNotFoundException {
-        String userEmail = principal.getName();
-        Category category = categoryService.getCategory(userEmail);
+        Category category = categoryService.getCategory(principal.getName());
         return new VendorCategoryResponse(category.getId());
     }
 
