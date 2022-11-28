@@ -104,10 +104,11 @@ public class OrderService {
         return new Date();
     }
 
-    public void placeOrder(String userEmail, long categoryId) throws UserNotFoundException, NoCategoryFoundException {
+    public void placeOrder(String userEmail, long categoryId) throws UserNotFoundException, NoCategoryFoundException, EmptyCartException {
         User user = userPrincipalService.findUserByEmail(userEmail);
         Cart cart = cartService.getCart(user.getId(), categoryId);
         Set<CartItem> cartItems = cart.getCartItems();
+        if (cartItems.isEmpty()) throw new EmptyCartException();
         Order order = new Order(getCurrentDate(), user, cart.getCategory());
         for (CartItem cartItem : cartItems) {
             order.addOrderedItem(new OrderedItem(order, cartItem.getItem(), cartItem.getQuantity()));

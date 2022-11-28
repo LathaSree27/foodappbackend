@@ -73,7 +73,7 @@ public class OrderControllerTest {
     }
 
     @Test
-    void shouldBeAbleToPlaceOrderWhenItemsArePresentInTheCart() throws UserNotFoundException, NoCategoryFoundException {
+    void shouldBeAbleToPlaceOrderWhenItemsArePresentInTheCart() throws UserNotFoundException, NoCategoryFoundException, EmptyCartException {
         long categoryId = 1;
 
         orderController.placeOrder(principal, categoryId);

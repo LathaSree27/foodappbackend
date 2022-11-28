@@ -51,7 +51,7 @@ public class OrderController {
         orderService.orderAnItem(principal.getName(), itemId, quantity);
     }
 
-    public void placeOrder(Principal principal, long categoryId) throws UserNotFoundException, NoCategoryFoundException {
+    public void placeOrder(Principal principal, long categoryId) throws UserNotFoundException, NoCategoryFoundException, EmptyCartException {
         orderService.placeOrder(principal.getName(), categoryId);
     }
 }

@@ -175,7 +175,7 @@ public class OrderServiceTest {
     }
 
     @Test
-    void shouldBeAbleToPlaceOrderWhenItemsAreInTheUserCart() throws NoCategoryFoundException, UserNotFoundException {
+    void shouldBeAbleToPlaceOrderWhenItemsAreInTheUserCart() throws NoCategoryFoundException, UserNotFoundException, EmptyCartException {
         long quantity = 1;
         Date today = new Date();
         Cart cart = new Cart(category, user);
@@ -194,5 +194,14 @@ public class OrderServiceTest {
         verify(cartService).getCart(user.getId(), category.getId());
         verify(orderRepository).save(savedOrder);
         verify(cartService).emptyCart(cart);
+    }
+
+    @Test
+    void shouldThrowEmptyCartExceptionWhenNoItemsPresentInTheCart() throws NoCategoryFoundException, UserNotFoundException {
+        Cart cart = new Cart(category, user);
+        when(userPrincipalService.findUserByEmail(user.getEmail())).thenReturn(user);
+        when(cartService.getCart(user.getId(), category.getId())).thenReturn(cart);
+
+        assertThrows(EmptyCartException.class, () -> orderService.placeOrder(user.getEmail(), category.getId()));
     }
 }
