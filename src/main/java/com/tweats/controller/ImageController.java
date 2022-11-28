@@ -24,11 +24,7 @@ public class ImageController {
 
     @GetMapping("{id}")
     public ResponseEntity getImage(@PathVariable String id) throws ImageNotFoundException {
-        Image image = imageService.getImage(id);
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + image.getName() + "\"")
-                .contentType(MediaType.valueOf(image.getContentType()))
-                .body(image.getData());
+        return imageService.getImageResponse(id);
     }
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)

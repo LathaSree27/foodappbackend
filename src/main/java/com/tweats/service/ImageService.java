@@ -7,7 +7,9 @@ import com.tweats.model.Image;
 import com.tweats.repo.ImageRepository;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -15,7 +17,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Objects;
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -54,11 +55,15 @@ public class ImageService {
     }
 
     public Image getImage(String imageId) throws ImageNotFoundException {
+        return imageRepository.findById(imageId).orElseThrow(ImageNotFoundException::new);
+    }
 
-        Optional<Image> image = imageRepository.findById(imageId);
-        if (image.isPresent()) return image.get();
-        throw new ImageNotFoundException();
-
+    public ResponseEntity getImageResponse(String imageId) throws ImageNotFoundException {
+        Image image = getImage(imageId);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + image.getName() + "\"")
+                .contentType(MediaType.valueOf(image.getContentType()))
+                .body(image.getData());
     }
 
     public String getImageLink(Image image) {
