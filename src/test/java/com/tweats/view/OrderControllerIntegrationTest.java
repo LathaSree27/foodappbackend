@@ -85,7 +85,7 @@ public class OrderControllerIntegrationTest {
         orderedItems.add(new OrderedItem(order, apple, 4));
         order.setOrderedItems(orderedItems);
         otherVendor = userRepository.save(new User("xyz", "xyz@example.com", bCryptPasswordEncoder.encode("password"), roleRepository.save(new Role("VENDOR"))));
-        Category food = new Category("Food", categoryImage,  otherVendor);
+        Category food = new Category("Food", categoryImage, otherVendor);
         categoryRepository.save(food);
     }
 
@@ -190,9 +190,9 @@ public class OrderControllerIntegrationTest {
         int quantity = 2;
 
         mockMvc.perform(
-                post("/order/buy/"+mango.getId())
-                        .with(httpBasic(customer.getEmail(), "password"))
-                        .param("quantity", String.valueOf(quantity)))
+                        post("/order/buy/" + mango.getId())
+                                .with(httpBasic(customer.getEmail(), "password"))
+                                .param("quantity", String.valueOf(quantity)))
                 .andExpect(status().isCreated());
 
     }
@@ -202,9 +202,21 @@ public class OrderControllerIntegrationTest {
         int quantity = 0;
 
         mockMvc.perform(
-                        post("/order/buy/"+mango.getId())
+                        post("/order/buy/" + mango.getId())
                                 .with(httpBasic(customer.getEmail(), "password"))
                                 .param("quantity", String.valueOf(quantity)))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldThrowItemDoesNotExistErrorWhenItemIsNotPresent() throws Exception {
+        int quantity = 1;
+        int itemId = -1;
+
+        mockMvc.perform(
+                        post("/order/buy/" + itemId)
+                                .with(httpBasic(customer.getEmail(), "password"))
+                                .param("quantity", String.valueOf(quantity)))
+                .andExpect(status().isNotFound());
     }
 }

@@ -66,7 +66,7 @@ public class OrderControllerTest {
     }
 
     @Test
-    void shouldBeAbleToOrderOneItemWhenItemAndQuantityIsGiven() throws UserNotFoundException {
+    void shouldBeAbleToOrderOneItemWhenItemAndQuantityIsGiven() throws UserNotFoundException, ItemDoesNotExistException {
         long itemId = 1;
         long quantity = 3;
 

@@ -27,7 +27,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 public class OrderServiceTest {
     @Mock
-    private ItemRepository itemRepository;
+    private ItemService itemService;
     @Mock
     private Item item;
     @InjectMocks
@@ -163,7 +163,7 @@ public class OrderServiceTest {
     }
 
     @Test
-    void shouldBeAbleToOrderAnItemWhenItemIdQuantityAndUserEmailIsGiven() throws UserNotFoundException {
+    void shouldBeAbleToOrderAnItemWhenItemIdQuantityAndUserEmailIsGiven() throws UserNotFoundException, ItemDoesNotExistException {
         long quantity = 2;
         Date today = new Date();
         Order savedOrder = new Order(today, user, category);
@@ -171,7 +171,7 @@ public class OrderServiceTest {
         OrderService spiedOrderService = spy(orderService);
         when(spiedOrderService.getCurrentDate()).thenReturn(today);
         when(userPrincipalService.findUserByEmail(user.getEmail())).thenReturn(user);
-        when(itemRepository.findById(item.getId())).thenReturn(Optional.of(item));
+        when(itemService.getItem(item.getId())).thenReturn(item);
         when(item.getCategory()).thenReturn(category);
 
         spiedOrderService.orderAnItem(user.getEmail(), item.getId(), quantity);

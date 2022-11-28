@@ -32,8 +32,7 @@ public class OrderService {
 
     private CategoryRepository categoryRepository;
 
-    private ItemRepository itemRepository;
-
+    private ItemService itemService;
     public CompletedOrdersResponse getCompletedOrders(long categoryId, Date date) throws NoOrdersFoundException {
         List<Order> orders = orderRepository.getAllCompletedOrdersByCategoryAndDate(categoryId, date, OrderStatus.DELIVERED.name());
         int count = orders.size();
@@ -93,9 +92,9 @@ public class OrderService {
         orderRepository.save(order);
     }
 
-    public void orderAnItem(String userEmail, long itemId, long quantity) throws UserNotFoundException {
+    public void orderAnItem(String userEmail, long itemId, long quantity) throws UserNotFoundException, ItemDoesNotExistException {
         User user = userPrincipalService.findUserByEmail(userEmail);
-        Item item = itemRepository.findById(itemId).get();
+        Item item = itemService.getItem(itemId);
         Date today = getCurrentDate();
         Order order = new Order(today, user, item.getCategory());
         order.AddOrderedItems(new OrderedItem(order, item, quantity));

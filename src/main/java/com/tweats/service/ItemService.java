@@ -78,18 +78,15 @@ public class ItemService {
     public void updateAvailability(String vendorEmail, long itemId) throws ItemAccessException, ItemDoesNotExistException, UserNotFoundException {
         User vendor = userPrincipalService.findUserByEmail(vendorEmail);
         Category userCategory = categoryRepository.findByUserId(vendor.getId());
-        Optional<Item> optionalItem = itemRepository.findById(itemId);
-        Item item = getItem(optionalItem);
+        Item item = getItem(itemId);
         Category itemCategory = item.getCategory();
         if (!isValidCategory(userCategory, itemCategory)) throw new ItemAccessException();
-        item.set_available(item.is_available() ? false : true);
+        item.set_available(!item.is_available());
         itemRepository.save(item);
     }
 
-    private Item getItem(Optional<Item> optionalItem) throws ItemDoesNotExistException {
-        if (!optionalItem.isPresent()) throw new ItemDoesNotExistException();
-        Item item = optionalItem.get();
-        return item;
+    public Item getItem(Long itemId) throws ItemDoesNotExistException {
+        return itemRepository.findById(itemId).orElseThrow(ItemDoesNotExistException::new);
     }
 
     private boolean isValidCategory(Category userCategory, Category itemCategory) {

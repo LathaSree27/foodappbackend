@@ -47,7 +47,7 @@ public class OrderController {
     @ResponseStatus(HttpStatus.CREATED)
     public void orderAnItem(Principal principal,
                             @PathVariable(name = "itemId") long itemId,
-                            @RequestParam(name = "quantity") @Min(value = 1,message = "Quantity can't be less than 1") long quantity) throws UserNotFoundException {
+                            @RequestParam(name = "quantity") @Min(value = 1,message = "Quantity can't be less than 1") long quantity) throws UserNotFoundException, ItemDoesNotExistException {
         orderService.orderAnItem(principal.getName(), itemId, quantity);
     }
 }
