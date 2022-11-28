@@ -45,11 +45,7 @@ public class CategoryService {
 
     public Category getCategory(String userEmail) throws NoCategoryFoundException, UserNotFoundException {
         User user = userPrincipalService.findUserByEmail(userEmail);
-
-        Optional<Category> optionalCategory = categoryRepository.findByUser_id(user.getId());
-        if (optionalCategory.isPresent()) return optionalCategory.get();
-
-        throw new NoCategoryFoundException();
+        return categoryRepository.findByUser_id(user.getId()).orElseThrow(NoCategoryFoundException::new);
     }
 
     public List<CategoryResponse> getAllCategories() throws NoCategoryFoundException {
