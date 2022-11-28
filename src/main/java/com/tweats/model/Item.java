@@ -42,6 +42,9 @@ public class Item {
     @OneToMany(mappedBy = "item")
     private Set<CartItem> cartItems = new HashSet<>();
 
+    @OneToMany(mappedBy = "item")
+    private Set<OrderedItem> orderedItems;
+
     public Item(String name, Image image, BigDecimal price, Category category) {
         this.name = name;
         this.image = image;

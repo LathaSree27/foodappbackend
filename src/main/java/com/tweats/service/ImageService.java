@@ -25,6 +25,8 @@ public class ImageService {
     private final ImageRepository imageRepository;
     @Value("${image.max-file-size}")
     private long maxSizeOfImage;
+    @Value("${application.link}")
+    private String appLink;
 
     public ImageService(ImageRepository imageRepository) {
         this.imageRepository = imageRepository;
@@ -57,6 +59,10 @@ public class ImageService {
         if (image.isPresent()) return image.get();
         throw new ImageNotFoundException();
 
+    }
+
+    public String getImageLink(Image image) {
+        return appLink + "/images/" + image.getId();
     }
 
 }

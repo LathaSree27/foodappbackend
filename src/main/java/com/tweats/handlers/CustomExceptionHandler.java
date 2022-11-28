@@ -30,13 +30,37 @@ public class CustomExceptionHandler {
             details.add(violation.getMessage());
         }
         ErrorResponse error = new ErrorResponse("Validation Failed", details);
-        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity(error, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(NoItemsFoundException.class)
     public ResponseEntity handleNoItemsFoundException(NoItemsFoundException ex) {
         ErrorResponse error = new ErrorResponse("No items found!", Collections.singletonList(ex.getMessage()));
-        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+        return new ResponseEntity(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(NoOrdersFoundException.class)
+    public ResponseEntity handleNoOrdersFoundException(NoOrdersFoundException ex) {
+        ErrorResponse error = new ErrorResponse("No orders found!", Collections.singletonList(ex.getMessage()));
+        return new ResponseEntity(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(OrderNotFoundException.class)
+    public ResponseEntity handleOrderNotFoundException(OrderNotFoundException ex) {
+        ErrorResponse error = new ErrorResponse("Requested order does not exist!", Collections.singletonList(ex.getMessage()));
+        return new ResponseEntity(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(OrderCategoryMismatchException.class)
+    public ResponseEntity handleOrderCategoryMismatchException(OrderCategoryMismatchException ex) {
+        ErrorResponse error = new ErrorResponse("Requested order does not belong to this category!", Collections.singletonList(ex.getMessage()));
+        return new ResponseEntity(error, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(OrderCancelledException.class)
+    public ResponseEntity handleOrderCancelledException(OrderCancelledException ex) {
+        ErrorResponse error = new ErrorResponse("Requested order is cancelled already!", Collections.singletonList(ex.getMessage()));
+        return new ResponseEntity(error, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(ItemAccessException.class)
