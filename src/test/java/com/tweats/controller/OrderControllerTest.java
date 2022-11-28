@@ -4,8 +4,11 @@ import com.tweats.controller.response.ActiveOrderResponse;
 import com.tweats.controller.response.CompletedOrdersResponse;
 import com.tweats.exceptions.*;
 import com.tweats.service.OrderService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.security.Principal;
 import java.util.Date;
@@ -13,28 +16,20 @@ import java.util.Date;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.*;
-
+@ExtendWith(MockitoExtension.class)
 public class OrderControllerTest {
-
+    @InjectMocks
     private OrderController orderController;
+    @Mock
     private OrderService orderService;
 
-    private long categoryId;
-
+    @Mock
     private Principal principal;
 
-    @BeforeEach
-    void setUp() {
-        principal = mock(Principal.class);
-        orderService = mock(OrderService.class);
-        orderController = new OrderController(orderService);
-        categoryId = 1;
-        String vendorEmail = "abc@example.com";
-        when(principal.getName()).thenReturn(vendorEmail);
-    }
 
     @Test
     void shouldBeAbleToFetchAllCompletedOrdersWhenCategoryIdAndDateIsGiven() throws NoOrdersFoundException {
+        long categoryId = 1;
         Date today = new Date();
         CompletedOrdersResponse expectedCompletedOrdersResponse = new CompletedOrdersResponse();
         when(orderService.getCompletedOrders(categoryId, today)).thenReturn(expectedCompletedOrdersResponse);
@@ -73,5 +68,14 @@ public class OrderControllerTest {
         orderController.orderAnItem(principal, itemId, quantity);
 
         verify(orderService).orderAnItem(principal.getName(), itemId, quantity);
+    }
+
+    @Test
+    void shouldBeAbleToPlaceOrderWhenItemsArePresentInTheCart() {
+        long categoryId = 1;
+
+        orderController.placeOrder(principal, categoryId);
+
+        verify(orderService).placeOrder(principal.getName(), categoryId);
     }
 }

@@ -101,4 +101,8 @@ public class OrderService {
     public Date getCurrentDate() {
         return new Date();
     }
+
+    public void placeOrder(String userEmail, long categoryId) {
+
+    }
 }

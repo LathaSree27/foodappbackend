@@ -50,4 +50,8 @@ public class OrderController {
                             @RequestParam(name = "quantity") @Min(value = 1,message = "Quantity can't be less than 1") long quantity) throws UserNotFoundException, ItemDoesNotExistException {
         orderService.orderAnItem(principal.getName(), itemId, quantity);
     }
+
+    public void placeOrder(Principal principal, long categoryId) {
+        orderService.placeOrder(principal.getName(), categoryId);
+    }
 }
