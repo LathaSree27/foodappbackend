@@ -35,7 +35,7 @@ public class Order {
     @OneToOne
     private Category category;
 
-    @OneToMany(mappedBy = "order")
+    @OneToMany(mappedBy = "order",cascade = CascadeType.ALL)
     private Set<OrderedItem> orderedItems;
 
     public void AddOrderedItems(OrderedItem orderedItem) {

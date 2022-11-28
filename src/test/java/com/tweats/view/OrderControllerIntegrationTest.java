@@ -23,8 +23,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(classes = TweatsApplication.class)
@@ -55,9 +54,11 @@ public class OrderControllerIntegrationTest {
 
     private Category category;
     private Order order;
-    private User user;
+    private User vendor;
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     private User otherVendor;
+    private Item mango;
+    private User customer;
 
     @BeforeEach
     public void before() {
@@ -68,16 +69,17 @@ public class OrderControllerIntegrationTest {
         userRepository.deleteAll();
         roleRepository.deleteAll();
         bCryptPasswordEncoder = new BCryptPasswordEncoder();
-        user = userRepository.save(new User("abc", "abc@example.com", bCryptPasswordEncoder.encode("password"), roleRepository.save(new Role("VENDOR"))));
+        vendor = userRepository.save(new User("abc", "abc@example.com", bCryptPasswordEncoder.encode("password"), roleRepository.save(new Role("VENDOR"))));
+        customer = userRepository.save(new User("abc", "mno@example.com", bCryptPasswordEncoder.encode("password"), roleRepository.save(new Role("CUSTOMER"))));
         Image image = new Image("image.png", MediaType.IMAGE_JPEG_VALUE, "hello".getBytes(), 1L);
         Image categoryImage = imageRepository.save(image);
-        Category juice = new Category("Juice", categoryImage,  user);
+        Category juice = new Category("Juice", categoryImage, vendor);
         category = categoryRepository.save(juice);
         BigDecimal itemPrice = new BigDecimal(30);
-        Item mango = itemRepository.save(new Item("Mango", image, itemPrice, category));
+        mango = itemRepository.save(new Item("Mango", image, itemPrice, category));
         Item apple = itemRepository.save(new Item("Apple", image, itemPrice, category));
         Date date = new Date();
-        order = new Order(date, user, category);
+        order = new Order(date, vendor, category);
         Set<OrderedItem> orderedItems = new HashSet<>();
         orderedItems.add(new OrderedItem(order, mango, 2));
         orderedItems.add(new OrderedItem(order, apple, 4));
@@ -128,7 +130,7 @@ public class OrderControllerIntegrationTest {
         orderRepository.save(order);
         mockMvc.perform(
                         get("/order/active")
-                                .with(httpBasic(user.getEmail(), "password")))
+                                .with(httpBasic(vendor.getEmail(), "password")))
                 .andExpect(status().isOk());
     }
 
@@ -136,7 +138,7 @@ public class OrderControllerIntegrationTest {
     void shouldThrowNoOrdersFoundErrorWhenThereAreNoActiveOrdersFound() throws Exception {
         mockMvc.perform(
                         get("/order/active")
-                                .with(httpBasic(user.getEmail(), "password")))
+                                .with(httpBasic(vendor.getEmail(), "password")))
                 .andExpect(status().isNotFound());
     }
 
@@ -146,7 +148,7 @@ public class OrderControllerIntegrationTest {
         Order placedOrder = orderRepository.save(order);
         mockMvc.perform(
                         put("/order/complete")
-                                .with(httpBasic(user.getEmail(), "password"))
+                                .with(httpBasic(vendor.getEmail(), "password"))
                                 .param("orderId", String.valueOf(placedOrder.getId())))
                 .andExpect(status().isNoContent());
     }
@@ -156,7 +158,7 @@ public class OrderControllerIntegrationTest {
         long orderId = 1;
         mockMvc.perform(
                         put("/order/complete")
-                                .with(httpBasic(user.getEmail(), "password"))
+                                .with(httpBasic(vendor.getEmail(), "password"))
                                 .param("orderId", String.valueOf(orderId)))
                 .andExpect(status().isNotFound());
     }
@@ -178,8 +180,20 @@ public class OrderControllerIntegrationTest {
         Order placedOrder = orderRepository.save(order);
         mockMvc.perform(
                         put("/order/complete")
-                                .with(httpBasic(user.getEmail(), "password"))
+                                .with(httpBasic(vendor.getEmail(), "password"))
                                 .param("orderId", String.valueOf(placedOrder.getId())))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldBeAbleToOrderAnItemWhenItemIdAndQuantityIsGiven() throws Exception {
+        int quantity = 2;
+
+        mockMvc.perform(
+                post("/order/buy/"+mango.getId())
+                        .with(httpBasic(customer.getEmail(), "password"))
+                        .param("quantity", String.valueOf(quantity)))
+                .andExpect(status().isCreated());
+
     }
 }

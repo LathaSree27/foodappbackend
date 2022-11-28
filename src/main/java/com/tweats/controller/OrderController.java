@@ -40,7 +40,9 @@ public class OrderController {
         orderService.completeTheOrder(vendorEmail, orderId);
     }
 
-    public void orderAnItem(Principal principal, long itemId, long quantity) throws UserNotFoundException {
+    @PostMapping("buy/{itemId}")
+    @ResponseStatus(HttpStatus.CREATED)
+    public void orderAnItem(Principal principal, @PathVariable(name = "itemId") long itemId, @RequestParam(name = "quantity") long quantity) throws UserNotFoundException {
         orderService.orderAnItem(principal.getName(), itemId, quantity);
     }
 }
