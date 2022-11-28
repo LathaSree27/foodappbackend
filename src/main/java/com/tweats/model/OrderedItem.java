@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.validation.constraints.Min;
 import java.util.Objects;
 
 @Entity
@@ -25,6 +26,7 @@ public class OrderedItem {
     @JoinColumn(name = "item_id")
     private Item item;
 
+    @Min(value = 1,message = "Quantity can't be less than 1")
     private long quantity;
 
     public OrderedItem(Order order, Item item, long quantity) {

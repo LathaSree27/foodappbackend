@@ -7,14 +7,17 @@ import com.tweats.service.OrderService;
 import lombok.AllArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.Min;
 import java.security.Principal;
 import java.util.Date;
 
 @RestController
 @AllArgsConstructor
 @RequestMapping("order")
+@Validated
 public class OrderController {
 
     private OrderService orderService;
@@ -42,7 +45,9 @@ public class OrderController {
 
     @PostMapping("buy/{itemId}")
     @ResponseStatus(HttpStatus.CREATED)
-    public void orderAnItem(Principal principal, @PathVariable(name = "itemId") long itemId, @RequestParam(name = "quantity") long quantity) throws UserNotFoundException {
+    public void orderAnItem(Principal principal,
+                            @PathVariable(name = "itemId") long itemId,
+                            @RequestParam(name = "quantity") @Min(value = 1,message = "Quantity can't be less than 1") long quantity) throws UserNotFoundException {
         orderService.orderAnItem(principal.getName(), itemId, quantity);
     }
 }

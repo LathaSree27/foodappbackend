@@ -196,4 +196,15 @@ public class OrderControllerIntegrationTest {
                 .andExpect(status().isCreated());
 
     }
+
+    @Test
+    void shouldThrowValidationErrorWhenQuantityIsLessThanOne() throws Exception {
+        int quantity = 0;
+
+        mockMvc.perform(
+                        post("/order/buy/"+mango.getId())
+                                .with(httpBasic(customer.getEmail(), "password"))
+                                .param("quantity", String.valueOf(quantity)))
+                .andExpect(status().isBadRequest());
+    }
 }
