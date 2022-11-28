@@ -98,4 +98,11 @@ public class CustomExceptionHandler {
         ErrorResponse errorResponse = new ErrorResponse("Category already Assigned!", Collections.singletonList(ex.getMessage()));
         return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
     }
+
+    @ExceptionHandler(CartItemNotFoundException.class)
+    public ResponseEntity handleCartItemNotFoundException(CartItemNotFoundException ex) {
+        ErrorResponse error = new ErrorResponse("CartItem Not Found!", Collections.singletonList(ex.getMessage()));
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
 }
+
