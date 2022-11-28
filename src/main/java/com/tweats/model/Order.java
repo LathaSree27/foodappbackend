@@ -35,10 +35,10 @@ public class Order {
     @OneToOne
     private Category category;
 
-    @OneToMany(mappedBy = "order",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private Set<OrderedItem> orderedItems;
 
-    public void AddOrderedItems(OrderedItem orderedItem) {
+    public void addOrderedItem(OrderedItem orderedItem) {
         this.orderedItems.add(orderedItem);
     }
 

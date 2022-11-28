@@ -32,6 +32,8 @@ public class OrderService {
 
     private ItemService itemService;
 
+    private CartService cartService;
+
     public CompletedOrdersResponse getCompletedOrders(long categoryId, Date date) throws NoOrdersFoundException {
         List<Order> orders = orderRepository.getAllCompletedOrdersByCategoryAndDate(categoryId, date, OrderStatus.DELIVERED.name());
         int count = orders.size();
@@ -94,7 +96,7 @@ public class OrderService {
         Item item = itemService.getItem(itemId);
         Date today = getCurrentDate();
         Order order = new Order(today, user, item.getCategory());
-        order.AddOrderedItems(new OrderedItem(order, item, quantity));
+        order.addOrderedItem(new OrderedItem(order, item, quantity));
         orderRepository.save(order);
     }
 
@@ -102,7 +104,15 @@ public class OrderService {
         return new Date();
     }
 
-    public void placeOrder(String userEmail, long categoryId) {
-
+    public void placeOrder(String userEmail, long categoryId) throws UserNotFoundException, NoCategoryFoundException {
+        User user = userPrincipalService.findUserByEmail(userEmail);
+        Cart cart = cartService.getCart(user.getId(), categoryId);
+        Set<CartItem> cartItems = cart.getCartItems();
+        Order order = new Order(getCurrentDate(), user, cart.getCategory());
+        for (CartItem cartItem : cartItems) {
+            order.addOrderedItem(new OrderedItem(order, cartItem.getItem(), cartItem.getQuantity()));
+        }
+        orderRepository.save(order);
+        cartService.emptyCart(cart.getId());
     }
 }

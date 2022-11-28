@@ -37,7 +37,7 @@ public class Cart {
         this.cartItems = new HashSet<>();
     }
 
-    public void addCartItems(CartItem cartItem) {
+    public void addCartItem(CartItem cartItem) {
         cartItems.add(cartItem);
     }
 

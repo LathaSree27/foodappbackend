@@ -15,7 +15,9 @@ import java.util.Date;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 @ExtendWith(MockitoExtension.class)
 public class OrderControllerTest {
     @InjectMocks
@@ -71,7 +73,7 @@ public class OrderControllerTest {
     }
 
     @Test
-    void shouldBeAbleToPlaceOrderWhenItemsArePresentInTheCart() {
+    void shouldBeAbleToPlaceOrderWhenItemsArePresentInTheCart() throws UserNotFoundException, NoCategoryFoundException {
         long categoryId = 1;
 
         orderController.placeOrder(principal, categoryId);

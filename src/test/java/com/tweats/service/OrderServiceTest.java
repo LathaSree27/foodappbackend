@@ -46,6 +46,8 @@ public class OrderServiceTest {
     private CategoryService categoryService;
     @Mock
     private User user;
+    @Mock
+    private CartService cartService;
 
     private void prepareData(Date date, List<Order> orders, List<OrderResponse> orderResponses) {
         BigDecimal billAmount = new BigDecimal(100);
@@ -101,7 +103,7 @@ public class OrderServiceTest {
         Date today = new Date();
         List<Order> orders = new ArrayList<>();
         List<OrderResponse> orderResponses = new ArrayList<>();
-        prepareData( today, orders, orderResponses);
+        prepareData(today, orders, orderResponses);
         ActiveOrderResponse expectedActiveOrderResponse = new ActiveOrderResponse(count, orderResponses);
         when(categoryService.getCategory(user.getEmail())).thenReturn(category);
         when(orderRepository.getAllActiveOrdersByCategoryId(category.getId(), OrderStatus.PLACED.name())).thenReturn(orders);
@@ -160,7 +162,7 @@ public class OrderServiceTest {
         long quantity = 2;
         Date today = new Date();
         Order savedOrder = new Order(today, user, category);
-        savedOrder.AddOrderedItems(new OrderedItem(savedOrder, item, quantity));
+        savedOrder.addOrderedItem(new OrderedItem(savedOrder, item, quantity));
         OrderService spiedOrderService = spy(orderService);
         when(spiedOrderService.getCurrentDate()).thenReturn(today);
         when(userPrincipalService.findUserByEmail(user.getEmail())).thenReturn(user);
@@ -170,5 +172,27 @@ public class OrderServiceTest {
         spiedOrderService.orderAnItem(user.getEmail(), item.getId(), quantity);
 
         verify(orderRepository).save(savedOrder);
+    }
+
+    @Test
+    void shouldBeAbleToPlaceOrderWhenItemsAreInTheUserCart() throws NoCategoryFoundException, UserNotFoundException {
+        long quantity = 1;
+        Date today = new Date();
+        Cart cart = new Cart(category, user);
+        cart.addCartItem(new CartItem(cart, item, quantity));
+        Order savedOrder = new Order(today, user, category);
+        List<CartItem> cartItems = new ArrayList<>(cart.getCartItems());
+        CartItem cartItem = cartItems.get(0);
+        savedOrder.addOrderedItem(new OrderedItem(order, cartItem.getItem(), cartItem.getQuantity()));
+        OrderService spiedOrderService = spy(orderService);
+        when(cartService.getCart(user.getId(), category.getId())).thenReturn(cart);
+        when(userPrincipalService.findUserByEmail(user.getEmail())).thenReturn(user);
+        when(spiedOrderService.getCurrentDate()).thenReturn(today);
+
+        spiedOrderService.placeOrder(user.getEmail(), category.getId());
+
+        verify(cartService).getCart(user.getId(), category.getId());
+        verify(orderRepository).save(savedOrder);
+        verify(cartService).emptyCart(cart.getId());
     }
 }

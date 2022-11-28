@@ -55,7 +55,7 @@ public class CartService {
         long categoryId = item.getCategory().getId();
         Cart cart = getCart(userId, categoryId);
         CartItem cartItem = cart.getCartItem(item, quantity);
-        cart.addCartItems(cartItem);
+        cart.addCartItem(cartItem);
         cartRepository.save(cart);
     }
 
@@ -81,7 +81,7 @@ public class CartService {
         return userPrincipalService.findUserByEmail(userEmail);
     }
 
-    private Cart getCart(long userId, long categoryId) throws NoCategoryFoundException {
+    public Cart getCart(long userId, long categoryId) throws NoCategoryFoundException {
         return cartRepository.findCartByUserIdAndCategoryId(userId, categoryId).orElseThrow(NoCategoryFoundException::new);
     }
 
@@ -101,5 +101,9 @@ public class CartService {
 
     private CartItem getCartItem(long cartItemId) throws CartItemNotFoundException {
         return cartItemRepository.findById(cartItemId).orElseThrow(CartItemNotFoundException::new);
+    }
+
+    public void emptyCart(long cartId) {
+
     }
 }
