@@ -35,6 +35,9 @@ public class CategoryControllerTest {
     @Mock
     Category category;
 
+    @Mock
+    VendorCategoryResponse vendorCategoryResponse;
+
     @InjectMocks
     private CategoryController categoryController;
 
@@ -44,18 +47,17 @@ public class CategoryControllerTest {
         String name = "juice";
         String user_email = "abc@gmail.com";
 
-        categoryController.save(categoryImageFile,name,user_email);
+        categoryController.save(categoryImageFile, name, user_email);
 
-        verify(categoryService).save(name,categoryImageFile,user_email);
+        verify(categoryService).save(name, categoryImageFile, user_email);
 
     }
 
     @Test
     void shouldBeAbleToFetchCategoryOfLoggedInVendor() throws UserNotFoundException, NoCategoryFoundException {
-        when(categoryService.getCategory(principal.getName())).thenReturn(category);
-        VendorCategoryResponse expectedVendorCategoryResponse = new VendorCategoryResponse(category.getId());
+        when(categoryService.getCategoryResponse(principal.getName())).thenReturn(vendorCategoryResponse);
 
-        assertThat(categoryController.fetchCategory(principal),is(expectedVendorCategoryResponse));
+        assertThat(categoryController.fetchCategory(principal), is(vendorCategoryResponse));
     }
 
     @Test

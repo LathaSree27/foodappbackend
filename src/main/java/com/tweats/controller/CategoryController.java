@@ -3,11 +3,9 @@ package com.tweats.controller;
 import com.tweats.controller.response.CategoryResponse;
 import com.tweats.controller.response.VendorCategoryResponse;
 import com.tweats.exceptions.*;
-import com.tweats.model.Category;
 import com.tweats.service.CategoryService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -35,8 +33,7 @@ public class CategoryController {
 
     @GetMapping("vendor")
     public VendorCategoryResponse fetchCategory(Principal principal) throws NoCategoryFoundException, UserNotFoundException {
-        Category category = categoryService.getCategory(principal.getName());
-        return new VendorCategoryResponse(category.getId());
+        return categoryService.getCategoryResponse(principal.getName());
     }
 
     @GetMapping
