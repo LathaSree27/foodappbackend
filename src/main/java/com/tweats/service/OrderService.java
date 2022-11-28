@@ -87,7 +87,7 @@ public class OrderService {
     }
 
     public void completeTheOrder(String vendorEmail, long orderId) throws OrderNotFoundException, OrderCategoryMismatchException, OrderCancelledException {
-        Order order = orderRepository.findById(orderId).orElseThrow(() -> new OrderNotFoundException());
+        Order order = orderRepository.findById(orderId).orElseThrow(OrderNotFoundException::new);
         User vendor = userPrincipalService.findUserByEmail(vendorEmail);
         Category category = categoryRepository.findByUserId(vendor.getId());
         if (!category.equals(order.getCategory())) throw new OrderCategoryMismatchException();
@@ -103,7 +103,6 @@ public class OrderService {
         Order order = new Order(today, user, item.getCategory());
         order.AddOrderedItems(new OrderedItem(order, item, quantity));
         orderRepository.save(order);
-
     }
 
     public Date getCurrentDate() {

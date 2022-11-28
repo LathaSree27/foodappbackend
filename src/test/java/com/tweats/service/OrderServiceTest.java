@@ -13,8 +13,11 @@ import com.tweats.model.constants.OrderStatus;
 import com.tweats.repo.CategoryRepository;
 import com.tweats.repo.ItemRepository;
 import com.tweats.repo.OrderRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -24,33 +27,30 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 public class OrderServiceTest {
-
-    private final ItemRepository itemRepository;
+    @Mock
+    private ItemRepository itemRepository;
+    @Mock
     private Item item;
-    private final OrderService orderService;
-    private final Order order;
-    private final Category category;
-    private final OrderRepository orderRepository;
-    private final Image image;
-    private final ImageService imageService;
-    private final UserPrincipalService userPrincipalService;
-    private final CategoryRepository categoryRepository;
-    private final User user;
-
-    public OrderServiceTest() {
-        userPrincipalService = mock(UserPrincipalService.class);
-        categoryRepository = mock(CategoryRepository.class);
-        imageService = mock(ImageService.class);
-        orderRepository = mock(OrderRepository.class);
-        order = mock(Order.class);
-        category = mock(Category.class);
-        image = mock(Image.class);
-        user = mock(User.class);
-        item = mock(Item.class);
-        itemRepository = mock(ItemRepository.class);
-        orderService = new OrderService(orderRepository, imageService, userPrincipalService, categoryRepository, itemRepository);
-    }
+    @InjectMocks
+    private OrderService orderService;
+    @Mock
+    private Order order;
+    @Mock
+    private Category category;
+    @Mock
+    private OrderRepository orderRepository;
+    @Mock
+    private Image image;
+    @Mock
+    private ImageService imageService;
+    @Mock
+    private UserPrincipalService userPrincipalService;
+    @Mock
+    private CategoryRepository categoryRepository;
+    @Mock
+    private User user;
 
     private void prepareData(int count, Date date, List<Order> orders, List<OrderResponse> orderResponses) {
         BigDecimal billAmount = new BigDecimal(100);
@@ -71,12 +71,6 @@ public class OrderServiceTest {
         when(order.getOrderedItems()).thenReturn(orderedItems);
         when(imageService.getImageLink(image)).thenReturn(imageLink);
         when(order.getDate()).thenReturn(date);
-    }
-
-    @BeforeEach
-    void setUp() {
-        when(userPrincipalService.findUserByEmail(user.getEmail())).thenReturn(user);
-        when(categoryRepository.findByUserId(user.getId())).thenReturn(category);
     }
 
     @Test
@@ -114,6 +108,8 @@ public class OrderServiceTest {
         List<OrderResponse> orderResponses = new ArrayList<>();
         prepareData(count, today, orders, orderResponses);
         ActiveOrderResponse expectedActiveOrderResponse = new ActiveOrderResponse(count, orderResponses);
+        when(userPrincipalService.findUserByEmail(user.getEmail())).thenReturn(user);
+        when(categoryRepository.findByUserId(user.getId())).thenReturn(category);
         when(orderRepository.getAllActiveOrdersByCategoryId(category.getId(), OrderStatus.PLACED.name())).thenReturn(orders);
 
         ActiveOrderResponse actualActiveOrders = orderService.getActiveOrders(user.getEmail());
@@ -124,11 +120,16 @@ public class OrderServiceTest {
 
     @Test
     void shouldThrowNoOrderFoundExceptionWhenThereAreNoActiveOrdersFound() {
+        when(userPrincipalService.findUserByEmail(user.getEmail())).thenReturn(user);
+        when(categoryRepository.findByUserId(user.getId())).thenReturn(category);
+
         assertThrows(NoOrdersFoundException.class, () -> orderService.getActiveOrders(user.getEmail()));
     }
 
     @Test
     void shouldCompleteTheOrderWhenOrderIsNotDelivered() throws OrderNotFoundException, OrderCategoryMismatchException, OrderCancelledException {
+        when(userPrincipalService.findUserByEmail(user.getEmail())).thenReturn(user);
+        when(categoryRepository.findByUserId(user.getId())).thenReturn(category);
         when(orderRepository.findById(order.getId())).thenReturn(Optional.of(order));
         when(order.getCategory()).thenReturn(category);
         when(order.getStatus()).thenReturn(OrderStatus.PLACED);
@@ -146,12 +147,17 @@ public class OrderServiceTest {
 
     @Test
     void shouldThrowOrderCategoryMismatchExceptionWhenGivenOrderDoesNotBelongToVendorCategory() {
+        when(userPrincipalService.findUserByEmail(user.getEmail())).thenReturn(user);
+        when(categoryRepository.findByUserId(user.getId())).thenReturn(category);
         when(orderRepository.findById(order.getId())).thenReturn(Optional.of(order));
+
         assertThrows(OrderCategoryMismatchException.class, () -> orderService.completeTheOrder(user.getEmail(), order.getId()));
     }
 
     @Test
     void shouldThrowOrderCancelledExceptionWhenGivenOrderIsCanceled() {
+        when(userPrincipalService.findUserByEmail(user.getEmail())).thenReturn(user);
+        when(categoryRepository.findByUserId(user.getId())).thenReturn(category);
         when(orderRepository.findById(order.getId())).thenReturn(Optional.of(order));
         when(order.getCategory()).thenReturn(category);
         when(order.getStatus()).thenReturn(OrderStatus.CANCELED);
