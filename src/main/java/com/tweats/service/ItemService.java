@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -53,8 +52,7 @@ public class ItemService {
         List<Item> items = itemRepository.findByCategory_id(category_id);
         List<ItemResponse> itemResponses = getItemResponses(items);
         if (isEmpty(itemResponses)) throw new NoItemsFoundException();
-        ItemListResponse itemListResponse = new ItemListResponse(category_id, itemResponses);
-        return itemListResponse;
+        return new ItemListResponse(category_id, itemResponses);
     }
 
     private boolean isEmpty(List<ItemResponse> itemResponses) {

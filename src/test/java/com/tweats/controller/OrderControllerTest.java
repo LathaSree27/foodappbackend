@@ -46,7 +46,7 @@ public class OrderControllerTest {
     }
 
     @Test
-    void shouldBeAbleToFetchAllActiveOrdersWhenCategoryIdIsGiven() throws NoOrdersFoundException, UserNotFoundException {
+    void shouldBeAbleToFetchAllActiveOrdersWhenCategoryIdIsGiven() throws NoOrdersFoundException, UserNotFoundException, NoCategoryFoundException {
         ActiveOrderResponse expectedActiveOrderResponse = new ActiveOrderResponse();
         when(orderService.getActiveOrders(principal.getName())).thenReturn(expectedActiveOrderResponse);
 
@@ -57,7 +57,7 @@ public class OrderControllerTest {
     }
 
     @Test
-    void shouldBeAbleToCompleteOrderWhenOrderIdIsGiven() throws OrderNotFoundException, OrderCategoryMismatchException, OrderCancelledException, UserNotFoundException {
+    void shouldBeAbleToCompleteOrderWhenOrderIdIsGiven() throws OrderNotFoundException, OrderCategoryMismatchException, OrderCancelledException, UserNotFoundException, NoCategoryFoundException {
         long orderId = 1;
 
         orderController.completeTheOrder(principal, orderId);

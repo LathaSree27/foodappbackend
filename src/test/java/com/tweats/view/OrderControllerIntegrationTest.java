@@ -55,7 +55,6 @@ public class OrderControllerIntegrationTest {
     private Category category;
     private Order order;
     private User vendor;
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
     private User otherVendor;
     private Item mango;
     private User customer;
@@ -68,7 +67,7 @@ public class OrderControllerIntegrationTest {
         imageRepository.deleteAll();
         userRepository.deleteAll();
         roleRepository.deleteAll();
-        bCryptPasswordEncoder = new BCryptPasswordEncoder();
+        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
         vendor = userRepository.save(new User("abc", "abc@example.com", bCryptPasswordEncoder.encode("password"), roleRepository.save(new Role("VENDOR"))));
         customer = userRepository.save(new User("abc", "mno@example.com", bCryptPasswordEncoder.encode("password"), roleRepository.save(new Role("CUSTOMER"))));
         Image image = new Image("image.png", MediaType.IMAGE_JPEG_VALUE, "hello".getBytes(), 1L);

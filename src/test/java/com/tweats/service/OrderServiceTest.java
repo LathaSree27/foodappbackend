@@ -7,8 +7,6 @@ import com.tweats.controller.response.OrderedItemResponse;
 import com.tweats.exceptions.*;
 import com.tweats.model.*;
 import com.tweats.model.constants.OrderStatus;
-import com.tweats.repo.CategoryRepository;
-import com.tweats.repo.ItemRepository;
 import com.tweats.repo.OrderRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -45,11 +43,11 @@ public class OrderServiceTest {
     @Mock
     private UserPrincipalService userPrincipalService;
     @Mock
-    private CategoryRepository categoryRepository;
+    private CategoryService categoryService;
     @Mock
     private User user;
 
-    private void prepareData(int count, Date date, List<Order> orders, List<OrderResponse> orderResponses) {
+    private void prepareData(Date date, List<Order> orders, List<OrderResponse> orderResponses) {
         BigDecimal billAmount = new BigDecimal(100);
         String itemName = "Mango";
         HashSet<OrderedItem> orderedItems = new HashSet<>();
@@ -76,7 +74,7 @@ public class OrderServiceTest {
         Date today = new Date();
         List<Order> orders = new ArrayList<>();
         List<OrderResponse> orderResponses = new ArrayList<>();
-        prepareData(count, today, orders, orderResponses);
+        prepareData(today, orders, orderResponses);
         BigDecimal revenue = new BigDecimal(100);
         CompletedOrdersResponse expectedCompletedOrdersResponse = new CompletedOrdersResponse(count, revenue, orderResponses);
         when(orderRepository.getAllCompletedOrdersByCategoryAndDate(category.getId(), today, OrderStatus.DELIVERED.name())).thenReturn(orders);
@@ -98,15 +96,14 @@ public class OrderServiceTest {
     }
 
     @Test
-    void shouldBeAbleToFetchAllActiveOrdersWhenCategoryIdIsGiven() throws NoOrdersFoundException, UserNotFoundException {
+    void shouldBeAbleToFetchAllActiveOrdersWhenCategoryIdIsGiven() throws NoOrdersFoundException, UserNotFoundException, NoCategoryFoundException {
         int count = 1;
         Date today = new Date();
         List<Order> orders = new ArrayList<>();
         List<OrderResponse> orderResponses = new ArrayList<>();
-        prepareData(count, today, orders, orderResponses);
+        prepareData( today, orders, orderResponses);
         ActiveOrderResponse expectedActiveOrderResponse = new ActiveOrderResponse(count, orderResponses);
-        when(userPrincipalService.findUserByEmail(user.getEmail())).thenReturn(user);
-        when(categoryRepository.findByUserId(user.getId())).thenReturn(category);
+        when(categoryService.getCategory(user.getEmail())).thenReturn(category);
         when(orderRepository.getAllActiveOrdersByCategoryId(category.getId(), OrderStatus.PLACED.name())).thenReturn(orders);
 
         ActiveOrderResponse actualActiveOrders = orderService.getActiveOrders(user.getEmail());
@@ -116,17 +113,15 @@ public class OrderServiceTest {
     }
 
     @Test
-    void shouldThrowNoOrderFoundExceptionWhenThereAreNoActiveOrdersFound() throws UserNotFoundException {
-        when(userPrincipalService.findUserByEmail(user.getEmail())).thenReturn(user);
-        when(categoryRepository.findByUserId(user.getId())).thenReturn(category);
+    void shouldThrowNoOrderFoundExceptionWhenThereAreNoActiveOrdersFound() throws UserNotFoundException, NoCategoryFoundException {
+        when(categoryService.getCategory(user.getEmail())).thenReturn(category);
 
         assertThrows(NoOrdersFoundException.class, () -> orderService.getActiveOrders(user.getEmail()));
     }
 
     @Test
-    void shouldCompleteTheOrderWhenOrderIsNotDelivered() throws OrderNotFoundException, OrderCategoryMismatchException, OrderCancelledException, UserNotFoundException {
-        when(userPrincipalService.findUserByEmail(user.getEmail())).thenReturn(user);
-        when(categoryRepository.findByUserId(user.getId())).thenReturn(category);
+    void shouldCompleteTheOrderWhenOrderIsNotDelivered() throws OrderNotFoundException, OrderCategoryMismatchException, OrderCancelledException, UserNotFoundException, NoCategoryFoundException {
+        when(categoryService.getCategory(user.getEmail())).thenReturn(category);
         when(orderRepository.findById(order.getId())).thenReturn(Optional.of(order));
         when(order.getCategory()).thenReturn(category);
         when(order.getStatus()).thenReturn(OrderStatus.PLACED);
@@ -143,18 +138,16 @@ public class OrderServiceTest {
     }
 
     @Test
-    void shouldThrowOrderCategoryMismatchExceptionWhenGivenOrderDoesNotBelongToVendorCategory() throws UserNotFoundException {
-        when(userPrincipalService.findUserByEmail(user.getEmail())).thenReturn(user);
-        when(categoryRepository.findByUserId(user.getId())).thenReturn(category);
+    void shouldThrowOrderCategoryMismatchExceptionWhenGivenOrderDoesNotBelongToVendorCategory() throws UserNotFoundException, NoCategoryFoundException {
+        when(categoryService.getCategory(user.getEmail())).thenReturn(category);
         when(orderRepository.findById(order.getId())).thenReturn(Optional.of(order));
 
         assertThrows(OrderCategoryMismatchException.class, () -> orderService.completeTheOrder(user.getEmail(), order.getId()));
     }
 
     @Test
-    void shouldThrowOrderCancelledExceptionWhenGivenOrderIsCanceled() throws UserNotFoundException {
-        when(userPrincipalService.findUserByEmail(user.getEmail())).thenReturn(user);
-        when(categoryRepository.findByUserId(user.getId())).thenReturn(category);
+    void shouldThrowOrderCancelledExceptionWhenGivenOrderIsCanceled() throws UserNotFoundException, NoCategoryFoundException {
+        when(categoryService.getCategory(user.getEmail())).thenReturn(category);
         when(orderRepository.findById(order.getId())).thenReturn(Optional.of(order));
         when(order.getCategory()).thenReturn(category);
         when(order.getStatus()).thenReturn(OrderStatus.CANCELED);

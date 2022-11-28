@@ -30,7 +30,7 @@ public class OrderController {
     }
 
     @GetMapping("active")
-    public ActiveOrderResponse getActiveOrders(Principal principal) throws NoOrdersFoundException, UserNotFoundException {
+    public ActiveOrderResponse getActiveOrders(Principal principal) throws NoOrdersFoundException, UserNotFoundException, NoCategoryFoundException {
         String vendorEmail = principal.getName();
         return orderService.getActiveOrders(vendorEmail);
     }
@@ -38,7 +38,7 @@ public class OrderController {
     @PutMapping("complete")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void completeTheOrder(Principal principal,
-                                 @RequestParam(name = "orderId") long orderId) throws OrderNotFoundException, OrderCategoryMismatchException, OrderCancelledException, UserNotFoundException {
+                                 @RequestParam(name = "orderId") long orderId) throws OrderNotFoundException, OrderCategoryMismatchException, OrderCancelledException, UserNotFoundException, NoCategoryFoundException {
         String vendorEmail = principal.getName();
         orderService.completeTheOrder(vendorEmail, orderId);
     }

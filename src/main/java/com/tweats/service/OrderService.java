@@ -7,8 +7,6 @@ import com.tweats.controller.response.OrderedItemResponse;
 import com.tweats.exceptions.*;
 import com.tweats.model.*;
 import com.tweats.model.constants.OrderStatus;
-import com.tweats.repo.CategoryRepository;
-import com.tweats.repo.ItemRepository;
 import com.tweats.repo.OrderRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -30,9 +28,10 @@ public class OrderService {
 
     private UserPrincipalService userPrincipalService;
 
-    private CategoryRepository categoryRepository;
+    private CategoryService categoryService;
 
     private ItemService itemService;
+
     public CompletedOrdersResponse getCompletedOrders(long categoryId, Date date) throws NoOrdersFoundException {
         List<Order> orders = orderRepository.getAllCompletedOrdersByCategoryAndDate(categoryId, date, OrderStatus.DELIVERED.name());
         int count = orders.size();
@@ -71,9 +70,8 @@ public class OrderService {
         return billAmount;
     }
 
-    public ActiveOrderResponse getActiveOrders(String vendorEmail) throws NoOrdersFoundException, UserNotFoundException {
-        User vendor = userPrincipalService.findUserByEmail(vendorEmail);
-        Category category = categoryRepository.findByUserId(vendor.getId());
+    public ActiveOrderResponse getActiveOrders(String vendorEmail) throws NoOrdersFoundException, UserNotFoundException, NoCategoryFoundException {
+        Category category = categoryService.getCategory(vendorEmail);
         List<Order> orders = orderRepository.getAllActiveOrdersByCategoryId(category.getId(), OrderStatus.PLACED.name());
         int count = orders.size();
         if (count == 0) throw new NoOrdersFoundException();
@@ -82,10 +80,9 @@ public class OrderService {
         return new ActiveOrderResponse(count, orderResponses);
     }
 
-    public void completeTheOrder(String vendorEmail, long orderId) throws OrderNotFoundException, OrderCategoryMismatchException, OrderCancelledException, UserNotFoundException {
+    public void completeTheOrder(String vendorEmail, long orderId) throws OrderNotFoundException, OrderCategoryMismatchException, OrderCancelledException, UserNotFoundException, NoCategoryFoundException {
         Order order = orderRepository.findById(orderId).orElseThrow(OrderNotFoundException::new);
-        User vendor = userPrincipalService.findUserByEmail(vendorEmail);
-        Category category = categoryRepository.findByUserId(vendor.getId());
+        Category category = categoryService.getCategory(vendorEmail);
         if (!category.equals(order.getCategory())) throw new OrderCategoryMismatchException();
         if (order.getStatus().equals(OrderStatus.CANCELED)) throw new OrderCancelledException();
         order.setStatus(OrderStatus.DELIVERED);
