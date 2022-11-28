@@ -188,7 +188,7 @@ public class OrderServiceTest {
         when(cartService.getCart(user.getId(), category.getId())).thenReturn(cart);
         when(userPrincipalService.findUserByEmail(user.getEmail())).thenReturn(user);
         when(spiedOrderService.getCurrentDate()).thenReturn(today);
-        when(item.is_available()).thenReturn(true);
+        when(item.isAvailable()).thenReturn(true);
 
         spiedOrderService.placeOrder(user.getEmail(), category.getId());
 

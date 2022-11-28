@@ -1,6 +1,7 @@
 package com.tweats.model;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
@@ -15,6 +16,7 @@ import java.util.Set;
 @Getter
 @Setter
 @Table(name = "item")
+@NoArgsConstructor
 public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,8 +34,8 @@ public class Item {
     @Column(nullable = false)
     private BigDecimal price;
 
-    @Column(nullable = false)
-    private boolean is_available;
+    @Column(nullable = false, name = "is_available")
+    private boolean isAvailable = true;
 
     @OneToOne
     @JoinColumn(name = "category_id")
@@ -49,12 +51,7 @@ public class Item {
         this.name = name;
         this.image = image;
         this.price = price;
-        this.is_available = false;
         this.category = category;
-    }
-
-    public Item() {
-        this.is_available = false;
     }
 
     @Override
@@ -62,11 +59,11 @@ public class Item {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Item item = (Item) o;
-        return id == item.id && is_available == item.is_available && name.equals(item.name) && image.equals(item.image) && price.equals(item.price) && category.equals(item.category);
+        return id == item.id && isAvailable == item.isAvailable && name.equals(item.name) && image.equals(item.image) && price.equals(item.price) && category.equals(item.category);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, image, price, is_available, category);
+        return Objects.hash(id, name, image, price, isAvailable, category);
     }
 }

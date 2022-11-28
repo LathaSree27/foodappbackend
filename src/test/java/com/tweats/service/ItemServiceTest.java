@@ -87,7 +87,7 @@ public class ItemServiceTest {
         List<ItemResponse> itemResponses = new ArrayList<>();
         for (Item item : items) {
             String itemImageLink = "http://localhost:8080/tweats/api/v1/images/" + item.getImage().getId();
-            ItemResponse itemResponse = new ItemResponse(item.getId(), item.getName(), itemImageLink, item.getPrice(), item.is_available());
+            ItemResponse itemResponse = new ItemResponse(item.getId(), item.getName(), itemImageLink, item.getPrice(), item.isAvailable());
             itemResponses.add(itemResponse);
         }
         ItemListResponse expectedItemListResponse = new ItemListResponse(category_id, itemResponses);
@@ -107,13 +107,12 @@ public class ItemServiceTest {
     }
 
     @Test
-    void shouldBeAbleUpdateAvailabilityOfAnItemFromFalseToTrue() throws ItemAccessException, ItemDoesNotExistException, UserNotFoundException {
+    void shouldBeAbleUpdateAvailabilityOfAnItemFromTrueToFalse() throws ItemAccessException, ItemDoesNotExistException, UserNotFoundException {
         String vendorEmail = "abc@gmail.com";
         long itemId = 1;
         String itemName = "Mango";
         BigDecimal price = new BigDecimal(80);
         Item item = new Item(itemName, image, price, category);
-        item.setId(itemId);
         when(userPrincipalService.findUserByEmail(vendorEmail)).thenReturn(user);
         when(categoryRepository.findByUserId(user.getId())).thenReturn(category);
         when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
@@ -121,7 +120,7 @@ public class ItemServiceTest {
         itemService.updateAvailability(vendorEmail, itemId);
 
         verify(itemRepository).save(item);
-        assertThat(itemRepository.findById(itemId).get().is_available(), is(true));
+        assertThat(itemRepository.findById(itemId).get().isAvailable(), is(false));
     }
 
     @Test

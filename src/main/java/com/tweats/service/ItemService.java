@@ -63,7 +63,7 @@ public class ItemService {
         List<ItemResponse> itemResponses = new ArrayList<>();
         for (Item item : items) {
             String itemImageLink = getItemImageLink(item.getImage().getId());
-            ItemResponse itemResponse = new ItemResponse(item.getId(), item.getName(), itemImageLink, item.getPrice(), item.is_available());
+            ItemResponse itemResponse = new ItemResponse(item.getId(), item.getName(), itemImageLink, item.getPrice(), item.isAvailable());
             itemResponses.add(itemResponse);
         }
         return itemResponses;
@@ -79,7 +79,7 @@ public class ItemService {
         Item item = getItem(itemId);
         Category itemCategory = item.getCategory();
         if (!isValidCategory(userCategory, itemCategory)) throw new ItemAccessException();
-        item.set_available(!item.is_available());
+        item.setAvailable(!item.isAvailable());
         itemRepository.save(item);
     }
 

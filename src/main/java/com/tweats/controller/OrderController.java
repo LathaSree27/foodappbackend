@@ -47,11 +47,14 @@ public class OrderController {
     @ResponseStatus(HttpStatus.CREATED)
     public void orderAnItem(Principal principal,
                             @PathVariable(name = "itemId") long itemId,
-                            @RequestParam(name = "quantity") @Min(value = 1,message = "Quantity can't be less than 1") long quantity) throws UserNotFoundException, ItemDoesNotExistException {
+                            @RequestParam(name = "quantity") @Min(value = 1, message = "Quantity can't be less than 1") long quantity) throws UserNotFoundException, ItemDoesNotExistException {
         orderService.orderAnItem(principal.getName(), itemId, quantity);
     }
 
-    public void placeOrder(Principal principal, long categoryId) throws UserNotFoundException, NoCategoryFoundException, EmptyCartException {
+    @PostMapping("place")
+    @ResponseStatus(HttpStatus.CREATED)
+    public void placeOrder(Principal principal,
+                           @RequestParam(name = "categoryId") long categoryId) throws UserNotFoundException, NoCategoryFoundException, EmptyCartException {
         orderService.placeOrder(principal.getName(), categoryId);
     }
 }

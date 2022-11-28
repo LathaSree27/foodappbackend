@@ -93,7 +93,7 @@ public class CartService {
         Set<CartItem> cartItems = cart.getCartItems();
         List<CartItemResponse> cartItemResponseList = new ArrayList<>();
         for (CartItem cartItem : cartItems) {
-            CartItemResponse cartItemResponse = new CartItemResponse(cartItem.getId(), cartItem.getItem().getName(), cartItem.getQuantity(), cartItem.getItem().getPrice(), getImageLink(cartItem), cartItem.getItem().is_available());
+            CartItemResponse cartItemResponse = new CartItemResponse(cartItem.getId(), cartItem.getItem().getName(), cartItem.getQuantity(), cartItem.getItem().getPrice(), getImageLink(cartItem), cartItem.getItem().isAvailable());
             cartItemResponseList.add(cartItemResponse);
         }
         return new CartResponse(cart.getId(), cartRepository.getBillAmount(cart.getId()), cartItemResponseList);

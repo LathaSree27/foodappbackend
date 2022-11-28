@@ -52,6 +52,9 @@ public class OrderControllerIntegrationTest {
     @Autowired
     RoleRepository roleRepository;
 
+    @Autowired
+    CartRepository cartRepository;
+
     private Category category;
     private Order order;
     private User vendor;
@@ -61,6 +64,7 @@ public class OrderControllerIntegrationTest {
 
     @BeforeEach
     public void before() {
+        cartRepository.deleteAll();
         orderRepository.deleteAll();
         itemRepository.deleteAll();
         categoryRepository.deleteAll();
@@ -90,6 +94,7 @@ public class OrderControllerIntegrationTest {
 
     @AfterEach
     public void after() {
+        cartRepository.deleteAll();
         orderRepository.deleteAll();
         itemRepository.deleteAll();
         categoryRepository.deleteAll();
@@ -217,5 +222,19 @@ public class OrderControllerIntegrationTest {
                                 .with(httpBasic(customer.getEmail(), "password"))
                                 .param("quantity", String.valueOf(quantity)))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void shouldBeAbleToPlaceOrderWhenItemsArePresentInTheCart() throws Exception {
+        int quantity = 1;
+        Cart cart = new Cart(category, customer);
+        cart.addCartItem(new CartItem(cart, mango, quantity));
+        cartRepository.save(cart);
+
+        mockMvc.perform(
+                post("/order/place")
+                        .with(httpBasic(customer.getEmail(), "password"))
+                        .param("categoryId", String.valueOf(category.getId()))
+        ).andExpect(status().isCreated());
     }
 }

@@ -105,7 +105,7 @@ public class CartServiceTest {
         cart.setCartItems(cartItems);
         cart.setId(2);
         BigDecimal billAmount = new BigDecimal(160);
-        CartItemResponse cartItemResponse = new CartItemResponse(cartItem.getId(), cartItem.getItem().getName(), cartItem.getQuantity(), cartItem.getItem().getPrice(), appLink + "/images/" + (cartItem.getItem().getId()), cartItem.getItem().is_available());
+        CartItemResponse cartItemResponse = new CartItemResponse(cartItem.getId(), cartItem.getItem().getName(), cartItem.getQuantity(), cartItem.getItem().getPrice(), appLink + "/images/" + (cartItem.getItem().getId()), cartItem.getItem().isAvailable());
         List<CartItemResponse> cartItemResponseList = new ArrayList<>();
         cartItemResponseList.add(cartItemResponse);
         when(userPrincipalService.findUserByEmail(userEmail)).thenReturn(user);

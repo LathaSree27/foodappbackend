@@ -130,7 +130,7 @@ public class ItemControllerIntegrationTest {
         Item savedItem = itemRepository.save(item);
         List<ItemResponse> itemResponses = new ArrayList<>();
         String imageLink = "http://localhost:8080/tweats/api/v1/images/" + savedItem.getImage().getId();
-        itemResponses.add(new ItemResponse(savedItem.getId(), savedItem.getName(), imageLink, savedItem.getPrice(), savedItem.is_available()));
+        itemResponses.add(new ItemResponse(savedItem.getId(), savedItem.getName(), imageLink, savedItem.getPrice(), savedItem.isAvailable()));
         ItemListResponse itemListResponse = new ItemListResponse(category.getId(), itemResponses);
 
 
