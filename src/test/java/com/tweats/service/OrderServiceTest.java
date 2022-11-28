@@ -193,6 +193,6 @@ public class OrderServiceTest {
 
         verify(cartService).getCart(user.getId(), category.getId());
         verify(orderRepository).save(savedOrder);
-        verify(cartService).emptyCart(cart.getId());
+        verify(cartService).emptyCart(cart);
     }
 }

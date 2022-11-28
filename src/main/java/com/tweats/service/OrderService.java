@@ -113,6 +113,6 @@ public class OrderService {
             order.addOrderedItem(new OrderedItem(order, cartItem.getItem(), cartItem.getQuantity()));
         }
         orderRepository.save(order);
-        cartService.emptyCart(cart.getId());
+        cartService.emptyCart(cart);
     }
 }

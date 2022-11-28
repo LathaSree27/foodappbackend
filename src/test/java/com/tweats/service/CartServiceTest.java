@@ -21,6 +21,7 @@ import java.math.BigDecimal;
 import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
@@ -160,6 +161,18 @@ public class CartServiceTest {
     void shouldThrowCartItemNotFoundExceptionWhenCartItemDoesNotExistWithGivenId() {
         long cartItemId = 2;
 
-        assertThrows(CartItemNotFoundException.class, ()->cartService.deleteCartItem(cartItemId));
+        assertThrows(CartItemNotFoundException.class, () -> cartService.deleteCartItem(cartItemId));
+    }
+
+    @Test
+    void shouldBeAbleToEmptyCartWhenCartIsGiven() {
+        long quantity = 1;
+        Cart savedCart = new Cart(category, user);
+        savedCart.addCartItem(new CartItem(savedCart, item, quantity));
+
+        cartService.emptyCart(savedCart);
+
+        assertThat(savedCart.getCartItems(), is(empty()));
+        verify(cartRepository).save(savedCart);
     }
 }

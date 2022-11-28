@@ -103,7 +103,8 @@ public class CartService {
         return cartItemRepository.findById(cartItemId).orElseThrow(CartItemNotFoundException::new);
     }
 
-    public void emptyCart(long cartId) {
-
+    public void emptyCart(Cart cart) {
+        cart.emptyCart();
+        cartRepository.save(cart);
     }
 }

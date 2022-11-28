@@ -54,4 +54,10 @@ public class Cart {
     private boolean isCartItem(Item item, CartItem cartItem) {
         return cartItem.getItem().equals(item);
     }
+
+    public void emptyCart() {
+        cartItems = new HashSet<>();
+    }
+
+
 }
