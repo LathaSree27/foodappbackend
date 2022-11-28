@@ -237,4 +237,16 @@ public class OrderControllerIntegrationTest {
                         .param("categoryId", String.valueOf(category.getId()))
         ).andExpect(status().isCreated());
     }
+
+    @Test
+    void shouldThrowEmptyCartErrorWhenUserHasEmptyCart() throws Exception {
+        Cart cart = new Cart(category, customer);
+        cartRepository.save(cart);
+
+        mockMvc.perform(
+                post("/order/place")
+                        .with(httpBasic(customer.getEmail(), "password"))
+                        .param("categoryId", String.valueOf(category.getId()))
+        ).andExpect(status().isBadRequest());
+    }
 }
