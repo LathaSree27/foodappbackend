@@ -1,11 +1,16 @@
 package com.tweats.model;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
-
 import javax.persistence.*;
 
 @Entity
 @Table(name = "image")
+@Getter
+@Setter
+@NoArgsConstructor
 public class Image {
     @Id
     @GeneratedValue(generator = "uuid")
@@ -13,7 +18,6 @@ public class Image {
     private String id;
 
     private String name;
-
     @Column(name = "content_type")
     private String contentType;
 
@@ -22,53 +26,10 @@ public class Image {
 
     private Long size;
 
-    public Image() {
-    }
-
     public Image(String name, String contentType, byte[] data, Long size) {
         this.name = name;
         this.contentType = contentType;
         this.data = data;
         this.size = size;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getContentType() {
-        return contentType;
-    }
-
-    public byte[] getData() {
-        return data;
-    }
-
-    public Long getSize() {
-        return size;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setContentType(String contentType) {
-        this.contentType = contentType;
-    }
-
-    public void setData(byte[] data) {
-        this.data = data;
-    }
-
-    public void setSize(Long size) {
-        this.size = size;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 }

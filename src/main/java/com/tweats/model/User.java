@@ -1,8 +1,5 @@
 package com.tweats.model;
 
-
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 
@@ -14,18 +11,13 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @JsonProperty
     @NotBlank(message = "user name must be provided")
     @Column(nullable = false)
     private String name;
 
-    @JsonProperty
-    @NotBlank(message = "user email must be provided")
     @Column(nullable = false, unique = true)
     private String email;
 
-    @JsonProperty
-    @NotBlank(message = "user password must be provided")
     @Column(nullable = false)
     private String password;
 

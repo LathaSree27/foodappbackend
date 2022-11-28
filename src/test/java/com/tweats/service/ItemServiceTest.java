@@ -2,10 +2,7 @@ package com.tweats.service;
 
 import com.tweats.controller.response.ItemListResponse;
 import com.tweats.controller.response.ItemResponse;
-import com.tweats.exceptions.ItemAccessException;
-import com.tweats.exceptions.ItemDoesNotExistException;
-import com.tweats.exceptions.NoItemsFoundException;
-import com.tweats.exceptions.NotAnImageException;
+import com.tweats.exceptions.*;
 import com.tweats.model.Category;
 import com.tweats.model.Image;
 import com.tweats.model.Item;
@@ -56,7 +53,7 @@ public class ItemServiceTest {
     }
 
     @Test
-    void shouldBeAbleToAddItemWhenItemIsGiven() throws IOException, NotAnImageException {
+    void shouldBeAbleToAddItemWhenItemIsGiven() throws IOException, NotAnImageException, ImageSizeExceededException {
         String userEmail = "abc@gmail.com";
         String itemName = "Mango";
         BigDecimal price = new BigDecimal(80);

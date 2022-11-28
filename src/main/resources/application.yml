@@ -6,6 +6,10 @@ spring:
     url: jdbc:postgresql://localhost:5432/tweats
     username: tweats
     password: tweats
+  servlet:
+    multipart:
+      max-file-size: 3MB
+      max-request-size: 3MB
 logging:
   level:
     root: INFO
@@ -14,3 +18,5 @@ server:
     context-path: /tweats/api/v1
 application:
   link: http://localhost:8080/tweats/api/v1
+image:
+  max-file-size: 3145728

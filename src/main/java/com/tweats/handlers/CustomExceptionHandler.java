@@ -1,9 +1,9 @@
 package com.tweats.handlers;
 
 import com.tweats.controller.response.ErrorResponse;
-import com.tweats.exceptions.ItemAccessException;
-import com.tweats.exceptions.ItemDoesNotExistException;
-import com.tweats.exceptions.NoItemsFoundException;
+import com.tweats.exceptions.*;
+import org.apache.tomcat.util.http.fileupload.impl.SizeLimitExceededException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -17,6 +17,11 @@ import java.util.Set;
 
 @ControllerAdvice
 public class CustomExceptionHandler {
+    @Value("${image.max-file-size}")
+    private long maxFileSize;
+
+    private final long MEGABYTE = 1024 * 1024;
+
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity handleMethodArgumentNotValid(ConstraintViolationException ex) {
         ArrayList<String> details = new ArrayList<>();
@@ -45,4 +50,29 @@ public class CustomExceptionHandler {
         ErrorResponse error = new ErrorResponse("Item not found!", Collections.singletonList(ex.getMessage()));
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(value = {ImageNotFoundException.class})
+    public ResponseEntity handleImageNotFoundException(ImageNotFoundException ex) {
+        ErrorResponse error = new ErrorResponse("Image doesn't exists!", Collections.singletonList(ex.getMessage()));
+        return new ResponseEntity(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(NotAnImageException.class)
+    public ResponseEntity handleNotAnImageException(NotAnImageException ex) {
+        ErrorResponse error = new ErrorResponse("Try uploading image file (JPEG/PNG)", Collections.singletonList(ex.getMessage()));
+        return new ResponseEntity(error, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler({ImageSizeExceededException.class})
+    public ResponseEntity<ErrorResponse> handleImageSizeExceededException(ImageSizeExceededException ex) {
+        ErrorResponse error = new ErrorResponse("Try uploading less than " + (maxFileSize / MEGABYTE) + " MB", Collections.singletonList(ex.getMessage()));
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler({SizeLimitExceededException.class})
+    public ResponseEntity<ErrorResponse> handleSizeLimitExceededException(SizeLimitExceededException ex) {
+        ErrorResponse error = new ErrorResponse("Try uploading less than " + (maxFileSize / MEGABYTE) + " MB", Collections.singletonList(ex.getMessage()));
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
 }

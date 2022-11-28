@@ -18,6 +18,7 @@ public class Category {
     private Image image;
 
 
+
     @Column(nullable = false)
     private boolean is_open;
 

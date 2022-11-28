@@ -2,10 +2,7 @@ package com.tweats.service;
 
 import com.tweats.controller.response.ItemListResponse;
 import com.tweats.controller.response.ItemResponse;
-import com.tweats.exceptions.ItemAccessException;
-import com.tweats.exceptions.ItemDoesNotExistException;
-import com.tweats.exceptions.NoItemsFoundException;
-import com.tweats.exceptions.NotAnImageException;
+import com.tweats.exceptions.*;
 import com.tweats.model.Category;
 import com.tweats.model.Image;
 import com.tweats.model.Item;
@@ -44,7 +41,7 @@ public class ItemService {
         this.userPrincipalService = userPrincipalService;
     }
 
-    public void save(String name, BigDecimal price, MultipartFile itemImageFile, String userEmail) throws IOException, NotAnImageException {
+    public void save(String name, BigDecimal price, MultipartFile itemImageFile, String userEmail) throws IOException, NotAnImageException, ImageSizeExceededException {
         Image itemImage = imageService.save(itemImageFile);
         User vendor = userPrincipalService.findUserByEmail(userEmail);
         Category category = categoryRepository.findByUserId(vendor.getId());

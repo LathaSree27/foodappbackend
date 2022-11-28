@@ -1,10 +1,7 @@
 package com.tweats.controller;
 
 import com.tweats.controller.response.ItemListResponse;
-import com.tweats.exceptions.ItemAccessException;
-import com.tweats.exceptions.ItemDoesNotExistException;
-import com.tweats.exceptions.NoItemsFoundException;
-import com.tweats.exceptions.NotAnImageException;
+import com.tweats.exceptions.*;
 import com.tweats.service.ItemService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -31,7 +28,7 @@ public class ItemController {
     public void save(Principal principal,
                      @RequestParam(value = "name") @NotBlank(message = "Item name can't be empty!") String name,
                      @RequestParam(value = "price") @Min(value = 0, message = "Price can't be negative!") BigDecimal price,
-                     @RequestParam(value = "file") MultipartFile itemImageFile) throws IOException, NotAnImageException {
+                     @RequestParam(value = "file") MultipartFile itemImageFile) throws IOException, NotAnImageException, ImageSizeExceededException {
         String userEmail = principal.getName();
         itemService.save(name, price, itemImageFile, userEmail);
     }
