@@ -28,8 +28,6 @@ public class OrderServiceTest {
     private ItemService itemService;
     @Mock
     private Item item;
-    @InjectMocks
-    private OrderService orderService;
     @Mock
     private Order order;
     @Mock
@@ -48,6 +46,8 @@ public class OrderServiceTest {
     private User user;
     @Mock
     private CartService cartService;
+    @InjectMocks
+    private OrderService orderService;
 
     private void prepareData(Date date, List<Order> orders, List<OrderResponse> orderResponses) {
         BigDecimal billAmount = new BigDecimal(100);

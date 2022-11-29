@@ -33,28 +33,20 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class OrderControllerIntegrationTest {
     @Autowired
     MockMvc mockMvc;
-
     @Autowired
     OrderRepository orderRepository;
-
     @Autowired
     CategoryRepository categoryRepository;
-
     @Autowired
     ItemRepository itemRepository;
-
     @Autowired
     UserRepository userRepository;
-
     @Autowired
     ImageRepository imageRepository;
-
     @Autowired
     RoleRepository roleRepository;
-
     @Autowired
     CartRepository cartRepository;
-
     private Category category;
     private Order order;
     private User vendor;
@@ -132,6 +124,7 @@ public class OrderControllerIntegrationTest {
     void shouldBeAbleToGetActiveOrdersWhenCategoryIdIsGiven() throws Exception {
         order.setStatus(OrderStatus.PLACED);
         orderRepository.save(order);
+
         mockMvc.perform(
                         get("/order/active")
                                 .with(httpBasic(vendor.getEmail(), "password")))
@@ -150,6 +143,7 @@ public class OrderControllerIntegrationTest {
     void shouldBeAbleToCompleteTheOrderWhenOrderIdIsGiven() throws Exception {
         order.setStatus(OrderStatus.PLACED);
         Order placedOrder = orderRepository.save(order);
+
         mockMvc.perform(
                         put("/order/complete")
                                 .with(httpBasic(vendor.getEmail(), "password"))
@@ -160,6 +154,7 @@ public class OrderControllerIntegrationTest {
     @Test
     void shouldThrowOrderNotFoundErrorWhenTheGivenOrderIsNotPlaced() throws Exception {
         long orderId = 1;
+
         mockMvc.perform(
                         put("/order/complete")
                                 .with(httpBasic(vendor.getEmail(), "password"))
@@ -171,6 +166,7 @@ public class OrderControllerIntegrationTest {
     void shouldThrowOrderCategoryMismatchErrorWhenTheGivenOrderDoesNotBelongToVendorCategory() throws Exception {
         order.setStatus(OrderStatus.PLACED);
         Order placedOrder = orderRepository.save(order);
+
         mockMvc.perform(
                         put("/order/complete")
                                 .with(httpBasic(otherVendor.getEmail(), "password"))
@@ -182,6 +178,7 @@ public class OrderControllerIntegrationTest {
     void shouldThrowOrderCanceledErrorWhenTheGivenOrderAlreadyCanceled() throws Exception {
         order.setStatus(OrderStatus.CANCELED);
         Order placedOrder = orderRepository.save(order);
+
         mockMvc.perform(
                         put("/order/complete")
                                 .with(httpBasic(vendor.getEmail(), "password"))

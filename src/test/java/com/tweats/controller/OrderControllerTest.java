@@ -20,14 +20,13 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class OrderControllerTest {
-    @InjectMocks
-    private OrderController orderController;
+
     @Mock
     private OrderService orderService;
-
     @Mock
     private Principal principal;
-
+    @InjectMocks
+    private OrderController orderController;
 
     @Test
     void shouldBeAbleToFetchAllCompletedOrdersWhenCategoryIdAndDateIsGiven() throws NoOrdersFoundException {
