@@ -24,8 +24,6 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class CategoryControllerTest {
-
-
     @Mock
     CategoryService categoryService;
 
@@ -42,7 +40,7 @@ public class CategoryControllerTest {
     private CategoryController categoryController;
 
     @Test
-    void shouldBeAbleToSaveCategoryWhenNameFileAndUseremailIsGiven() throws UserNotFoundException, ImageSizeExceededException, IOException, NotAVendorException, CategoryAlreadyAssignedException, NotAnImageException {
+    void shouldBeAbleToSaveCategoryWhenNameFileAndUserEmailIsGiven() throws UserNotFoundException, ImageSizeExceededException, IOException, NotAVendorException, CategoryAlreadyAssignedException, NotAnImageException {
         MockMultipartFile categoryImageFile = new MockMultipartFile("image.png", "Hello".getBytes());
         String name = "juice";
         String user_email = "abc@gmail.com";
@@ -55,7 +53,7 @@ public class CategoryControllerTest {
 
     @Test
     void shouldBeAbleToFetchCategoryOfLoggedInVendor() throws UserNotFoundException, NoCategoryFoundException {
-        when(categoryService.getCategoryResponse(principal.getName())).thenReturn(vendorCategoryResponse);
+        when(categoryService.getVendorCategoryResponse(principal.getName())).thenReturn(vendorCategoryResponse);
 
         assertThat(categoryController.fetchCategory(principal), is(vendorCategoryResponse));
     }

@@ -33,7 +33,7 @@ public class CategoryController {
 
     @GetMapping("vendor")
     public VendorCategoryResponse fetchCategory(Principal principal) throws NoCategoryFoundException, UserNotFoundException {
-        return categoryService.getCategoryResponse(principal.getName());
+        return categoryService.getVendorCategoryResponse(principal.getName());
     }
 
     @GetMapping

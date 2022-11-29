@@ -1,6 +1,7 @@
 package com.tweats.service;
 
 import com.tweats.controller.response.CategoryResponse;
+import com.tweats.controller.response.VendorCategoryResponse;
 import com.tweats.exceptions.*;
 import com.tweats.model.Category;
 import com.tweats.model.Image;
@@ -14,7 +15,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -43,13 +46,11 @@ public class CategoryServiceTest {
 
     @Mock
     private Category category;
-    private String userEmail;
-
 
     @Test
     public void shouldBeAbleToSaveValidCategoryWhenCategoryDetailsAreProvided() throws IOException, NotAnImageException, UserNotFoundException, NotAVendorException, CategoryAlreadyAssignedException, ImageSizeExceededException {
         String categoryName = "Juice";
-        userEmail = "abc@example.com";
+        String userEmail = "abc@example.com";
         Category category = new Category(categoryName, image, user);
         MockMultipartFile categoryImageFile = new MockMultipartFile("image.png", "Hello".getBytes());
         when(userPrincipalService.findUserByEmail(userEmail)).thenReturn(user);
@@ -64,26 +65,27 @@ public class CategoryServiceTest {
     @Test
     public void shouldBeAbleToFetchCategoryWhenUserIdIsProvided() throws NoCategoryFoundException, UserNotFoundException {
         long userId = user.getId();
-        userEmail = "abc@example.com";
+        String userEmail = "abc@example.com";
         when(userPrincipalService.findUserByEmail(userEmail)).thenReturn(user);
         when(categoryRepository.findByUser_id(userId)).thenReturn(Optional.of(category));
+        VendorCategoryResponse expectedVendorCategoryResponse = new VendorCategoryResponse(category.getId());
 
-        Category fetchedCategory = categoryService.getCategory(userEmail);
+        VendorCategoryResponse actualVendorCategoryResponse = categoryService.getVendorCategoryResponse(userEmail);
 
-        assertThat(category, is(fetchedCategory));
+        assertThat(actualVendorCategoryResponse, is(expectedVendorCategoryResponse));
     }
 
     @Test
     void shouldThrowNoCategoryFoundExceptionWhenCategoryIsNotPresentForTheUser() throws UserNotFoundException {
-        userEmail = "abc@example.com";
+        String userEmail = "abc@example.com";
         when(userPrincipalService.findUserByEmail(userEmail)).thenReturn(user);
 
-        assertThrows(NoCategoryFoundException.class, () -> categoryService.getCategory(userEmail));
+        assertThrows(NoCategoryFoundException.class, () -> categoryService.getVendorCategoryResponse(userEmail));
     }
 
     @Test
     public void shouldThrowNotAVendorExceptionWhenTheUserIsNotAVendor() throws UserNotFoundException {
-        userEmail = "abc@example.com";
+        String userEmail = "abc@example.com";
         MockMultipartFile categoryImageFile = new MockMultipartFile("image.png", "Hello".getBytes());
         when(userPrincipalService.findUserByEmail(userEmail)).thenReturn(user);
         when(userPrincipalService.isVendor(user)).thenReturn(false);
@@ -94,7 +96,7 @@ public class CategoryServiceTest {
     @Test
     void shouldThrowCategoryAlreadyAssignedExceptionWhenTheGivenVendorHasCategoryAssigned() throws UserNotFoundException {
         long userId = 2;
-        userEmail = "abc@example.com";
+        String userEmail = "abc@example.com";
         MockMultipartFile categoryImageFile = new MockMultipartFile("image.png", "Hello".getBytes());
         when(userPrincipalService.findUserByEmail(userEmail)).thenReturn(user);
         when(userPrincipalService.isVendor(user)).thenReturn(true);
@@ -108,12 +110,14 @@ public class CategoryServiceTest {
     void shouldBeAbleToGetAllCategories() throws NoCategoryFoundException {
         String categoryName = "Juice";
         when(category.getImage()).thenReturn(image);
+        String imageLink = "http://localhost:8080/tweats/api/v1/images/" + category.getImage().getId();
         when(category.getName()).thenReturn(categoryName);
+        when(imageService.getImageLink(category.getImage())).thenReturn(imageLink);
         List<CategoryResponse> expectedCategories = new ArrayList<>(List.of(CategoryResponse
                 .builder()
                 .id(category.getId())
                 .categoryName(category.getName())
-                .imageLink("http://localhost:8080/tweats/api/v1/images/" + category.getImage().getId())
+                .imageLink(imageLink)
                 .isOpen(category.isOpen())
                 .build()));
         when(categoryRepository.findAll()).thenReturn(new ArrayList<>(List.of(category)));
@@ -121,11 +125,11 @@ public class CategoryServiceTest {
         List<CategoryResponse> actualCategories = categoryService.getAllCategories();
 
         verify(categoryRepository).findAll();
-        assertThat(actualCategories,is(expectedCategories));
+        assertThat(actualCategories, is(expectedCategories));
     }
 
     @Test
     void shouldThrowNoCategoryFoundExceptionWhenThereIsNoCategory() {
-        assertThrows(NoCategoryFoundException.class,()->categoryService.getAllCategories());
+        assertThrows(NoCategoryFoundException.class, () -> categoryService.getAllCategories());
     }
 }

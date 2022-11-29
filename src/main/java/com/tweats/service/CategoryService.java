@@ -23,24 +23,17 @@ import java.util.Optional;
 @AllArgsConstructor
 public class CategoryService {
 
-    private final CategoryRepository categoryRepository;
+    private CategoryRepository categoryRepository;
     private UserPrincipalService userPrincipalService;
-
     private ImageService imageService;
 
     public void save(String name, MultipartFile categoryImageFile, String email) throws IOException, NotAnImageException, UserNotFoundException, NotAVendorException, CategoryAlreadyAssignedException, ImageSizeExceededException {
         User vendor = userPrincipalService.findUserByEmail(email);
-        if (!userPrincipalService.isVendor(vendor))
-            throw new NotAVendorException();
-
+        if (!userPrincipalService.isVendor(vendor)) throw new NotAVendorException();
         Optional<Category> optionalCategory = categoryRepository.findByUser_id(vendor.getId());
-        if (optionalCategory.isPresent())
-            throw new CategoryAlreadyAssignedException();
-
+        if(optionalCategory.isPresent()) throw new CategoryAlreadyAssignedException();
         Image categoryImage = imageService.save(categoryImageFile);
-
         Category category = new Category(name, categoryImage, vendor);
-
         categoryRepository.save(category);
     }
 
@@ -49,15 +42,15 @@ public class CategoryService {
         return categoryRepository.findByUser_id(user.getId()).orElseThrow(NoCategoryFoundException::new);
     }
 
-    public VendorCategoryResponse getCategoryResponse(String userEmail) throws UserNotFoundException, NoCategoryFoundException {
+    public VendorCategoryResponse getVendorCategoryResponse(String userEmail) throws UserNotFoundException, NoCategoryFoundException {
         Category category = getCategory(userEmail);
         return new VendorCategoryResponse(category.getId());
     }
 
     public List<CategoryResponse> getAllCategories() throws NoCategoryFoundException {
+        ArrayList<CategoryResponse> categoryResponses = new ArrayList<>();
         List<Category> categories = categoryRepository.findAll();
         if (isEmpty(categories)) throw new NoCategoryFoundException();
-        ArrayList<CategoryResponse> categoryResponses = new ArrayList<>();
         for (Category category : categories) {
             categoryResponses.add(getCategoryResponse(category));
         }
@@ -73,7 +66,7 @@ public class CategoryService {
                 .builder()
                 .id(category.getId())
                 .categoryName(category.getName())
-                .imageLink("http://localhost:8080/tweats/api/v1/images/" + category.getImage().getId())
+                .imageLink(imageService.getImageLink(category.getImage()))
                 .isOpen(category.isOpen())
                 .build();
     }

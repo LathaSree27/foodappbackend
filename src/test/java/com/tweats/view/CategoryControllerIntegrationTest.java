@@ -36,8 +36,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("test")
 @WithMockUser
 public class CategoryControllerIntegrationTest {
-
-
     @Autowired
     MockMvc mockMvc;
 
@@ -61,7 +59,6 @@ public class CategoryControllerIntegrationTest {
     @Autowired
     BCryptPasswordEncoder bCryptPasswordEncoder;
 
-
     private User vendor;
 
     @BeforeEach
@@ -71,8 +68,6 @@ public class CategoryControllerIntegrationTest {
         userRepository.deleteAll();
         roleRepository.deleteAll();
         vendor = userRepository.save(new User("abc", "abc@example.com", bCryptPasswordEncoder.encode("password"), roleRepository.save(new Role("VENDOR"))));
-
-
     }
 
     @AfterEach
@@ -81,8 +76,6 @@ public class CategoryControllerIntegrationTest {
         imageRepository.deleteAll();
         userRepository.deleteAll();
         roleRepository.deleteAll();
-
-
     }
 
     @Test
