@@ -23,11 +23,11 @@ public class CartItemResponse {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         CartItemResponse that = (CartItemResponse) o;
-        return quantity == that.quantity && isAvailable == that.isAvailable && Objects.equals(name, that.name) && Objects.equals(price, that.price) && Objects.equals(imageLink, that.imageLink);
+        return id == that.id && quantity == that.quantity && isAvailable == that.isAvailable && name.equals(that.name) && price.equals(that.price) && imageLink.equals(that.imageLink);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, quantity, price, imageLink, isAvailable);
+        return Objects.hash(id, name, quantity, price, imageLink, isAvailable);
     }
 }

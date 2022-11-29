@@ -9,7 +9,6 @@ import com.tweats.exceptions.UserNotFoundException;
 import com.tweats.model.*;
 import com.tweats.repo.CartItemRepository;
 import com.tweats.repo.CartRepository;
-import com.tweats.repo.ItemRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,7 +23,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class CartServiceTest {
@@ -34,7 +34,9 @@ public class CartServiceTest {
     @Mock
     private UserPrincipalService userPrincipalService;
     @Mock
-    private ItemRepository itemRepository;
+    private ItemService itemService;
+    @Mock
+    private ImageService imageService;
     @Mock
     private CartRepository cartRepository;
     @Mock
@@ -58,7 +60,6 @@ public class CartServiceTest {
 
     @Test
     void shouldBeAbleToSaveCartItemWhenUserAddsItemToCart() throws ItemDoesNotExistException, NoCategoryFoundException, UserNotFoundException {
-        String userEmail = "abc@gmail.com";
         long itemId = 1;
         long quantity = 2;
         String itemName = "Mango";
@@ -67,63 +68,47 @@ public class CartServiceTest {
         CartItem cartItem = new CartItem(cart, item, quantity);
         Set<CartItem> expectedCartItems = new HashSet<>();
         expectedCartItems.add(cartItem);
-        when(userPrincipalService.findUserByEmail(userEmail)).thenReturn(user);
-        when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
-        when(cartRepository.findCartByUserIdAndCategoryId(user.getId(), category.getId())).thenReturn(Optional.of(cart));
+        when(userPrincipalService.findUserByEmail(user.getEmail())).thenReturn(user);
+        when(itemService.getItem(itemId)).thenReturn(item);
+        when(cartRepository.findByUserIdAndCategoryId(user.getId(), category.getId())).thenReturn(Optional.of(cart));
 
-        cartService.addItem(userEmail, itemId, quantity);
+        cartService.addItem(user.getEmail(), itemId, quantity);
 
         verify(cartRepository).save(cart);
         assertThat(cart.getCartItems(), is(expectedCartItems));
     }
 
     @Test
-    void shouldThrowItemDoesNotExistExceptionWhenItemWithTheGivenIdDoesNotExist() throws UserNotFoundException {
-        String userEmail = "abc@gmail.com";
-        long itemId = 1;
-        long quantity = 2;
-        when(userPrincipalService.findUserByEmail(userEmail)).thenReturn(user);
-
-        assertThrows(ItemDoesNotExistException.class, () -> cartService.addItem(userEmail, itemId, quantity));
-    }
-
-    @Test
     void shouldBeAbleToGetCartItemsWhenUserEmailAndAValidCategoryIdIsGiven() throws NoCategoryFoundException, UserNotFoundException {
-        String appLink = "http://localhost:8080/tweats/api/v1";
-        cartService.setAppLink(appLink);
-        String userEmail = "abc@gamil.com";
+        String imageLink = "http://localhost:8080/tweats/api/v1/images/" + image.getId();
         long categoryId = 1;
         String firstItemName = "Mango";
         BigDecimal firstItemPrice = new BigDecimal(80);
-        Image itemImage = mock(Image.class);
-        Item mango = new Item(firstItemName, itemImage, firstItemPrice, category);
-        HashSet<CartItem> cartItems = new HashSet<>();
+        Item mango = new Item(firstItemName, image, firstItemPrice, category);
         long quantity = 2;
         CartItem cartItem = new CartItem(cart, mango, quantity);
-        cartItems.add(cartItem);
-        cartItem.setId(2);
-        cart.setCartItems(cartItems);
-        cart.setId(2);
+        cart.addCartItem(cartItem);
         BigDecimal billAmount = new BigDecimal(160);
-        CartItemResponse cartItemResponse = new CartItemResponse(cartItem.getId(), cartItem.getItem().getName(), cartItem.getQuantity(), cartItem.getItem().getPrice(), appLink + "/images/" + (cartItem.getItem().getId()), cartItem.getItem().isAvailable());
+        CartItemResponse cartItemResponse = new CartItemResponse(cartItem.getId(), mango.getName(), cartItem.getQuantity(), mango.getPrice(), imageLink, mango.isAvailable());
         List<CartItemResponse> cartItemResponseList = new ArrayList<>();
         cartItemResponseList.add(cartItemResponse);
-        when(userPrincipalService.findUserByEmail(userEmail)).thenReturn(user);
-        when(cartRepository.findCartByUserIdAndCategoryId(user.getId(), categoryId)).thenReturn(Optional.of(cart));
-        when(cartRepository.getBillAmount(cart.getId())).thenReturn(billAmount);
-        CartResponse expectedCartResponse = new CartResponse(cart.getId(), cartRepository.getBillAmount(cart.getId()), cartItemResponseList);
+        when(userPrincipalService.findUserByEmail(user.getEmail())).thenReturn(user);
+        when(imageService.getImageLink(image)).thenReturn(imageLink);
+        when(cartRepository.findByUserIdAndCategoryId(user.getId(), categoryId)).thenReturn(Optional.of(cart));
+        when(cartRepository.getBillAmount(cart.getId())).thenReturn(Optional.of(billAmount));
+        CartResponse expectedCartResponse = new CartResponse(cart.getId(), billAmount, cartItemResponseList);
 
-        CartResponse actualCartResponse = cartService.cartItems(userEmail, categoryId);
+        CartResponse actualCartResponse = cartService.getCartItems(user.getEmail(), categoryId);
 
         assertThat(actualCartResponse, is(expectedCartResponse));
     }
 
     @Test
     void shouldThrowNoCategoryFoundExceptionWhenCategoryDoesNotExistsWithGivenId() throws UserNotFoundException {
-        String userEmail = "abc@gmail.com";
-        when(userPrincipalService.findUserByEmail(userEmail)).thenReturn(user);
         long categoryId = 2;
-        assertThrows(NoCategoryFoundException.class, () -> cartService.cartItems(userEmail, categoryId));
+        when(userPrincipalService.findUserByEmail(user.getEmail())).thenReturn(user);
+
+        assertThrows(NoCategoryFoundException.class, () -> cartService.getCartItems(user.getEmail(), categoryId));
     }
 
     @Test

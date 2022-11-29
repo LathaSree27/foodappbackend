@@ -1,9 +1,6 @@
 package com.tweats.view;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tweats.TweatsApplication;
-import com.tweats.controller.response.CartItemResponse;
-import com.tweats.controller.response.CartResponse;
 import com.tweats.model.*;
 import com.tweats.repo.*;
 import org.junit.jupiter.api.AfterEach;
@@ -49,12 +46,8 @@ public class CartControllerIntegrationTest {
     private CartRepository cartRepository;
     @Autowired
     private CartItemRepository cartItemRepository;
-    @Autowired
-    ObjectMapper objectMapper;
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
     private Category category;
     private Cart cart;
-    private User user;
     private Image categoryImage;
 
     @BeforeEach
@@ -66,9 +59,9 @@ public class CartControllerIntegrationTest {
         imageRepository.deleteAll();
         userRepository.deleteAll();
         roleRepository.deleteAll();
-        bCryptPasswordEncoder = new BCryptPasswordEncoder();
-        Role userRole = roleRepository.save(new Role("USER"));
-        user = userRepository.save(new User("abc", "abc@gmail.com", bCryptPasswordEncoder.encode("password"), userRole));
+        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+        Role userRole = roleRepository.save(new Role("CUSTOMER"));
+        User user = userRepository.save(new User("abc", "abc@gmail.com", bCryptPasswordEncoder.encode("password"), userRole));
         Image image = new Image("image.png", MediaType.IMAGE_JPEG_VALUE, "hello".getBytes(), 1L);
         categoryImage = imageRepository.save(image);
         category = new Category("Juice", categoryImage, user);
@@ -95,47 +88,43 @@ public class CartControllerIntegrationTest {
         Item item = new Item(itemName, categoryImage, itemPrice, category);
         Item savedItem = itemRepository.save(item);
 
-        mockMvc.perform(post("/cart")
-                .param("itemId", String.valueOf(savedItem.getId()))
+        mockMvc.perform(post("/cart/item/" + savedItem.getId())
                 .param("quantity", String.valueOf(1L))
                 .with(httpBasic("abc@gmail.com", "password"))).andExpect(status().isOk());
     }
 
     @Test
     void shouldThrowItemDoesNotExistErrorWhenItemWithGivenIdDoesNotExist() throws Exception {
-        mockMvc.perform(post("/cart")
-                .param("itemId", "1")
-                .param("quantity", String.valueOf(1L))
+        int itemId = -1;
+        int quantity = 1;
+
+        mockMvc.perform(post("/cart/item/" + itemId)
+                .param("quantity", String.valueOf(quantity))
                 .with(httpBasic("abc@gmail.com", "password"))).andExpect(status().isNotFound());
     }
 
     @Test
     void shouldThrowNegativeQuantityErrorWhenItemQuantityIsGivenNegative() throws Exception {
-        mockMvc.perform(post("/cart")
-                .param("itemId", "1")
-                .param("quantity", String.valueOf(-1L))
+        int itemId = 1;
+        int quantity = -1;
+
+        mockMvc.perform(post("/cart/item/" + itemId)
+                .param("quantity", String.valueOf(quantity))
                 .with(httpBasic("abc@gmail.com", "password"))).andExpect(status().isBadRequest());
     }
 
     @Test
     void shouldBeAbleToGetCartItemsFromCartWhenCartApiIsInvoked() throws Exception {
-        String appLink = "http://localhost:8080/tweats/api/v1";
-        CartItemResponse mango = CartItemResponse.builder().id(1).name("Mango").quantity(2).price(new BigDecimal(50)).imageLink(appLink + "/images/" + 1).build();
-        ArrayList<CartItemResponse> cartItemResponses = new ArrayList<>();
-        cartItemResponses.add(mango);
-        CartResponse cartResponse = CartResponse.builder().id(2).billAmount(new BigDecimal(100)).cartItemResponses(cartItemResponses).build();
-        String jsonContent = objectMapper.writeValueAsString(cartResponse);
-
-        mockMvc.perform(get("/cart/" + category.getId())
-                        .with(httpBasic("abc@gmail.com", "password"))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonContent))
+        mockMvc.perform(get("/cart/category/" + category.getId())
+                        .with(httpBasic("abc@gmail.com", "password")))
                 .andExpect(status().isOk());
     }
 
     @Test
     void shouldThrowCategoryNotFoundErrorWhenCategoryDoestNotExistsWithGivenId() throws Exception {
-        mockMvc.perform(get("/cart/" + 370)
+        long categoryId = -1;
+
+        mockMvc.perform(get("/cart/category/" + categoryId)
                         .with(httpBasic("abc@gmail.com", "password")))
                 .andExpect(status().isNotFound());
     }
@@ -143,29 +132,30 @@ public class CartControllerIntegrationTest {
     @Test
     void shouldBeAbleToUpdateQuantityOfCartItemWhenCartUpdateApiIsInvoked() throws Exception {
         String itemName = "mango";
+        long quantity = 1;
+        Set<CartItem> cartItems = new HashSet<>();
         Item item = new Item(itemName, categoryImage, new BigDecimal(2), category);
         itemRepository.save(item);
-        long quantity = 1;
         CartItem cartItem = new CartItem(cart, item, quantity);
-        Set<CartItem> cartItems = new HashSet<>();
         cartItems.add(cartItem);
         cart.setCartItems(cartItems);
         Cart cart = cartRepository.save(this.cart);
         List<CartItem> cartItemList = new ArrayList<>(cart.getCartItems());
         CartItem savedCartItem = cartItemList.get(0);
+        int updatedQuantity = 2;
 
-        mockMvc.perform(put("/cart/update/" + savedCartItem.getId())
-                        .param("quantity", String.valueOf(2))
+        mockMvc.perform(put("/cart/item/" + savedCartItem.getId())
+                        .param("quantity", String.valueOf(updatedQuantity))
                         .with(httpBasic("abc@gmail.com", "password")))
                 .andExpect(status().isOk());
     }
 
     @Test
     void shouldThrowCartItemNotFoundErrorWhenCartItemDoesNotExistsWithGivenId() throws Exception {
-        long cartItemId = 2L;
-        long quantity = 4L;
+        long cartItemId = -1;
+        long quantity = 4;
 
-        mockMvc.perform(put("/cart/update/" + cartItemId)
+        mockMvc.perform(put("/cart/item/" + cartItemId)
                         .param("quantity", String.valueOf(quantity))
                         .with(httpBasic("abc@gmail.com", "password")))
                 .andExpect(status().isNotFound());
@@ -173,10 +163,10 @@ public class CartControllerIntegrationTest {
 
     @Test
     void shouldThrowValidationErrorWhenGivenQuantityIsNegative() throws Exception {
-        long cartItemId = 2L;
-        long quantity = -4L;
+        long cartItemId = 2;
+        long quantity = -4;
 
-        mockMvc.perform(put("/cart/update/" + cartItemId)
+        mockMvc.perform(put("/cart/item/" + cartItemId)
                         .param("quantity", String.valueOf(quantity))
                         .with(httpBasic("abc@gmail.com", "password")))
                 .andExpect(status().isBadRequest());
@@ -185,26 +175,26 @@ public class CartControllerIntegrationTest {
     @Test
     void shouldBeAbleToDeleteCartItemWhenIdIsGiven() throws Exception {
         String itemName = "mango";
+        long quantity = 1;
+        Set<CartItem> cartItems = new HashSet<>();
         Item item = new Item(itemName, categoryImage, new BigDecimal(2), category);
         itemRepository.save(item);
-        long quantity = 1;
         CartItem cartItem = new CartItem(cart, item, quantity);
-        Set<CartItem> cartItems = new HashSet<>();
         cartItems.add(cartItem);
         cart.setCartItems(cartItems);
         Cart cart = cartRepository.save(this.cart);
         List<CartItem> cartItemList = new ArrayList<>(cart.getCartItems());
         CartItem savedCartItem = cartItemList.get(0);
 
-        mockMvc.perform(delete("/cart/delete/" + savedCartItem.getId()))
+        mockMvc.perform(delete("/cart/item/" + savedCartItem.getId()))
                 .andExpect(status().isOk());
     }
 
     @Test
     void shouldThrowCartItemNotFoundErrorWhenCartItemDoesNotExistWithGivenId() throws Exception {
-        long cartItemId = 2L;
+        long cartItemId = 2;
 
-        mockMvc.perform(delete("/cart/delete/" + cartItemId))
+        mockMvc.perform(delete("/cart/item/" + cartItemId))
                 .andExpect(status().isNotFound());
     }
 }

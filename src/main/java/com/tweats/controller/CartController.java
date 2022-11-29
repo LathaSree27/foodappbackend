@@ -7,7 +7,6 @@ import com.tweats.exceptions.NoCategoryFoundException;
 import com.tweats.exceptions.UserNotFoundException;
 import com.tweats.service.CartService;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,32 +21,27 @@ public class CartController {
 
     CartService cartService;
 
-    @PostMapping
+    @PostMapping("item/{itemId}")
     public void add(Principal principal,
-                    @RequestParam long itemId,
+                    @PathVariable long itemId,
                     @Min(value = 0, message = "quantity cannot be negative")
                     @RequestParam long quantity) throws ItemDoesNotExistException, NoCategoryFoundException, UserNotFoundException {
-        String userEmail = principal.getName();
-        cartService.addItem(userEmail, itemId, quantity);
+        cartService.addItem(principal.getName(), itemId, quantity);
     }
 
-    @GetMapping("{categoryId}")
-    @ResponseStatus(code = HttpStatus.OK)
+    @GetMapping("category/{categoryId}")
     public CartResponse getCartItems(Principal principal,
                                      @PathVariable long categoryId) throws NoCategoryFoundException, UserNotFoundException {
-        String userEmail = principal.getName();
-        return cartService.cartItems(userEmail, categoryId);
+        return cartService.getCartItems(principal.getName(), categoryId);
     }
 
-    @PutMapping("/update/{cartItemId}")
-    @ResponseStatus(code = HttpStatus.OK)
+    @PutMapping("item/{cartItemId}")
     public void updateQuantity(@PathVariable long cartItemId,
                                @RequestParam(value = "quantity") @Min(value = 0, message = "Quantity can't be negative!") long quantity) throws CartItemNotFoundException {
         cartService.updateCartItemQuantity(cartItemId, quantity);
     }
 
-    @DeleteMapping("/delete/{cartItemId}")
-    @ResponseStatus(code = HttpStatus.OK)
+    @DeleteMapping("item/{cartItemId}")
     public void deleteCartItem(@PathVariable long cartItemId) throws CartItemNotFoundException {
         cartService.deleteCartItem(cartItemId);
     }
