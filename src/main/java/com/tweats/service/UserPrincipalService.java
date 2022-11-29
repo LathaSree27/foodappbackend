@@ -7,43 +7,32 @@ import com.tweats.model.User;
 import com.tweats.model.UserPrincipal;
 import com.tweats.repo.RoleRepository;
 import com.tweats.repo.UserRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service
+@AllArgsConstructor
 public class UserPrincipalService implements UserDetailsService {
 
     private final UserRepository userRepository;
 
     private final RoleRepository roleRepository;
 
-    public UserPrincipalService(UserRepository userRepository, RoleRepository roleRepository) {
-        this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
-    }
-
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = null;
         try {
-            user = findUserByEmail(email);
+            User user = findUserByEmail(email);
+            return new UserPrincipal(user);
         } catch (UserNotFoundException e) {
             throw new UsernameNotFoundException("user not found");
         }
-        return new UserPrincipal(user);
-
     }
 
     public User findUserByEmail(String email) throws UserNotFoundException {
-        Optional<User> optionalUser = userRepository.findByEmail(email);
-        if (!optionalUser.isPresent()) {
-            throw new UserNotFoundException();
-        }
-        return optionalUser.get();
+        return userRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
     }
 
     public boolean isVendor(User user) {
@@ -52,7 +41,8 @@ public class UserPrincipalService implements UserDetailsService {
         return userRole.equals(vendorRole);
     }
 
-    public LoginResponse getLoginResponse(String email) {
-        return null;
+    public LoginResponse getLoginResponse(String email) throws UserNotFoundException {
+        User user = findUserByEmail(email);
+        return new LoginResponse(email, user.getRole().getName());
     }
 }

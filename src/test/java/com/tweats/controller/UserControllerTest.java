@@ -1,6 +1,7 @@
 package com.tweats.controller;
 
 import com.tweats.controller.response.LoginResponse;
+import com.tweats.exceptions.UserNotFoundException;
 import com.tweats.service.UserPrincipalService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,7 +26,7 @@ public class UserControllerTest {
     private Principal principal;
 
     @Test
-    void shouldBeAbleToGetEmailAndRoleWhenUserLoggedIn() {
+    void shouldBeAbleToGetEmailAndRoleWhenUserLoggedIn() throws UserNotFoundException {
         LoginResponse expectedLoginResponse = new LoginResponse();
         when(userPrincipalService.getLoginResponse(principal.getName())).thenReturn(expectedLoginResponse);
 

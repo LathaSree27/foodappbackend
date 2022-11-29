@@ -1,49 +1,47 @@
 package com.tweats.service;
 
+import com.tweats.controller.response.LoginResponse;
 import com.tweats.exceptions.UserNotFoundException;
 import com.tweats.model.Role;
 import com.tweats.model.User;
 import com.tweats.repo.RoleRepository;
 import com.tweats.repo.UserRepository;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 public class UserPrincipleServiceTest {
 
+    @Mock
     private UserRepository userRepository;
+    @Mock
     private RoleRepository roleRepository;
+    @InjectMocks
     private UserPrincipalService userPrincipalService;
+    @Mock
     private User user;
-
-    @BeforeEach
-    public void setup() {
-        userRepository = mock(UserRepository.class);
-        roleRepository = mock(RoleRepository.class);
-        user = mock(User.class);
-        userPrincipalService = new UserPrincipalService(userRepository, roleRepository);
-    }
 
     @Test
     void shouldBeAbleToReturnUserWhenAnAccountExistsWithGivenEmail() throws UserNotFoundException {
-        String email = "abc@gmail.com";
-        when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
+        when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
 
-        assertThat(user, is(userPrincipalService.findUserByEmail(email)));
+        assertThat(user, is(userPrincipalService.findUserByEmail(user.getEmail())));
     }
 
     @Test
     void shouldBeAbleToThrowUserNotFoundExceptionWhenNoAccountExistsWithGivenMailId() {
-        String email = "abc@gmail.com";
-
-        assertThrows(UserNotFoundException.class, () -> userPrincipalService.findUserByEmail(email));
+        assertThrows(UserNotFoundException.class, () -> userPrincipalService.findUserByEmail(user.getEmail()));
     }
 
     @Test
@@ -52,7 +50,7 @@ public class UserPrincipleServiceTest {
         when(user.getRole()).thenReturn(role);
         when(roleRepository.findByName("VENDOR")).thenReturn(role);
 
-        assertTrue(userPrincipalService.isVendor(user));
+        Assertions.assertTrue(userPrincipalService.isVendor(user));
     }
 
     @Test
@@ -62,6 +60,20 @@ public class UserPrincipleServiceTest {
         when(user.getRole()).thenReturn(userRole);
         when(roleRepository.findByName("VENDOR")).thenReturn(vendorRole);
 
-        assertFalse(userPrincipalService.isVendor(user));
+        Assertions.assertFalse(userPrincipalService.isVendor(user));
+    }
+
+    @Test
+    void shouldBeAbleToGetEmailAndRoleWhenUserIsLoggedIn() throws UserNotFoundException {
+        String roleName = "CUSTOMER";
+        String email = "abc@example.com";
+        Role role = new Role(roleName);
+        when(user.getRole()).thenReturn(role);
+        when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
+        LoginResponse expectedLoginResponse = new LoginResponse(email, user.getRole().getName());
+
+        LoginResponse actualLoginResponse = userPrincipalService.getLoginResponse(email);
+
+        assertThat(actualLoginResponse, is(expectedLoginResponse));
     }
 }

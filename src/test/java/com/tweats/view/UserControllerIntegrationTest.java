@@ -1,6 +1,8 @@
 package com.tweats.view;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tweats.TweatsApplication;
+import com.tweats.controller.response.LoginResponse;
 import com.tweats.model.Role;
 import com.tweats.model.User;
 import com.tweats.repo.RoleRepository;
@@ -12,12 +14,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(classes = TweatsApplication.class)
@@ -33,6 +35,9 @@ public class UserControllerIntegrationTest {
 
     @Autowired
     private RoleRepository roleRepository;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @BeforeEach
     public void before() {
@@ -53,9 +58,11 @@ public class UserControllerIntegrationTest {
         roleRepository.save(role);
         User user = new User("abc", "abc@gmail.com", bCryptPasswordEncoder.encode("Password@123"), roleRepository.findByName("CUSTOMER"));
         userRepository.save(user);
+        LoginResponse loginResponse = new LoginResponse(user.getEmail(), role.getName());
         mockMvc.perform(get("/login")
                         .with(httpBasic("abc@gmail.com", "Password@123")))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(content().json(objectMapper.writeValueAsString(loginResponse)));
     }
 
     @Test

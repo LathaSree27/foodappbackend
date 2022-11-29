@@ -1,6 +1,7 @@
 package com.tweats.controller;
 
 import com.tweats.controller.response.LoginResponse;
+import com.tweats.exceptions.UserNotFoundException;
 import com.tweats.service.UserPrincipalService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,7 +15,7 @@ public class UserController {
     private UserPrincipalService userPrincipalService;
 
     @GetMapping("/login")
-    public LoginResponse login(Principal principal) {
+    public LoginResponse login(Principal principal) throws UserNotFoundException {
         return userPrincipalService.getLoginResponse(principal.getName());
     }
 }
