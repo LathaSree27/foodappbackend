@@ -23,68 +23,68 @@ public class CustomExceptionHandler {
     private final long MEGABYTE = 1024 * 1024;
 
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity handleMethodArgumentNotValid(ConstraintViolationException ex) {
+    public ResponseEntity<ErrorResponse> handleMethodArgumentNotValid(ConstraintViolationException ex) {
         ArrayList<String> details = new ArrayList<>();
         Set<ConstraintViolation<?>> violations = ex.getConstraintViolations();
         for (ConstraintViolation<?> violation : violations) {
             details.add(violation.getMessage());
         }
         ErrorResponse error = new ErrorResponse("Validation Failed", details);
-        return new ResponseEntity(error, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(NoItemsFoundException.class)
-    public ResponseEntity handleNoItemsFoundException(NoItemsFoundException ex) {
+    public ResponseEntity<ErrorResponse> handleNoItemsFoundException(NoItemsFoundException ex) {
         ErrorResponse error = new ErrorResponse("No items found!", Collections.singletonList(ex.getMessage()));
-        return new ResponseEntity(error, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(NoOrdersFoundException.class)
-    public ResponseEntity handleNoOrdersFoundException(NoOrdersFoundException ex) {
+    public ResponseEntity<ErrorResponse> handleNoOrdersFoundException(NoOrdersFoundException ex) {
         ErrorResponse error = new ErrorResponse("No orders found!", Collections.singletonList(ex.getMessage()));
-        return new ResponseEntity(error, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(OrderNotFoundException.class)
-    public ResponseEntity handleOrderNotFoundException(OrderNotFoundException ex) {
+    public ResponseEntity<ErrorResponse> handleOrderNotFoundException(OrderNotFoundException ex) {
         ErrorResponse error = new ErrorResponse("Requested order does not exist!", Collections.singletonList(ex.getMessage()));
-        return new ResponseEntity(error, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(OrderCategoryMismatchException.class)
-    public ResponseEntity handleOrderCategoryMismatchException(OrderCategoryMismatchException ex) {
+    public ResponseEntity<ErrorResponse> handleOrderCategoryMismatchException(OrderCategoryMismatchException ex) {
         ErrorResponse error = new ErrorResponse("Requested order does not belong to this category!", Collections.singletonList(ex.getMessage()));
-        return new ResponseEntity(error, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(OrderCancelledException.class)
-    public ResponseEntity handleOrderCancelledException(OrderCancelledException ex) {
+    public ResponseEntity<ErrorResponse> handleOrderCancelledException(OrderCancelledException ex) {
         ErrorResponse error = new ErrorResponse("Requested order is cancelled already!", Collections.singletonList(ex.getMessage()));
-        return new ResponseEntity(error, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(ItemAccessException.class)
-    public ResponseEntity handleItemAccessException(ItemAccessException ex) {
+    public ResponseEntity<ErrorResponse> handleItemAccessException(ItemAccessException ex) {
         ErrorResponse error = new ErrorResponse("Item access denied!", Collections.singletonList(ex.getMessage()));
         return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(ItemDoesNotExistException.class)
-    public ResponseEntity handleItemDoesNotExistException(ItemDoesNotExistException ex) {
+    public ResponseEntity<ErrorResponse> handleItemDoesNotExistException(ItemDoesNotExistException ex) {
         ErrorResponse error = new ErrorResponse("Item not found!", Collections.singletonList(ex.getMessage()));
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(value = {ImageNotFoundException.class})
-    public ResponseEntity handleImageNotFoundException(ImageNotFoundException ex) {
+    public ResponseEntity<ErrorResponse> handleImageNotFoundException(ImageNotFoundException ex) {
         ErrorResponse error = new ErrorResponse("Image doesn't exists!", Collections.singletonList(ex.getMessage()));
-        return new ResponseEntity(error, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(NotAnImageException.class)
-    public ResponseEntity handleNotAnImageException(NotAnImageException ex) {
+    public ResponseEntity<ErrorResponse> handleNotAnImageException(NotAnImageException ex) {
         ErrorResponse error = new ErrorResponse("Try uploading image file (JPEG/PNG)", Collections.singletonList(ex.getMessage()));
-        return new ResponseEntity(error, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler({ImageSizeExceededException.class})
@@ -100,31 +100,31 @@ public class CustomExceptionHandler {
     }
 
     @ExceptionHandler(NoCategoryFoundException.class)
-    public ResponseEntity handlerNoCategoryFoundException(NoCategoryFoundException ex) {
+    public ResponseEntity<ErrorResponse> handlerNoCategoryFoundException(NoCategoryFoundException ex) {
         ErrorResponse errorResponse = new ErrorResponse("No category found!!", Collections.singletonList(ex.getMessage()));
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(NotAVendorException.class)
-    public ResponseEntity handlerNotAVendorException(NotAVendorException ex) {
+    public ResponseEntity<ErrorResponse> handlerNotAVendorException(NotAVendorException ex) {
         ErrorResponse errorResponse = new ErrorResponse("Not a Vendor!", Collections.singletonList(ex.getMessage()));
         return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity handlerUserNotFoundException(UserNotFoundException ex) {
+    public ResponseEntity<ErrorResponse> handlerUserNotFoundException(UserNotFoundException ex) {
         ErrorResponse errorResponse = new ErrorResponse("User does not Exist!", Collections.singletonList(ex.getMessage()));
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(CategoryAlreadyAssignedException.class)
-    public ResponseEntity handlerCategoryAlreadyAssignedException(CategoryAlreadyAssignedException ex) {
+    public ResponseEntity<ErrorResponse> handlerCategoryAlreadyAssignedException(CategoryAlreadyAssignedException ex) {
         ErrorResponse errorResponse = new ErrorResponse("Category already Assigned!", Collections.singletonList(ex.getMessage()));
         return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(CartItemNotFoundException.class)
-    public ResponseEntity handleCartItemNotFoundException(CartItemNotFoundException ex) {
+    public ResponseEntity<ErrorResponse> handleCartItemNotFoundException(CartItemNotFoundException ex) {
         ErrorResponse error = new ErrorResponse("CartItem Not Found!", Collections.singletonList(ex.getMessage()));
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }

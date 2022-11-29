@@ -22,7 +22,6 @@ import java.util.Objects;
 @Transactional
 @Setter
 public class ImageService {
-
     private final ImageRepository imageRepository;
     @Value("${image.max-file-size}")
     private long maxSizeOfImage;
@@ -41,6 +40,22 @@ public class ImageService {
         throw new NotAnImageException();
     }
 
+    private Image getImage(String imageId) throws ImageNotFoundException {
+        return imageRepository.findById(imageId).orElseThrow(ImageNotFoundException::new);
+    }
+
+    public ResponseEntity<byte[]> getImageResponse(String imageId) throws ImageNotFoundException {
+        Image image = getImage(imageId);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + image.getName() + "\"")
+                .contentType(MediaType.valueOf(image.getContentType()))
+                .body(image.getData());
+    }
+
+    public String getImageLink(Image image) {
+        return appLink + "/images/" + image.getId();
+    }
+
     private boolean isValidSize(MultipartFile file) throws ImageSizeExceededException {
         if (maxSizeOfImage < file.getSize()) throw new ImageSizeExceededException();
         return true;
@@ -52,22 +67,6 @@ public class ImageService {
 
     private boolean isPngFile(MultipartFile file) {
         return Objects.equals(file.getContentType(), MediaType.IMAGE_PNG_VALUE);
-    }
-
-    public Image getImage(String imageId) throws ImageNotFoundException {
-        return imageRepository.findById(imageId).orElseThrow(ImageNotFoundException::new);
-    }
-
-    public ResponseEntity getImageResponse(String imageId) throws ImageNotFoundException {
-        Image image = getImage(imageId);
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + image.getName() + "\"")
-                .contentType(MediaType.valueOf(image.getContentType()))
-                .body(image.getData());
-    }
-
-    public String getImageLink(Image image) {
-        return appLink + "/images/" + image.getId();
     }
 
 }

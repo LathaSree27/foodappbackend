@@ -21,7 +21,6 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class ImageControllerTest {
-
     @Mock
     ImageService imageService;
 
@@ -30,7 +29,7 @@ public class ImageControllerTest {
 
     @Test
     void shouldBeAbleToGetImageWhenIdIsGiven() throws ImageNotFoundException {
-        ResponseEntity responseEntity = ResponseEntity.ok().build();
+        ResponseEntity<byte[]> responseEntity = ResponseEntity.ok().build();
         String imageId = "image@#$";
         when(imageService.getImageResponse(imageId)).thenReturn(responseEntity);
 
