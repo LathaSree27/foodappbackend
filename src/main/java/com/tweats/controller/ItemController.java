@@ -1,6 +1,6 @@
 package com.tweats.controller;
 
-import com.tweats.controller.response.ItemListResponse;
+import com.tweats.controller.response.CategoryItemsResponse;
 import com.tweats.exceptions.*;
 import com.tweats.service.ItemService;
 import lombok.AllArgsConstructor;
@@ -28,21 +28,19 @@ public class ItemController {
     public void save(Principal principal,
                      @RequestParam(value = "name") @NotBlank(message = "Item name can't be empty!") String name,
                      @RequestParam(value = "price") @Min(value = 0, message = "Price can't be negative!") BigDecimal price,
-                     @RequestParam(value = "file") MultipartFile itemImageFile) throws IOException, NotAnImageException, ImageSizeExceededException, UserNotFoundException {
-        String userEmail = principal.getName();
-        itemService.save(name, price, itemImageFile, userEmail);
+                     @RequestParam(value = "file") MultipartFile itemImageFile) throws IOException, NotAnImageException, ImageSizeExceededException, UserNotFoundException, NoCategoryFoundException {
+        itemService.save(name, price, itemImageFile, principal.getName());
     }
 
-    @GetMapping("{category_id}")
+    @GetMapping
     @ResponseStatus(code = HttpStatus.OK)
-    public ItemListResponse get(@PathVariable Long category_id) throws NoItemsFoundException {
-        ItemListResponse itemListResponse = itemService.getItems(category_id);
-        return itemListResponse;
+    public CategoryItemsResponse getCategoryItems(@RequestParam(name = "categoryId") Long categoryId) throws NoItemsFoundException {
+        return itemService.getCategoryItems(categoryId);
     }
 
 
-    @PutMapping("{id}")
-    public void updateAvailability(Principal principal, @PathVariable long id) throws ItemAccessException, ItemDoesNotExistException, UserNotFoundException {
-        itemService.updateAvailability(principal.getName(), id);
+    @PutMapping("{itemId}")
+    public void updateAvailability(Principal principal, @PathVariable long itemId) throws ItemAccessException, ItemDoesNotExistException, UserNotFoundException, NoCategoryFoundException {
+        itemService.updateAvailability(principal.getName(), itemId);
     }
 }

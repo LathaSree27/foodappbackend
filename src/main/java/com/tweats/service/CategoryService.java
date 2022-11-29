@@ -30,7 +30,7 @@ public class CategoryService {
     public void save(String name, MultipartFile categoryImageFile, String email) throws IOException, NotAnImageException, UserNotFoundException, NotAVendorException, CategoryAlreadyAssignedException, ImageSizeExceededException {
         User vendor = userPrincipalService.findUserByEmail(email);
         if (!userPrincipalService.isVendor(vendor)) throw new NotAVendorException();
-        Optional<Category> optionalCategory = categoryRepository.findByUser_id(vendor.getId());
+        Optional<Category> optionalCategory = categoryRepository.findByUserId(vendor.getId());
         if(optionalCategory.isPresent()) throw new CategoryAlreadyAssignedException();
         Image categoryImage = imageService.save(categoryImageFile);
         Category category = new Category(name, categoryImage, vendor);
@@ -39,7 +39,7 @@ public class CategoryService {
 
     public Category getCategory(String userEmail) throws NoCategoryFoundException, UserNotFoundException {
         User user = userPrincipalService.findUserByEmail(userEmail);
-        return categoryRepository.findByUser_id(user.getId()).orElseThrow(NoCategoryFoundException::new);
+        return categoryRepository.findByUserId(user.getId()).orElseThrow(NoCategoryFoundException::new);
     }
 
     public VendorCategoryResponse getVendorCategoryResponse(String userEmail) throws UserNotFoundException, NoCategoryFoundException {

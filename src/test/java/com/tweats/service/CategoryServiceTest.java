@@ -67,7 +67,7 @@ public class CategoryServiceTest {
         long userId = user.getId();
         String userEmail = "abc@example.com";
         when(userPrincipalService.findUserByEmail(userEmail)).thenReturn(user);
-        when(categoryRepository.findByUser_id(userId)).thenReturn(Optional.of(category));
+        when(categoryRepository.findByUserId(userId)).thenReturn(Optional.of(category));
         VendorCategoryResponse expectedVendorCategoryResponse = new VendorCategoryResponse(category.getId());
 
         VendorCategoryResponse actualVendorCategoryResponse = categoryService.getVendorCategoryResponse(userEmail);
@@ -101,7 +101,7 @@ public class CategoryServiceTest {
         when(userPrincipalService.findUserByEmail(userEmail)).thenReturn(user);
         when(userPrincipalService.isVendor(user)).thenReturn(true);
         when(user.getId()).thenReturn(userId);
-        when(categoryRepository.findByUser_id(userId)).thenReturn(Optional.of(category));
+        when(categoryRepository.findByUserId(userId)).thenReturn(Optional.of(category));
 
         assertThrows(CategoryAlreadyAssignedException.class, () -> categoryService.save(category.getName(), categoryImageFile, userEmail));
     }

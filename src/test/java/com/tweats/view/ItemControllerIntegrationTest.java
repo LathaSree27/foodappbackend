@@ -2,7 +2,7 @@ package com.tweats.view;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tweats.TweatsApplication;
-import com.tweats.controller.response.ItemListResponse;
+import com.tweats.controller.response.CategoryItemsResponse;
 import com.tweats.controller.response.ItemResponse;
 import com.tweats.model.*;
 import com.tweats.repo.*;
@@ -44,7 +44,6 @@ public class ItemControllerIntegrationTest {
     @Autowired
     ImageRepository imageRepository;
 
-
     @Autowired
     CategoryRepository categoryRepository;
 
@@ -56,7 +55,6 @@ public class ItemControllerIntegrationTest {
 
     @Autowired
     ObjectMapper objectMapper;
-    private User vendor;
     private Image categoryImage;
     private Category category;
     private BCryptPasswordEncoder encoder;
@@ -70,7 +68,7 @@ public class ItemControllerIntegrationTest {
         userRepository.deleteAll();
         roleRepository.deleteAll();
         encoder = new BCryptPasswordEncoder();
-        vendor = userRepository.save(new User("abc", "abc@example.com", encoder.encode("password"), roleRepository.save(new Role("VENDOR"))));
+        User vendor = userRepository.save(new User("abc", "abc@example.com", encoder.encode("password"), roleRepository.save(new Role("VENDOR"))));
         Image image = new Image("image.png", MediaType.IMAGE_JPEG_VALUE, "hello".getBytes(), 1L);
         categoryImage = imageRepository.save(image);
         Category juice = new Category("Juice", categoryImage, vendor);
@@ -131,17 +129,19 @@ public class ItemControllerIntegrationTest {
         List<ItemResponse> itemResponses = new ArrayList<>();
         String imageLink = "http://localhost:8080/tweats/api/v1/images/" + savedItem.getImage().getId();
         itemResponses.add(new ItemResponse(savedItem.getId(), savedItem.getName(), imageLink, savedItem.getPrice(), savedItem.isAvailable()));
-        ItemListResponse itemListResponse = new ItemListResponse(category.getId(), itemResponses);
+        CategoryItemsResponse categoryItemsResponse = new CategoryItemsResponse(category.getId(), itemResponses);
 
 
-        mockMvc.perform(get("/item/" + category.getId()))
+        mockMvc.perform(get("/item")
+                        .param("categoryId", String.valueOf(category.getId())))
                 .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(itemListResponse)));
+                .andExpect(content().json(objectMapper.writeValueAsString(categoryItemsResponse)));
     }
 
     @Test
     void shouldThrowNoItemsFoundErrorWhenThereIsNoItemsInTheGivenCategoryId() throws Exception {
-        mockMvc.perform(get("/item/" + category.getId()))
+        mockMvc.perform(get("/item")
+                        .param("categoryId", String.valueOf(category.getId())))
                 .andExpect(status().isNotFound());
     }
 

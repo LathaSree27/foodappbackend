@@ -2,6 +2,7 @@ package com.tweats.controller.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
@@ -10,7 +11,8 @@ import java.util.Objects;
 @AllArgsConstructor
 @Getter
 @Setter
-public class ItemListResponse {
+@NoArgsConstructor
+public class CategoryItemsResponse {
     private long categoryId;
     private List<ItemResponse> items;
 
@@ -18,7 +20,7 @@ public class ItemListResponse {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ItemListResponse that = (ItemListResponse) o;
+        CategoryItemsResponse that = (CategoryItemsResponse) o;
         return categoryId == that.categoryId && Objects.equals(items, that.items);
     }
 
