@@ -1,5 +1,6 @@
 package com.tweats.service;
 
+import com.tweats.controller.response.LoginResponse;
 import com.tweats.exceptions.UserNotFoundException;
 import com.tweats.model.Role;
 import com.tweats.model.User;
@@ -45,15 +46,13 @@ public class UserPrincipalService implements UserDetailsService {
         return optionalUser.get();
     }
 
-    public String getRoleName(String email) throws UserNotFoundException {
-        User user = findUserByEmail(email);
-        return user.getRole().getName();
-
-    }
-
     public boolean isVendor(User user) {
         Role userRole = user.getRole();
         Role vendorRole = roleRepository.findByName("VENDOR");
         return userRole.equals(vendorRole);
+    }
+
+    public LoginResponse getLoginResponse(String email) {
+        return null;
     }
 }
