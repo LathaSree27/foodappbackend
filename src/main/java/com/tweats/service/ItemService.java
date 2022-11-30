@@ -35,11 +35,11 @@ public class ItemService {
         itemRepository.save(item);
     }
 
-    public CategoryItemsResponse getCategoryItems(Long category_id) throws NoItemsFoundException {
-        List<Item> items = itemRepository.findByCategory_id(category_id);
+    public CategoryItemsResponse getCategoryItems(Long categoryId) throws NoItemsFoundException {
+        List<Item> items = itemRepository.findByCategoryId(categoryId);
         List<ItemResponse> itemResponses = getItemResponses(items);
         if (isEmpty(itemResponses)) throw new NoItemsFoundException();
-        return new CategoryItemsResponse(category_id, itemResponses);
+        return new CategoryItemsResponse(categoryId, itemResponses);
     }
 
     public void updateAvailability(String vendorEmail, long itemId) throws ItemAccessException, ItemDoesNotExistException, UserNotFoundException, NoCategoryFoundException {

@@ -77,7 +77,7 @@ public class ItemServiceTest {
         }
         CategoryItemsResponse expectedCategoryItemsResponse = new CategoryItemsResponse(categoryId, itemResponses);
         when(imageService.getImageLink(itemImage)).thenReturn(itemImageLink);
-        when(itemRepository.findByCategory_id(categoryId)).thenReturn(items);
+        when(itemRepository.findByCategoryId(categoryId)).thenReturn(items);
 
         CategoryItemsResponse actualCategoryItemsResponse = itemService.getCategoryItems(categoryId);
 
