@@ -41,6 +41,7 @@ public class CategoryController {
         return categoryService.getAllCategories();
     }
 
+    @PutMapping("status")
     public void updateOpenStatus(Principal principal) throws UserNotFoundException, NoCategoryFoundException {
         categoryService.updateOpenStatus(principal.getName());
     }

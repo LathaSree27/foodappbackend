@@ -28,6 +28,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -192,5 +193,17 @@ public class CategoryControllerIntegrationTest {
         mockMvc.perform(
                 get("/category")
         ).andExpect(status().isNotFound());
+    }
+
+    @Test
+    void shouldBeAbleToUpdateOpenStatusForVendorCategory() throws Exception {
+        MockMultipartFile mockMultipartFileCategory = new MockMultipartFile("file", "image.png", MediaType.IMAGE_JPEG_VALUE, "hello".getBytes());
+        Image categoryImage = imageService.save(mockMultipartFileCategory);
+        categoryRepository.save(new Category("juice", categoryImage, vendor));
+
+        mockMvc.perform(
+                put("/category/status")
+                        .with(httpBasic(vendor.getEmail(), "password"))
+        ).andExpect(status().isOk());
     }
 }
