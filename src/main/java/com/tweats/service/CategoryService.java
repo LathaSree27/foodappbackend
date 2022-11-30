@@ -70,4 +70,8 @@ public class CategoryService {
                 .isOpen(category.isOpen())
                 .build();
     }
+
+    public void updateOpenStatus(String vendorEmail) {
+
+    }
 }

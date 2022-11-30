@@ -3,7 +3,6 @@ package com.tweats.controller;
 import com.tweats.controller.response.CategoryResponse;
 import com.tweats.controller.response.VendorCategoryResponse;
 import com.tweats.exceptions.*;
-import com.tweats.model.Category;
 import com.tweats.service.CategoryService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,9 +28,6 @@ public class CategoryControllerTest {
 
     @Mock
     Principal principal;
-
-    @Mock
-    Category category;
 
     @Mock
     VendorCategoryResponse vendorCategoryResponse;
@@ -67,5 +63,10 @@ public class CategoryControllerTest {
         assertThat(actualCategoryResponses, is(expectedCategoryResponses));
     }
 
+    @Test
+    void shouldBeAbleToChangeOpenStatus() {
+        categoryController.updateOpenStatus(principal);
 
+        verify(categoryService).updateOpenStatus(principal.getName());
+    }
 }

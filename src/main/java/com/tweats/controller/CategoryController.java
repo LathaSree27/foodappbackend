@@ -40,4 +40,8 @@ public class CategoryController {
     public List<CategoryResponse> fetchAllCategories() throws NoCategoryFoundException {
         return categoryService.getAllCategories();
     }
+
+    public void updateOpenStatus(Principal principal) {
+          categoryService.updateOpenStatus(principal.getName());
+    }
 }
