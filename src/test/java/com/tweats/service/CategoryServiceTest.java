@@ -22,6 +22,7 @@ import java.util.Optional;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -131,5 +132,17 @@ public class CategoryServiceTest {
     @Test
     void shouldThrowNoCategoryFoundExceptionWhenThereIsNoCategory() {
         assertThrows(NoCategoryFoundException.class, () -> categoryService.getAllCategories());
+    }
+
+    @Test
+    void shouldBeAbleToUpdateOpenStatusFalseToTrue() throws UserNotFoundException, NoCategoryFoundException {
+        String categoryName = "abc";
+        Category category = new Category(categoryName, image, user);
+        when(userPrincipalService.findUserByEmail(user.getEmail())).thenReturn(user);
+        when(categoryRepository.findByUserId(user.getId())).thenReturn(Optional.of(category));
+
+        categoryService.updateOpenStatus(user.getEmail());
+
+        assertTrue(category.isOpen());
     }
 }

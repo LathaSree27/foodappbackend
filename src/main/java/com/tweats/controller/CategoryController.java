@@ -41,7 +41,7 @@ public class CategoryController {
         return categoryService.getAllCategories();
     }
 
-    public void updateOpenStatus(Principal principal) {
-          categoryService.updateOpenStatus(principal.getName());
+    public void updateOpenStatus(Principal principal) throws UserNotFoundException, NoCategoryFoundException {
+        categoryService.updateOpenStatus(principal.getName());
     }
 }

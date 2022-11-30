@@ -64,7 +64,7 @@ public class CategoryControllerTest {
     }
 
     @Test
-    void shouldBeAbleToChangeOpenStatus() {
+    void shouldBeAbleToChangeOpenStatus() throws UserNotFoundException, NoCategoryFoundException {
         categoryController.updateOpenStatus(principal);
 
         verify(categoryService).updateOpenStatus(principal.getName());

@@ -31,7 +31,7 @@ public class CategoryService {
         User vendor = userPrincipalService.findUserByEmail(email);
         if (!userPrincipalService.isVendor(vendor)) throw new NotAVendorException();
         Optional<Category> optionalCategory = categoryRepository.findByUserId(vendor.getId());
-        if(optionalCategory.isPresent()) throw new CategoryAlreadyAssignedException();
+        if (optionalCategory.isPresent()) throw new CategoryAlreadyAssignedException();
         Image categoryImage = imageService.save(categoryImageFile);
         Category category = new Category(name, categoryImage, vendor);
         categoryRepository.save(category);
@@ -71,7 +71,8 @@ public class CategoryService {
                 .build();
     }
 
-    public void updateOpenStatus(String vendorEmail) {
-
+    public void updateOpenStatus(String vendorEmail) throws UserNotFoundException, NoCategoryFoundException {
+        Category category = getCategory(vendorEmail);
+        category.setOpen(!category.isOpen());
     }
 }
