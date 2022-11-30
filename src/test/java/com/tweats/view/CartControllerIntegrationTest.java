@@ -11,7 +11,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -27,7 +26,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest(classes = TweatsApplication.class)
 @AutoConfigureMockMvc
-@WithMockUser
 @ActiveProfiles("test")
 public class CartControllerIntegrationTest {
     @Autowired
@@ -186,7 +184,8 @@ public class CartControllerIntegrationTest {
         List<CartItem> cartItemList = new ArrayList<>(cart.getCartItems());
         CartItem savedCartItem = cartItemList.get(0);
 
-        mockMvc.perform(delete("/cart/item/" + savedCartItem.getId()))
+        mockMvc.perform(delete("/cart/item/" + savedCartItem.getId())
+                        .with(httpBasic("abc@gmail.com", "password")))
                 .andExpect(status().isOk());
     }
 
@@ -194,7 +193,8 @@ public class CartControllerIntegrationTest {
     void shouldThrowCartItemNotFoundErrorWhenCartItemDoesNotExistWithGivenId() throws Exception {
         long cartItemId = 2;
 
-        mockMvc.perform(delete("/cart/item/" + cartItemId))
+        mockMvc.perform(delete("/cart/item/" + cartItemId)
+                        .with(httpBasic("abc@gmail.com", "password")))
                 .andExpect(status().isNotFound());
     }
 }

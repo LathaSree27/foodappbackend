@@ -35,7 +35,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(classes = TweatsApplication.class)
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-@WithMockUser
 public class CategoryControllerIntegrationTest {
     @Autowired
     MockMvc mockMvc;
@@ -61,6 +60,7 @@ public class CategoryControllerIntegrationTest {
     BCryptPasswordEncoder bCryptPasswordEncoder;
 
     private User vendor;
+    private User admin;
 
     @BeforeEach
     public void before() {
@@ -69,6 +69,7 @@ public class CategoryControllerIntegrationTest {
         userRepository.deleteAll();
         roleRepository.deleteAll();
         vendor = userRepository.save(new User("abc", "abc@example.com", bCryptPasswordEncoder.encode("password"), roleRepository.save(new Role("VENDOR"))));
+        admin = userRepository.save(new User("xyz", "xyz@example.com", bCryptPasswordEncoder.encode("password"), roleRepository.save(new Role("ADMIN"))));
     }
 
     @AfterEach
@@ -87,7 +88,7 @@ public class CategoryControllerIntegrationTest {
                         .file(mockMultipartFile)
                         .param("name", "juice")
                         .param("user_email", vendor.getEmail())
-                        .with((httpBasic("abc@example.com", "password"))))
+                        .with((httpBasic(admin.getEmail(), "password"))))
                 .andExpect(status().isCreated());
     }
 
@@ -99,7 +100,7 @@ public class CategoryControllerIntegrationTest {
         VendorCategoryResponse vendorCategoryResponse = new VendorCategoryResponse(juice.getId());
 
         mockMvc.perform(get("/category/vendor")
-                        .with((httpBasic("abc@example.com", "password"))))
+                        .with((httpBasic(vendor.getEmail(), "password"))))
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(vendorCategoryResponse)));
 
@@ -108,20 +109,19 @@ public class CategoryControllerIntegrationTest {
     @Test
     void shouldThrowNoCategoryFoundErrorWhenVendorIsNotAssignedWithCategory() throws Exception {
         mockMvc.perform(get("/category/vendor")
-                        .with((httpBasic("abc@example.com", "password"))))
+                        .with((httpBasic(vendor.getEmail(), "password"))))
                 .andExpect(status().isNotFound());
     }
 
     @Test
     void shouldThrowNotAVendorErrorWhenTheGivenUserIsNotAVendor() throws Exception {
         MockMultipartFile mockMultipartFile = new MockMultipartFile("file", "image.png", MediaType.IMAGE_JPEG_VALUE, "hello".getBytes());
-        User user = userRepository.save(new User("xyz", "xyz@example.com", bCryptPasswordEncoder.encode("password"), roleRepository.save(new Role("USER"))));
 
         mockMvc.perform(MockMvcRequestBuilders.multipart("/category")
                         .file(mockMultipartFile)
                         .param("name", "juice")
-                        .param("user_email", user.getEmail())
-                        .with((httpBasic("abc@example.com", "password"))))
+                        .param("user_email", admin.getEmail())
+                        .with((httpBasic(admin.getEmail(), "password"))))
                 .andExpect(status().isForbidden());
     }
 
@@ -133,7 +133,7 @@ public class CategoryControllerIntegrationTest {
                         .file(mockMultipartFile)
                         .param("name", "juice")
                         .param("user_email", "pqr@gmail.com")
-                        .with((httpBasic("abc@example.com", "password"))))
+                        .with((httpBasic(admin.getEmail(), "password"))))
                 .andExpect(status().isNotFound());
     }
 
@@ -149,7 +149,7 @@ public class CategoryControllerIntegrationTest {
                         .file(mockMultipartFile)
                         .param("name", "juice")
                         .param("user_email", vendor.getEmail())
-                        .with((httpBasic("abc@example.com", "password"))))
+                        .with((httpBasic(admin.getEmail(), "password"))))
                 .andExpect(status().isForbidden());
     }
 
@@ -161,7 +161,7 @@ public class CategoryControllerIntegrationTest {
                         .file(mockMultipartFile)
                         .param("name", "")
                         .param("user_email", "")
-                        .with((httpBasic("abc@example.com", "password"))))
+                        .with((httpBasic(admin.getEmail(), "password"))))
                 .andExpect(status().isBadRequest());
     }
 
@@ -173,11 +173,12 @@ public class CategoryControllerIntegrationTest {
                         .file(mockMultipartFile)
                         .param("name", "juice")
                         .param("user_email", "abc")
-                        .with((httpBasic("abc@example.com", "password"))))
+                        .with((httpBasic(admin.getEmail(), "password"))))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
+    @WithMockUser(roles = {"ADMIN", "CUSTOMER"})
     void shouldBeAbleToGetAllCategories() throws Exception {
         MockMultipartFile mockMultipartFileCategory = new MockMultipartFile("file", "image.png", MediaType.IMAGE_JPEG_VALUE, "hello".getBytes());
         Image categoryImage = imageService.save(mockMultipartFileCategory);
@@ -189,6 +190,7 @@ public class CategoryControllerIntegrationTest {
     }
 
     @Test
+    @WithMockUser(roles = {"ADMIN", "CUSTOMER"})
     void shouldThrowNoCategoryFoundErrorWhenNoCategoriesAreAvailable() throws Exception {
         mockMvc.perform(
                 get("/category")

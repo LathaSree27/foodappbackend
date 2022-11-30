@@ -26,7 +26,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public PasswordEncoder getPasswordEncoder(){
+    public PasswordEncoder getPasswordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
@@ -41,11 +41,21 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.cors()
                 .and()
                 .authorizeRequests()
                 .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                .antMatchers("/cart/**").hasAnyRole("CUSTOMER", "ADMIN")
+                .antMatchers("/order/active", "/order/complete").hasRole("VENDOR")
+                .antMatchers("/order/completed").hasAnyRole("ADMIN", "VENDOR")
+                .antMatchers("/order/place", "/order/buy/*").hasAnyRole("ADMIN", "CUSTOMER")
+                .antMatchers(HttpMethod.POST, "/category").hasRole("ADMIN")
+                .antMatchers(HttpMethod.GET, "/category").hasAnyRole("CUSTOMER", "ADMIN")
+                .antMatchers(HttpMethod.GET, "/category/vendor").hasRole("VENDOR")
+                .antMatchers(HttpMethod.PUT, "/category/status").hasRole("VENDOR")
+                .antMatchers(HttpMethod.POST, "/item").hasRole("VENDOR")
+                .antMatchers(HttpMethod.PUT, "/item/*").hasRole("VENDOR")
                 .anyRequest().authenticated()
                 .and()
                 .httpBasic()
