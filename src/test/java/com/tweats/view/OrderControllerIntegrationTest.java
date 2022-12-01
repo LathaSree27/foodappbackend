@@ -29,7 +29,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(classes = TweatsApplication.class)
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-@WithMockUser
 public class OrderControllerIntegrationTest {
     @Autowired
     MockMvc mockMvc;
@@ -96,6 +95,7 @@ public class OrderControllerIntegrationTest {
     }
 
     @Test
+    @WithMockUser(roles = {"VENDOR", "ADMIN"})
     void shouldBeAbleToGetCompletedOrdersWhenCategoryIdAndDateIsGiven() throws Exception {
         order.setStatus(OrderStatus.DELIVERED);
         orderRepository.save(order);
@@ -110,6 +110,7 @@ public class OrderControllerIntegrationTest {
     }
 
     @Test
+    @WithMockUser(roles = {"VENDOR", "ADMIN"})
     void shouldThrowNoOrdersFoundErrorWhenThereIsNoCompletedOrdersAreFound() throws Exception {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
