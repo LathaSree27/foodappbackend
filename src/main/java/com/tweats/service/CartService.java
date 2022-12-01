@@ -2,10 +2,7 @@ package com.tweats.service;
 
 import com.tweats.controller.response.CartItemResponse;
 import com.tweats.controller.response.CartResponse;
-import com.tweats.exceptions.CartItemNotFoundException;
-import com.tweats.exceptions.ItemDoesNotExistException;
-import com.tweats.exceptions.NoCategoryFoundException;
-import com.tweats.exceptions.UserNotFoundException;
+import com.tweats.exceptions.*;
 import com.tweats.model.Cart;
 import com.tweats.model.CartItem;
 import com.tweats.model.Item;
@@ -20,6 +17,7 @@ import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -53,10 +51,22 @@ public class CartService {
         return getCartResponse(cart);
     }
 
-    public void updateCartItemQuantity(long cartItemId, long quantity) throws CartItemNotFoundException {
-        CartItem cartItem = getCartItem(cartItemId);
+    public void updateCartItemQuantity(String email, long cartId, long itemId, long quantity) throws CartItemNotFoundException, CartAccessDeniedException {
+        Optional<Cart> optionalCart = cartRepository.findById(cartId);
+        Cart cart = optionalCart.get();
+        String cartUserEmail = cart.getUser().getEmail();
+        if (!cartUserEmail.equals(email)) throw new CartAccessDeniedException();
+        Set<CartItem> cartItems = cart.getCartItems();
+        CartItem cartItem = getAvailableCartItem(itemId, cartItems);
         cartItem.setQuantity(quantity);
-        cartItemRepository.save(cartItem);
+        cartRepository.save(cart);
+    }
+
+    private CartItem getAvailableCartItem(long itemId, Set<CartItem> cartItems) throws CartItemNotFoundException {
+        for (CartItem cartItem : cartItems) {
+            if (cartItem.getItem().getId() == itemId) return cartItem;
+        }
+        throw new CartItemNotFoundException();
     }
 
     public void deleteCartItem(long cartItemId) throws CartItemNotFoundException {

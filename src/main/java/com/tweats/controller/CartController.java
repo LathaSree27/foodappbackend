@@ -1,10 +1,7 @@
 package com.tweats.controller;
 
 import com.tweats.controller.response.CartResponse;
-import com.tweats.exceptions.CartItemNotFoundException;
-import com.tweats.exceptions.ItemDoesNotExistException;
-import com.tweats.exceptions.NoCategoryFoundException;
-import com.tweats.exceptions.UserNotFoundException;
+import com.tweats.exceptions.*;
 import com.tweats.service.CartService;
 import lombok.AllArgsConstructor;
 import org.springframework.validation.annotation.Validated;
@@ -35,10 +32,12 @@ public class CartController {
         return cartService.getCartItems(principal.getName(), categoryId);
     }
 
-    @PutMapping("item/{cartItemId}")
-    public void updateQuantity(@PathVariable long cartItemId,
-                               @RequestParam(value = "quantity") @Min(value = 0, message = "Quantity can't be negative!") long quantity) throws CartItemNotFoundException {
-        cartService.updateCartItemQuantity(cartItemId, quantity);
+    @PutMapping("{cartId}")
+    public void updateQuantity(Principal principal,
+                               @PathVariable long cartId,
+                               @RequestParam long itemId,
+                               @RequestParam(value = "quantity") @Min(value = 0, message = "Quantity can't be negative!") long quantity) throws CartItemNotFoundException, UserNotFoundException, NoCategoryFoundException, ItemDoesNotExistException, CartAccessDeniedException {
+        cartService.updateCartItemQuantity(principal.getName(), cartId, itemId, quantity);
     }
 
     @DeleteMapping("item/{cartItemId}")

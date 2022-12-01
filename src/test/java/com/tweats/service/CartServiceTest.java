@@ -2,10 +2,7 @@ package com.tweats.service;
 
 import com.tweats.controller.response.CartItemResponse;
 import com.tweats.controller.response.CartResponse;
-import com.tweats.exceptions.CartItemNotFoundException;
-import com.tweats.exceptions.ItemDoesNotExistException;
-import com.tweats.exceptions.NoCategoryFoundException;
-import com.tweats.exceptions.UserNotFoundException;
+import com.tweats.exceptions.*;
 import com.tweats.model.*;
 import com.tweats.repo.CartItemRepository;
 import com.tweats.repo.CartRepository;
@@ -112,24 +109,47 @@ public class CartServiceTest {
     }
 
     @Test
-    void shouldBeAbleToUpdateQuantityOfACartItemWhenCartItemIdAndQuantityAreGiven() throws CartItemNotFoundException {
-        long cartItemId = 2;
-        long quantity = 5;
+    void shouldBeAbleToUpdateQuantityOfACartItemWhenCartItemIdAndQuantityAreGiven() throws CartItemNotFoundException, CartAccessDeniedException {
+        long itemId = 2;
+        long cartId = 1;
         long initialQuantity = 2;
+        long quantity = 5;
+        String email = "abc@gmail.com";
         CartItem cartItem = new CartItem(cart, item, initialQuantity);
-        when(cartItemRepository.findById(cartItemId)).thenReturn(Optional.of(cartItem));
+        cart.addCartItem(cartItem);
+        when(cartRepository.findById(cartId)).thenReturn(Optional.of(cart));
+        when(user.getEmail()).thenReturn(email);
+        when(item.getId()).thenReturn(itemId);
 
-        cartService.updateCartItemQuantity(cartItemId, quantity);
+        cartService.updateCartItemQuantity(email, cartId, itemId, quantity);
 
         assertThat(cartItem.getQuantity(), is(quantity));
     }
 
     @Test
-    void shouldThrowCartItemNotFoundExceptionWhenCartItemDoesNotExistsWithGivenId() {
-        long cartItemId = 2;
+    void shouldThrowCartItemNotFoundExceptionWhenCartItemDoesNotExistsWithGivenItem() {
+        long itemId = 2;
+        long cartId = 1;
         long quantity = 4;
+        String email = "abc@gmail.com";
+        when(cartRepository.findById(cartId)).thenReturn(Optional.of(cart));
+        when(user.getEmail()).thenReturn(email);
 
-        assertThrows(CartItemNotFoundException.class, () -> cartService.updateCartItemQuantity(cartItemId, quantity));
+        assertThrows(CartItemNotFoundException.class, () -> cartService.updateCartItemQuantity(email, cartId, itemId, quantity));
+    }
+
+    @Test
+    void shouldThrowCartAccessDeniedExceptionWhenGivenCartDoesNotBelongsToUser() {
+        long itemId = 2;
+        long cartId = 1;
+        long quantity = 4;
+        String email = "abc@gmail.com";
+        String cartUserEmail = "xyz@gmail.com";
+        when(cartRepository.findById(cartId)).thenReturn(Optional.of(cart));
+        when(user.getEmail()).thenReturn(cartUserEmail);
+
+        assertThrows(CartAccessDeniedException.class, () -> cartService.updateCartItemQuantity(email, cartId, itemId, quantity));
+
     }
 
     @Test

@@ -1,5 +1,7 @@
 fileignoreconfig:
 - filename: src/test/java/com/tweats/view/CartControllerIntegrationTest.java
+  checksum: 637ac180cd2c9f00e99752c92275da4cbecb3d33d150f0b57cf887ff5769b31f
+- filename: src/test/java/com/tweats/view/CartControllerIntegrationTest.java
   checksum: f07cbee4d4a8f3fa77d104f3245f5185caafbcb988cfd8de6c8176a582d7122c
 - filename: src/main/resources/db/migration/V2.2__DropIsDeliveredColumnInOrdersTable.sql
   checksum: a073748372ec5d191fa63f0a24ec11f3b7366002c91a1a82e2005ffedd34d6ca
@@ -47,4 +49,8 @@ fileignoreconfig:
   checksum: 705dfa05cddeaa38aaa3046399491edcf2a1862f69fc60af86e388c6299aea77
 - filename: src/main/resources/db/migration/V2.0__AlterColumnDataInImageTable.sql
   checksum: 9da5d9dd2467d4de224374196cacb262c51e151ba67519cc16f8eb1fe6770071
+- filename: src/test/java/com/tweats/view/CartControllerIntegrationTest.java
+  checksum: 637ac180cd2c9f00e99752c92275da4cbecb3d33d150f0b57cf887ff5769b31f
 version: ""
+
+

@@ -133,27 +133,27 @@ public class CartControllerIntegrationTest {
         long quantity = 1;
         Set<CartItem> cartItems = new HashSet<>();
         Item item = new Item(itemName, categoryImage, new BigDecimal(2), category);
-        itemRepository.save(item);
+        Item savedItem = itemRepository.save(item);
         CartItem cartItem = new CartItem(cart, item, quantity);
         cartItems.add(cartItem);
         cart.setCartItems(cartItems);
-        Cart cart = cartRepository.save(this.cart);
-        List<CartItem> cartItemList = new ArrayList<>(cart.getCartItems());
-        CartItem savedCartItem = cartItemList.get(0);
+        Cart savedCart = cartRepository.save(cart);
         int updatedQuantity = 2;
 
-        mockMvc.perform(put("/cart/item/" + savedCartItem.getId())
+        mockMvc.perform(put("/cart/" + savedCart.getId())
+                        .param("itemId", String.valueOf(savedItem.getId()))
                         .param("quantity", String.valueOf(updatedQuantity))
                         .with(httpBasic("abc@gmail.com", "password")))
                 .andExpect(status().isOk());
     }
 
     @Test
-    void shouldThrowCartItemNotFoundErrorWhenCartItemDoesNotExistsWithGivenId() throws Exception {
-        long cartItemId = -1;
+    void shouldThrowCartItemNotFoundErrorWhenCartItemDoesNotExistsWithGivenItem() throws Exception {
+        long itemId = 1;
         long quantity = 4;
 
-        mockMvc.perform(put("/cart/item/" + cartItemId)
+        mockMvc.perform(put("/cart/" + cart.getId())
+                        .param("itemId", String.valueOf(itemId))
                         .param("quantity", String.valueOf(quantity))
                         .with(httpBasic("abc@gmail.com", "password")))
                 .andExpect(status().isNotFound());
@@ -161,13 +161,29 @@ public class CartControllerIntegrationTest {
 
     @Test
     void shouldThrowValidationErrorWhenGivenQuantityIsNegative() throws Exception {
-        long cartItemId = 2;
+        long itemId = 2;
         long quantity = -4;
 
-        mockMvc.perform(put("/cart/item/" + cartItemId)
+        mockMvc.perform(put("/cart/" + cart.getId())
+                        .param("itemId", String.valueOf(itemId))
                         .param("quantity", String.valueOf(quantity))
                         .with(httpBasic("abc@gmail.com", "password")))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldThrowCartAccessDeniedErrorWhenGivenCartDoesNotBelongsToUser() throws Exception {
+        long itemId = 2;
+        long quantity = 4;
+        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+        Role userRole = roleRepository.save(new Role("CUSTOMER"));
+        User user2 = userRepository.save(new User("ab", "ab@gmail.com", bCryptPasswordEncoder.encode("password"), userRole));
+
+        mockMvc.perform(put("/cart/" + cart.getId())
+                        .param("itemId", String.valueOf(itemId))
+                        .param("quantity", String.valueOf(quantity))
+                        .with(httpBasic(user2.getEmail(), "password")))
+                .andExpect(status().isForbidden());
     }
 
     @Test

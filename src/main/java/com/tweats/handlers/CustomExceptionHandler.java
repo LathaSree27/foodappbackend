@@ -130,9 +130,15 @@ public class CustomExceptionHandler {
     }
 
     @ExceptionHandler(EmptyCartException.class)
-    public ResponseEntity<ErrorResponse> handleEmptyCartException(EmptyCartException ex){
+    public ResponseEntity<ErrorResponse> handleEmptyCartException(EmptyCartException ex) {
         ErrorResponse error = new ErrorResponse("your cart is empty!", Collections.singletonList(ex.getMessage()));
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(CartAccessDeniedException.class)
+    public ResponseEntity<ErrorResponse> handleCartAccessException(CartAccessDeniedException ex) {
+        ErrorResponse error = new ErrorResponse("Cart access denied!", Collections.singletonList(ex.getMessage()));
+        return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
     }
 }
 

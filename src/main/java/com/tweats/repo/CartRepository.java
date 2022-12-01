@@ -12,6 +12,6 @@ import java.util.Optional;
 public interface CartRepository extends JpaRepository<Cart, Long> {
     Optional<Cart> findByUserIdAndCategoryId(long userId, long categoryId);
 
-    @Query(value = "SELECT SUM(c.QUANTITY*i.PRICE) FROM CART_ITEM c JOIN ITEM i ON c.ITEM_ID = i.ID WHERE CART_ID = ?1", nativeQuery = true)
+    @Query(value = "SELECT SUM(c.QUANTITY*i.PRICE) FROM CART_ITEM c JOIN ITEM i ON c.ITEM_ID = i.ID WHERE CART_ID = ?1 AND i.IS_AVAILABLE = true", nativeQuery = true)
     Optional<BigDecimal> getBillAmount(Long cartId);
 }

@@ -1,10 +1,7 @@
 package com.tweats.controller;
 
 import com.tweats.controller.response.CartResponse;
-import com.tweats.exceptions.CartItemNotFoundException;
-import com.tweats.exceptions.ItemDoesNotExistException;
-import com.tweats.exceptions.NoCategoryFoundException;
-import com.tweats.exceptions.UserNotFoundException;
+import com.tweats.exceptions.*;
 import com.tweats.service.CartService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -53,13 +50,14 @@ public class CartControllerTest {
     }
 
     @Test
-    void shouldBeAbleToUpdateQuantityOfCartItemWhenQuantityIsGiven() throws CartItemNotFoundException {
-        long cartItemId = 2;
+    void shouldBeAbleToUpdateQuantityOfCartItemWhenQuantityIsGiven() throws CartItemNotFoundException, UserNotFoundException, NoCategoryFoundException, ItemDoesNotExistException, CartAccessDeniedException {
+        long cartId = 2;
+        long itemId = 1;
         long quantity = 30;
 
-        cartController.updateQuantity(cartItemId, quantity);
+        cartController.updateQuantity(principal, cartId, itemId, quantity);
 
-        verify(cartService).updateCartItemQuantity(cartItemId, quantity);
+        verify(cartService).updateCartItemQuantity(principal.getName(), cartId, itemId, quantity);
     }
 
     @Test
