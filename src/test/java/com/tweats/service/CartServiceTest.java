@@ -109,7 +109,7 @@ public class CartServiceTest {
     }
 
     @Test
-    void shouldBeAbleToUpdateQuantityOfACartItemWhenCartItemIdAndQuantityAreGiven() throws CartItemNotFoundException, CartAccessDeniedException {
+    void shouldBeAbleToUpdateQuantityOfACartItemWhenCartItemIdAndQuantityAreGiven() throws CartItemNotFoundException, CartAccessDeniedException, CartNotFoundException {
         long itemId = 2;
         long cartId = 1;
         long initialQuantity = 2;
@@ -149,7 +149,16 @@ public class CartServiceTest {
         when(user.getEmail()).thenReturn(cartUserEmail);
 
         assertThrows(CartAccessDeniedException.class, () -> cartService.updateCartItemQuantity(email, cartId, itemId, quantity));
+    }
 
+    @Test
+    void shouldThrowCartNotFoundExceptionWhenCartDoesNotFoundWithGivenId() {
+        long itemId = 2;
+        long cartId = 1;
+        long quantity = 4;
+        String email = "abc@gmail.com";
+
+        assertThrows(CartNotFoundException.class, () -> cartService.updateCartItemQuantity(email, cartId, itemId, quantity));
     }
 
     @Test

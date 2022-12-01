@@ -36,7 +36,7 @@ public class CartController {
     public void updateQuantity(Principal principal,
                                @PathVariable long cartId,
                                @RequestParam long itemId,
-                               @RequestParam(value = "quantity") @Min(value = 0, message = "Quantity can't be negative!") long quantity) throws CartItemNotFoundException, UserNotFoundException, NoCategoryFoundException, ItemDoesNotExistException, CartAccessDeniedException {
+                               @RequestParam(value = "quantity") @Min(value = 0, message = "Quantity can't be negative!") long quantity) throws CartItemNotFoundException, CartAccessDeniedException, CartNotFoundException {
         cartService.updateCartItemQuantity(principal.getName(), cartId, itemId, quantity);
     }
 

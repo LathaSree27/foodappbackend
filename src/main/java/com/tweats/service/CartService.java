@@ -17,7 +17,6 @@ import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -51,22 +50,14 @@ public class CartService {
         return getCartResponse(cart);
     }
 
-    public void updateCartItemQuantity(String email, long cartId, long itemId, long quantity) throws CartItemNotFoundException, CartAccessDeniedException {
-        Optional<Cart> optionalCart = cartRepository.findById(cartId);
-        Cart cart = optionalCart.get();
+    public void updateCartItemQuantity(String email, long cartId, long itemId, long quantity) throws CartItemNotFoundException, CartAccessDeniedException, CartNotFoundException {
+        Cart cart = getCart(cartId);
         String cartUserEmail = cart.getUser().getEmail();
         if (!cartUserEmail.equals(email)) throw new CartAccessDeniedException();
         Set<CartItem> cartItems = cart.getCartItems();
         CartItem cartItem = getAvailableCartItem(itemId, cartItems);
         cartItem.setQuantity(quantity);
         cartRepository.save(cart);
-    }
-
-    private CartItem getAvailableCartItem(long itemId, Set<CartItem> cartItems) throws CartItemNotFoundException {
-        for (CartItem cartItem : cartItems) {
-            if (cartItem.getItem().getId() == itemId) return cartItem;
-        }
-        throw new CartItemNotFoundException();
     }
 
     public void deleteCartItem(long cartItemId) throws CartItemNotFoundException {
@@ -92,6 +83,17 @@ public class CartService {
             cartItemResponseList.add(cartItemResponse);
         }
         return new CartResponse(cart.getId(), cartRepository.getBillAmount(cart.getId()).orElse(new BigDecimal(0)), cartItemResponseList);
+    }
+
+    private Cart getCart(long cartId) throws CartNotFoundException {
+        return cartRepository.findById(cartId).orElseThrow(CartNotFoundException::new);
+    }
+
+    private CartItem getAvailableCartItem(long itemId, Set<CartItem> cartItems) throws CartItemNotFoundException {
+        for (CartItem cartItem : cartItems) {
+            if (cartItem.getItem().getId() == itemId) return cartItem;
+        }
+        throw new CartItemNotFoundException();
     }
 
     private CartItem getCartItem(long cartItemId) throws CartItemNotFoundException {

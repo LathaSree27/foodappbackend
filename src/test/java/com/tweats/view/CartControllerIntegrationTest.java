@@ -47,6 +47,7 @@ public class CartControllerIntegrationTest {
     private Category category;
     private Cart cart;
     private Image categoryImage;
+    private User user;
 
     @BeforeEach
     void setUp() {
@@ -59,7 +60,7 @@ public class CartControllerIntegrationTest {
         roleRepository.deleteAll();
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
         Role userRole = roleRepository.save(new Role("CUSTOMER"));
-        User user = userRepository.save(new User("abc", "abc@gmail.com", bCryptPasswordEncoder.encode("password"), userRole));
+        user = userRepository.save(new User("abc", "abc@gmail.com", bCryptPasswordEncoder.encode("password"), userRole));
         Image image = new Image("image.png", MediaType.IMAGE_JPEG_VALUE, "hello".getBytes(), 1L);
         categoryImage = imageRepository.save(image);
         category = new Category("Juice", categoryImage, user);
@@ -184,6 +185,19 @@ public class CartControllerIntegrationTest {
                         .param("quantity", String.valueOf(quantity))
                         .with(httpBasic(user2.getEmail(), "password")))
                 .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void shouldThrowCartNotFoundExceptionWhenCartDoesNotFoundWithGivenId() throws Exception {
+        long itemId = 2;
+        long quantity = 4;
+        int cartId = 1;
+
+        mockMvc.perform(put("/cart/" + cartId)
+                        .param("itemId", String.valueOf(itemId))
+                        .param("quantity", String.valueOf(quantity))
+                        .with(httpBasic(user.getEmail(), "password")))
+                .andExpect(status().isNotFound());
     }
 
     @Test

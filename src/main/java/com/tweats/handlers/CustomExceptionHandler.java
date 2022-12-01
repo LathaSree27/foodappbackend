@@ -140,5 +140,11 @@ public class CustomExceptionHandler {
         ErrorResponse error = new ErrorResponse("Cart access denied!", Collections.singletonList(ex.getMessage()));
         return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
     }
+
+    @ExceptionHandler(CartNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleCartNotFoundException(CartNotFoundException ex) {
+        ErrorResponse error = new ErrorResponse("Cart not found!", Collections.singletonList(ex.getMessage()));
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
 }
 
