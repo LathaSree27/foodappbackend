@@ -1,9 +1,8 @@
 package com.tweats.service;
 
-import com.tweats.controller.response.ActiveOrderResponse;
-import com.tweats.controller.response.CompletedOrdersResponse;
 import com.tweats.controller.response.OrderResponse;
 import com.tweats.controller.response.OrderedItemResponse;
+import com.tweats.controller.response.OrdersResponse;
 import com.tweats.exceptions.*;
 import com.tweats.model.*;
 import com.tweats.model.constants.OrderStatus;
@@ -72,20 +71,21 @@ public class OrderServiceTest {
 
     @Test
     void shouldBeAbleToFetchAllCompletedOrdersWhenCategoryIdAndDateIsGiven() throws NoOrdersFoundException {
-        int count = 1;
+        long count = 1;
         Date today = new Date();
         List<Order> orders = new ArrayList<>();
         List<OrderResponse> orderResponses = new ArrayList<>();
         prepareData(today, orders, orderResponses);
         BigDecimal revenue = new BigDecimal(100);
-        CompletedOrdersResponse expectedCompletedOrdersResponse = new CompletedOrdersResponse(count, revenue, orderResponses);
         when(orderRepository.getAllCompletedOrdersByCategoryAndDate(category.getId(), today, OrderStatus.DELIVERED.name())).thenReturn(orders);
         when(orderRepository.getRevenueOfCompletedOrdersByCategoryIdAndDate(category.getId(), today, OrderStatus.DELIVERED.name())).thenReturn(revenue);
 
-        CompletedOrdersResponse actualCompletedOrdersResponse = orderService.getCompletedOrders(category.getId(), today);
+        OrdersResponse actualOrdersResponse = orderService.getCompletedOrders(category.getId(), today);
 
         verify(orderRepository).getAllCompletedOrdersByCategoryAndDate(category.getId(), today, OrderStatus.DELIVERED.name());
-        assertThat(actualCompletedOrdersResponse, is(expectedCompletedOrdersResponse));
+        assertThat(actualOrdersResponse.getCount(), is(count));
+        assertThat(actualOrdersResponse.getRevenue(), is(revenue));
+        assertThat(actualOrdersResponse.getOrders(), is(orderResponses));
 
     }
 
@@ -99,19 +99,19 @@ public class OrderServiceTest {
 
     @Test
     void shouldBeAbleToFetchAllActiveOrdersWhenCategoryIdIsGiven() throws NoOrdersFoundException, UserNotFoundException, NoCategoryFoundException {
-        int count = 1;
+        long count = 1;
         Date today = new Date();
         List<Order> orders = new ArrayList<>();
         List<OrderResponse> orderResponses = new ArrayList<>();
         prepareData(today, orders, orderResponses);
-        ActiveOrderResponse expectedActiveOrderResponse = new ActiveOrderResponse(count, orderResponses);
         when(categoryService.getCategory(user.getEmail())).thenReturn(category);
         when(orderRepository.getAllActiveOrdersByCategoryId(category.getId(), OrderStatus.PLACED.name())).thenReturn(orders);
 
-        ActiveOrderResponse actualActiveOrders = orderService.getActiveOrders(user.getEmail());
+        OrdersResponse actualActiveOrders = orderService.getActiveOrders(user.getEmail());
 
         verify(orderRepository).getAllActiveOrdersByCategoryId(category.getId(), OrderStatus.PLACED.name());
-        assertThat(actualActiveOrders, is(expectedActiveOrderResponse));
+        assertThat(actualActiveOrders.getCount(), is(count));
+        assertThat(actualActiveOrders.getOrders(), is(orderResponses));
     }
 
     @Test

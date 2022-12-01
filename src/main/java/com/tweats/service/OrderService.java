@@ -1,9 +1,8 @@
 package com.tweats.service;
 
-import com.tweats.controller.response.ActiveOrderResponse;
-import com.tweats.controller.response.CompletedOrdersResponse;
 import com.tweats.controller.response.OrderResponse;
 import com.tweats.controller.response.OrderedItemResponse;
+import com.tweats.controller.response.OrdersResponse;
 import com.tweats.exceptions.*;
 import com.tweats.model.*;
 import com.tweats.model.constants.OrderStatus;
@@ -34,15 +33,14 @@ public class OrderService {
 
     private CartService cartService;
 
-    public CompletedOrdersResponse getCompletedOrders(long categoryId, Date date) throws NoOrdersFoundException {
+    public OrdersResponse getCompletedOrders(long categoryId, Date date) throws NoOrdersFoundException {
         List<Order> orders = orderRepository.getAllCompletedOrdersByCategoryAndDate(categoryId, date, OrderStatus.DELIVERED.name());
         int count = orders.size();
         if (count == 0) throw new NoOrdersFoundException();
         BigDecimal revenue = orderRepository.getRevenueOfCompletedOrdersByCategoryIdAndDate(categoryId, date, OrderStatus.DELIVERED.name());
         ArrayList<OrderResponse> orderResponses = new ArrayList<>();
         createOrderResponse(orders, orderResponses);
-        return new CompletedOrdersResponse(count, revenue, orderResponses);
-
+        return getCompletedOrdersResponse(count, revenue, orderResponses);
     }
 
     private void createOrderResponse(List<Order> orders, ArrayList<OrderResponse> orderResponses) {
@@ -72,14 +70,29 @@ public class OrderService {
         return billAmount;
     }
 
-    public ActiveOrderResponse getActiveOrders(String vendorEmail) throws NoOrdersFoundException, UserNotFoundException, NoCategoryFoundException {
+    private OrdersResponse getCompletedOrdersResponse(int count, BigDecimal revenue,List<OrderResponse> orders){
+        return OrdersResponse.builder()
+                .count(count)
+                .revenue(revenue)
+                .orders(orders)
+                .build();
+    }
+
+    private OrdersResponse getActiveOrdersResponse(int count, List<OrderResponse> orders){
+        return OrdersResponse.builder()
+                .count(count)
+                .orders(orders)
+                .build();
+    }
+
+    public OrdersResponse getActiveOrders(String vendorEmail) throws NoOrdersFoundException, UserNotFoundException, NoCategoryFoundException {
         Category category = categoryService.getCategory(vendorEmail);
         List<Order> orders = orderRepository.getAllActiveOrdersByCategoryId(category.getId(), OrderStatus.PLACED.name());
         int count = orders.size();
         if (count == 0) throw new NoOrdersFoundException();
         ArrayList<OrderResponse> orderResponses = new ArrayList<>();
         createOrderResponse(orders, orderResponses);
-        return new ActiveOrderResponse(count, orderResponses);
+        return getActiveOrdersResponse(count, orderResponses);
     }
 
     public void completeTheOrder(String vendorEmail, long orderId) throws OrderNotFoundException, OrderCategoryMismatchException, OrderCancelledException, UserNotFoundException, NoCategoryFoundException {
