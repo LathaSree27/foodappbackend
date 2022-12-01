@@ -29,11 +29,4 @@ public class CategoryItemsResponse {
         return Objects.hash(categoryId, items);
     }
 
-    @Override
-    public String toString() {
-        return "{" +
-                "categoryId=" + categoryId +
-                ", items=" + items +
-                '}';
-    }
 }

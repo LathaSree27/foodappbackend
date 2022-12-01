@@ -1,7 +1,6 @@
 package com.tweats.service;
 
 import com.tweats.controller.response.CategoryResponse;
-import com.tweats.controller.response.VendorCategoryResponse;
 import com.tweats.exceptions.*;
 import com.tweats.model.Category;
 import com.tweats.model.Image;
@@ -69,11 +68,15 @@ public class CategoryServiceTest {
         String userEmail = "abc@example.com";
         when(userPrincipalService.findUserByEmail(userEmail)).thenReturn(user);
         when(categoryRepository.findByUserId(userId)).thenReturn(Optional.of(category));
-        VendorCategoryResponse expectedVendorCategoryResponse = new VendorCategoryResponse(category.getId());
+        when(category.getImage()).thenReturn(image);
+        String imageLink = "http://localhost:8080/tweats/api/v1/images" + category.getImage().getId();
+        when(imageService.getImageLink(category.getImage())).thenReturn(imageLink);
 
-        VendorCategoryResponse actualVendorCategoryResponse = categoryService.getVendorCategoryResponse(userEmail);
+        CategoryResponse actualVendorCategoryResponse = categoryService.getVendorCategoryResponse(userEmail);
 
-        assertThat(actualVendorCategoryResponse, is(expectedVendorCategoryResponse));
+        assertThat(actualVendorCategoryResponse.getId(), is(category.getId()));
+        assertThat(actualVendorCategoryResponse.getCategoryName(), is(category.getName()));
+        assertThat(actualVendorCategoryResponse.getImageLink(), is(imageLink));
     }
 
     @Test
@@ -114,19 +117,16 @@ public class CategoryServiceTest {
         String imageLink = "http://localhost:8080/tweats/api/v1/images/" + category.getImage().getId();
         when(category.getName()).thenReturn(categoryName);
         when(imageService.getImageLink(category.getImage())).thenReturn(imageLink);
-        List<CategoryResponse> expectedCategories = new ArrayList<>(List.of(CategoryResponse
-                .builder()
-                .id(category.getId())
-                .categoryName(category.getName())
-                .imageLink(imageLink)
-                .isOpen(category.isOpen())
-                .build()));
         when(categoryRepository.findAll()).thenReturn(new ArrayList<>(List.of(category)));
 
         List<CategoryResponse> actualCategories = categoryService.getAllCategories();
 
+        CategoryResponse actualCategoryResponse = actualCategories.get(0);
         verify(categoryRepository).findAll();
-        assertThat(actualCategories, is(expectedCategories));
+        assertThat(actualCategoryResponse.getId(), is(category.getId()));
+        assertThat(actualCategoryResponse.getCategoryName(), is(category.getName()));
+        assertThat(actualCategoryResponse.getImageLink(), is(imageLink));
+        assertThat(actualCategoryResponse.isOpen(), is(category.isOpen()));
     }
 
     @Test

@@ -1,7 +1,6 @@
 package com.tweats.controller;
 
 import com.tweats.controller.response.CategoryResponse;
-import com.tweats.controller.response.VendorCategoryResponse;
 import com.tweats.exceptions.*;
 import com.tweats.service.CategoryService;
 import org.junit.jupiter.api.Test;
@@ -30,7 +29,7 @@ public class CategoryControllerTest {
     Principal principal;
 
     @Mock
-    VendorCategoryResponse vendorCategoryResponse;
+    CategoryResponse categoryResponse;
 
     @InjectMocks
     private CategoryController categoryController;
@@ -49,9 +48,9 @@ public class CategoryControllerTest {
 
     @Test
     void shouldBeAbleToFetchCategoryOfLoggedInVendor() throws UserNotFoundException, NoCategoryFoundException {
-        when(categoryService.getVendorCategoryResponse(principal.getName())).thenReturn(vendorCategoryResponse);
+        when(categoryService.getVendorCategoryResponse(principal.getName())).thenReturn(categoryResponse);
 
-        assertThat(categoryController.fetchCategory(principal), is(vendorCategoryResponse));
+        assertThat(categoryController.fetchCategory(principal), is(categoryResponse));
     }
 
     @Test

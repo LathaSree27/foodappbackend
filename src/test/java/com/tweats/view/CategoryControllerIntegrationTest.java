@@ -2,7 +2,6 @@ package com.tweats.view;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tweats.TweatsApplication;
-import com.tweats.controller.response.VendorCategoryResponse;
 import com.tweats.model.Category;
 import com.tweats.model.Image;
 import com.tweats.model.Role;
@@ -29,7 +28,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(classes = TweatsApplication.class)
@@ -96,13 +94,11 @@ public class CategoryControllerIntegrationTest {
     void shouldBeAbleToFetchCategoryWhenUserEmailIsProvided() throws Exception {
         MockMultipartFile mockMultipartFileCategory = new MockMultipartFile("file", "image.png", MediaType.IMAGE_JPEG_VALUE, "hello".getBytes());
         Image categoryImage = imageService.save(mockMultipartFileCategory);
-        Category juice = categoryRepository.save(new Category("juice", categoryImage, vendor));
-        VendorCategoryResponse vendorCategoryResponse = new VendorCategoryResponse(juice.getId());
+        categoryRepository.save(new Category("juice", categoryImage, vendor));
 
         mockMvc.perform(get("/category/vendor")
                         .with((httpBasic(vendor.getEmail(), "password"))))
-                .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(vendorCategoryResponse)));
+                .andExpect(status().isOk());
 
     }
 

@@ -1,7 +1,6 @@
 package com.tweats.service;
 
 import com.tweats.controller.response.CategoryResponse;
-import com.tweats.controller.response.VendorCategoryResponse;
 import com.tweats.exceptions.*;
 import com.tweats.model.Category;
 import com.tweats.model.Image;
@@ -42,9 +41,10 @@ public class CategoryService {
         return categoryRepository.findByUserId(user.getId()).orElseThrow(NoCategoryFoundException::new);
     }
 
-    public VendorCategoryResponse getVendorCategoryResponse(String userEmail) throws UserNotFoundException, NoCategoryFoundException {
+    public CategoryResponse getVendorCategoryResponse(String userEmail) throws UserNotFoundException, NoCategoryFoundException {
         Category category = getCategory(userEmail);
-        return new VendorCategoryResponse(category.getId());
+        String imageLink = imageService.getImageLink(category.getImage());
+        return getVendorCategoryResponse(category, imageLink);
     }
 
     public List<CategoryResponse> getAllCategories() throws NoCategoryFoundException {
@@ -68,6 +68,14 @@ public class CategoryService {
                 .categoryName(category.getName())
                 .imageLink(imageService.getImageLink(category.getImage()))
                 .isOpen(category.isOpen())
+                .build();
+    }
+
+    private CategoryResponse getVendorCategoryResponse(Category category, String imageLink) {
+        return CategoryResponse.builder()
+                .id(category.getId())
+                .categoryName(category.getName())
+                .imageLink(imageLink)
                 .build();
     }
 

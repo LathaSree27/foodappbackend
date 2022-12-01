@@ -1,7 +1,6 @@
 package com.tweats.controller;
 
 import com.tweats.controller.response.CategoryResponse;
-import com.tweats.controller.response.VendorCategoryResponse;
 import com.tweats.exceptions.*;
 import com.tweats.service.CategoryService;
 import lombok.AllArgsConstructor;
@@ -32,7 +31,7 @@ public class CategoryController {
     }
 
     @GetMapping("vendor")
-    public VendorCategoryResponse fetchCategory(Principal principal) throws NoCategoryFoundException, UserNotFoundException {
+    public CategoryResponse fetchCategory(Principal principal) throws NoCategoryFoundException, UserNotFoundException {
         return categoryService.getVendorCategoryResponse(principal.getName());
     }
 
