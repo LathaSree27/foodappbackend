@@ -4,7 +4,6 @@ import com.tweats.controller.response.CartItemResponse;
 import com.tweats.controller.response.CartResponse;
 import com.tweats.exceptions.*;
 import com.tweats.model.*;
-import com.tweats.repo.CartItemRepository;
 import com.tweats.repo.CartRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,15 +39,11 @@ public class CartServiceTest {
     private User user;
     @Mock
     private Category category;
-    @Mock
-    CartItem cartItem;
     private Cart cart;
     @Mock
     private Image image;
     @Mock
     Item item;
-    @Mock
-    private CartItemRepository cartItemRepository;
 
     @BeforeEach
     void setUp() {
@@ -162,20 +157,26 @@ public class CartServiceTest {
     }
 
     @Test
-    void shouldBeAbleToDeleteCartItemWhenIdIsGiven() throws CartItemNotFoundException {
-        long cartItemId = 2;
-        when(cartItemRepository.findById(cartItemId)).thenReturn(Optional.of(cartItem));
+    void shouldBeAbleToDeleteCartItemWhenIdIsGiven() throws CartItemNotFoundException, CartNotFoundException {
+        long itemId = 2;
+        long cartId = 1;
+        long initialQuantity = 2;
+        CartItem cartItem = new CartItem(cart, item, initialQuantity);
+        cart.addCartItem(cartItem);
+        when(cartRepository.findById(cartId)).thenReturn(Optional.of(cart));
+        when(item.getId()).thenReturn(itemId);
 
-        cartService.deleteCartItem(cartItemId);
+        cartService.deleteCartItem(cartId, itemId);
 
-        verify(cartItemRepository).deleteById(cartItemId);
+        verify(cartRepository).save(cart);
     }
 
     @Test
-    void shouldThrowCartItemNotFoundExceptionWhenCartItemDoesNotExistWithGivenId() {
-        long cartItemId = 2;
+    void shouldThrowCartNotFoundExceptionWhenCartItemDoesNotExistWithGivenId() {
+        long cartId = 2;
+        int itemId = 3;
 
-        assertThrows(CartItemNotFoundException.class, () -> cartService.deleteCartItem(cartItemId));
+        assertThrows(CartNotFoundException.class, () -> cartService.deleteCartItem(cartId, itemId));
     }
 
     @Test
@@ -190,3 +191,4 @@ public class CartServiceTest {
         verify(cartRepository).save(savedCart);
     }
 }
+

@@ -7,7 +7,6 @@ import com.tweats.model.Cart;
 import com.tweats.model.CartItem;
 import com.tweats.model.Item;
 import com.tweats.model.User;
-import com.tweats.repo.CartItemRepository;
 import com.tweats.repo.CartRepository;
 import lombok.AllArgsConstructor;
 import lombok.Setter;
@@ -24,15 +23,9 @@ import java.util.Set;
 @Setter
 @AllArgsConstructor
 public class CartService {
-
     private UserPrincipalService userPrincipalService;
-
     private ItemService itemService;
-
     private CartRepository cartRepository;
-
-    private CartItemRepository cartItemRepository;
-
     private ImageService imageService;
 
     public void addItem(String userEmail, long itemId, long quantity) throws ItemDoesNotExistException, NoCategoryFoundException, UserNotFoundException {
@@ -55,14 +48,17 @@ public class CartService {
         String cartUserEmail = cart.getUser().getEmail();
         if (!cartUserEmail.equals(email)) throw new CartAccessDeniedException();
         Set<CartItem> cartItems = cart.getCartItems();
-        CartItem cartItem = getAvailableCartItem(itemId, cartItems);
+        CartItem cartItem = getCartItem(itemId, cartItems);
         cartItem.setQuantity(quantity);
         cartRepository.save(cart);
     }
 
-    public void deleteCartItem(long cartItemId) throws CartItemNotFoundException {
-        getCartItem(cartItemId);
-        cartItemRepository.deleteById(cartItemId);
+    public void deleteCartItem(long cartId, long itemId) throws CartItemNotFoundException, CartNotFoundException {
+        Cart cart = getCart(cartId);
+        Set<CartItem> cartItems = cart.getCartItems();
+        CartItem cartItem = getCartItem(itemId, cartItems);
+        cartItems.remove(cartItem);
+        cartRepository.save(cart);
     }
 
     public Cart getCart(long userId, long categoryId) throws NoCategoryFoundException {
@@ -89,14 +85,11 @@ public class CartService {
         return cartRepository.findById(cartId).orElseThrow(CartNotFoundException::new);
     }
 
-    private CartItem getAvailableCartItem(long itemId, Set<CartItem> cartItems) throws CartItemNotFoundException {
+    private CartItem getCartItem(long itemId, Set<CartItem> cartItems) throws CartItemNotFoundException {
         for (CartItem cartItem : cartItems) {
             if (cartItem.getItem().getId() == itemId) return cartItem;
         }
         throw new CartItemNotFoundException();
     }
-
-    private CartItem getCartItem(long cartItemId) throws CartItemNotFoundException {
-        return cartItemRepository.findById(cartItemId).orElseThrow(CartItemNotFoundException::new);
-    }
 }
+

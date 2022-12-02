@@ -15,9 +15,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
@@ -42,8 +40,6 @@ public class CartControllerIntegrationTest {
     private CategoryRepository categoryRepository;
     @Autowired
     private CartRepository cartRepository;
-    @Autowired
-    private CartItemRepository cartItemRepository;
     private Category category;
     private Cart cart;
     private Image categoryImage;
@@ -51,7 +47,6 @@ public class CartControllerIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        cartItemRepository.deleteAll();
         cartRepository.deleteAll();
         itemRepository.deleteAll();
         categoryRepository.deleteAll();
@@ -71,7 +66,6 @@ public class CartControllerIntegrationTest {
 
     @AfterEach
     public void after() {
-        cartItemRepository.deleteAll();
         cartRepository.deleteAll();
         itemRepository.deleteAll();
         categoryRepository.deleteAll();
@@ -201,7 +195,7 @@ public class CartControllerIntegrationTest {
     }
 
     @Test
-    void shouldBeAbleToDeleteCartItemWhenIdIsGiven() throws Exception {
+    void shouldBeAbleToDeleteCartItemWhenCartIdAndItemIdAreGiven() throws Exception {
         String itemName = "mango";
         long quantity = 1;
         Set<CartItem> cartItems = new HashSet<>();
@@ -210,21 +204,35 @@ public class CartControllerIntegrationTest {
         CartItem cartItem = new CartItem(cart, item, quantity);
         cartItems.add(cartItem);
         cart.setCartItems(cartItems);
-        Cart cart = cartRepository.save(this.cart);
-        List<CartItem> cartItemList = new ArrayList<>(cart.getCartItems());
-        CartItem savedCartItem = cartItemList.get(0);
+        Cart savedCart = cartRepository.save(this.cart);
 
-        mockMvc.perform(delete("/cart/item/" + savedCartItem.getId())
+        mockMvc.perform(delete("/cart/" + savedCart.getId())
+                        .param("itemId", String.valueOf(item.getId()))
                         .with(httpBasic("abc@gmail.com", "password")))
                 .andExpect(status().isOk());
     }
 
     @Test
-    void shouldThrowCartItemNotFoundErrorWhenCartItemDoesNotExistWithGivenId() throws Exception {
-        long cartItemId = 2;
+    void shouldThrowCartNotFoundErrorWhenCartItemDoesNotExistWithGivenId() throws Exception {
+        long itemId = 2;
+        long cartId = 3;
 
-        mockMvc.perform(delete("/cart/item/" + cartItemId)
+        mockMvc.perform(delete("/cart/" + cartId)
+                        .param("itemId", String.valueOf(itemId))
+                        .with(httpBasic("abc@gmail.com", "password")))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void shouldThrowCartItemNotFoundErrorWhenCartItemDoesNotExistsWithGivenItemId() throws Exception {
+        long itemId = 1;
+        long quantity = 4;
+
+        mockMvc.perform(put("/cart/" + cart.getId())
+                        .param("itemId", String.valueOf(itemId))
+                        .param("quantity", String.valueOf(quantity))
                         .with(httpBasic("abc@gmail.com", "password")))
                 .andExpect(status().isNotFound());
     }
 }
+

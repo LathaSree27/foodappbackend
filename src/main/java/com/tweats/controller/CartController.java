@@ -40,8 +40,9 @@ public class CartController {
         cartService.updateCartItemQuantity(principal.getName(), cartId, itemId, quantity);
     }
 
-    @DeleteMapping("item/{cartItemId}")
-    public void deleteCartItem(@PathVariable long cartItemId) throws CartItemNotFoundException {
-        cartService.deleteCartItem(cartItemId);
+    @DeleteMapping("{cartId}")
+    public void deleteCartItem(@PathVariable long cartId, @RequestParam long itemId) throws CartItemNotFoundException, CartNotFoundException {
+        cartService.deleteCartItem(cartId, itemId);
     }
 }
+

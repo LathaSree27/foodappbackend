@@ -50,7 +50,7 @@ public class CartControllerTest {
     }
 
     @Test
-    void shouldBeAbleToUpdateQuantityOfCartItemWhenQuantityIsGiven() throws CartItemNotFoundException, UserNotFoundException, NoCategoryFoundException, ItemDoesNotExistException, CartAccessDeniedException, CartNotFoundException {
+    void shouldBeAbleToUpdateQuantityOfCartItemWhenQuantityIsGiven() throws CartItemNotFoundException, CartAccessDeniedException, CartNotFoundException {
         long cartId = 2;
         long itemId = 1;
         long quantity = 30;
@@ -61,11 +61,13 @@ public class CartControllerTest {
     }
 
     @Test
-    void shouldBeAbleToDeleteCartItemWhenIdIsGiven() throws CartItemNotFoundException {
-        long cartItemId = 2;
+    void shouldBeAbleToDeleteCartItemWhenIdIsGiven() throws CartItemNotFoundException, CartNotFoundException {
+        long cartId = 2;
 
-        cartController.deleteCartItem(cartItemId);
+        int itemId = 3;
+        cartController.deleteCartItem(cartId, itemId);
 
-        verify(cartService).deleteCartItem(cartItemId);
+        verify(cartService).deleteCartItem(cartId, itemId);
     }
 }
+
