@@ -146,10 +146,17 @@ public class CustomExceptionHandler {
         ErrorResponse error = new ErrorResponse("Cart not found!", Collections.singletonList(ex.getMessage()));
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
+
     @ExceptionHandler(ItemUnavailableException.class)
     public ResponseEntity<ErrorResponse> handleItemIsNotAvailableException(ItemUnavailableException ex) {
         ErrorResponse error = new ErrorResponse("Item not available!", Collections.singletonList(ex.getMessage()));
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(OrderAlreadyCompletedException.class)
+    public ResponseEntity<ErrorResponse> handleOrderAlreadyCompletedException(OrderAlreadyCompletedException ex) {
+        ErrorResponse error = new ErrorResponse("Order completed!", Collections.singletonList(ex.getMessage()));
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 }
 

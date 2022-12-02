@@ -1,9 +1,9 @@
 package com.tweats.service;
 
 import com.tweats.controller.response.ActiveOrdersResponse;
+import com.tweats.controller.response.CompletedOrdersResponse;
 import com.tweats.controller.response.OrderResponse;
 import com.tweats.controller.response.OrderedItemResponse;
-import com.tweats.controller.response.CompletedOrdersResponse;
 import com.tweats.exceptions.*;
 import com.tweats.model.*;
 import com.tweats.model.constants.OrderStatus;
@@ -123,7 +123,7 @@ public class OrderServiceTest {
     }
 
     @Test
-    void shouldCompleteTheOrderWhenOrderIsNotDelivered() throws OrderNotFoundException, OrderCategoryMismatchException, OrderCancelledException, UserNotFoundException, NoCategoryFoundException {
+    void shouldCompleteTheOrderWhenOrderIsNotDelivered() throws OrderNotFoundException, OrderCategoryMismatchException, OrderCancelledException, UserNotFoundException, NoCategoryFoundException, OrderAlreadyCompletedException {
         when(categoryService.getCategory(user.getEmail())).thenReturn(category);
         when(orderRepository.findById(order.getId())).thenReturn(Optional.of(order));
         when(order.getCategory()).thenReturn(category);
@@ -133,6 +133,16 @@ public class OrderServiceTest {
         orderService.completeTheOrder(user.getEmail(), order.getId());
 
         verify(orderRepository).save(order);
+    }
+
+    @Test
+    void shouldThrowOrderAlreadyCompletedExceptionWhenOrderIsDelivered() throws UserNotFoundException, NoCategoryFoundException {
+        when(categoryService.getCategory(user.getEmail())).thenReturn(category);
+        when(orderRepository.findById(order.getId())).thenReturn(Optional.of(order));
+        when(order.getCategory()).thenReturn(category);
+        when(order.getStatus()).thenReturn(OrderStatus.DELIVERED);
+
+        assertThrows(OrderAlreadyCompletedException.class, () -> orderService.completeTheOrder(user.getEmail(), order.getId()));
     }
 
     @Test

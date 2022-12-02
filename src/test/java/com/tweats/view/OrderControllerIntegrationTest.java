@@ -155,6 +155,18 @@ public class OrderControllerIntegrationTest {
     }
 
     @Test
+    void shouldThrowOrderAlreadyCompletedErrorWhenOrderIdIsGiven() throws Exception {
+        order.setStatus(OrderStatus.DELIVERED);
+        Order placedOrder = orderRepository.save(order);
+
+        mockMvc.perform(
+                        put("/order/complete")
+                                .with(httpBasic(vendor.getEmail(), "password"))
+                                .param("orderId", String.valueOf(placedOrder.getId())))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     void shouldThrowOrderNotFoundErrorWhenTheGivenOrderIsNotPlaced() throws Exception {
         long orderId = 1;
 

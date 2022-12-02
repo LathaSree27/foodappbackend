@@ -37,7 +37,7 @@ public class OrderController {
     @PutMapping("complete")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void completeTheOrder(Principal principal,
-                                 @RequestParam(name = "orderId") long orderId) throws OrderNotFoundException, OrderCategoryMismatchException, OrderCancelledException, UserNotFoundException, NoCategoryFoundException {
+                                 @RequestParam(name = "orderId") long orderId) throws OrderNotFoundException, OrderCategoryMismatchException, OrderCancelledException, UserNotFoundException, NoCategoryFoundException, OrderAlreadyCompletedException {
         orderService.completeTheOrder(principal.getName(), orderId);
     }
 

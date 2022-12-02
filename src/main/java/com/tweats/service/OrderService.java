@@ -1,9 +1,9 @@
 package com.tweats.service;
 
 import com.tweats.controller.response.ActiveOrdersResponse;
+import com.tweats.controller.response.CompletedOrdersResponse;
 import com.tweats.controller.response.OrderResponse;
 import com.tweats.controller.response.OrderedItemResponse;
-import com.tweats.controller.response.CompletedOrdersResponse;
 import com.tweats.exceptions.*;
 import com.tweats.model.*;
 import com.tweats.model.constants.OrderStatus;
@@ -71,7 +71,7 @@ public class OrderService {
         return billAmount;
     }
 
-    private CompletedOrdersResponse getCompletedOrdersResponse(int count, BigDecimal revenue, List<OrderResponse> orders){
+    private CompletedOrdersResponse getCompletedOrdersResponse(int count, BigDecimal revenue, List<OrderResponse> orders) {
         return CompletedOrdersResponse.builder()
                 .count(count)
                 .revenue(revenue)
@@ -79,7 +79,7 @@ public class OrderService {
                 .build();
     }
 
-    private ActiveOrdersResponse getActiveOrdersResponse(int count, List<OrderResponse> orders){
+    private ActiveOrdersResponse getActiveOrdersResponse(int count, List<OrderResponse> orders) {
         return ActiveOrdersResponse.builder()
                 .count(count)
                 .orders(orders)
@@ -96,11 +96,12 @@ public class OrderService {
         return getActiveOrdersResponse(count, orderResponses);
     }
 
-    public void completeTheOrder(String vendorEmail, long orderId) throws OrderNotFoundException, OrderCategoryMismatchException, OrderCancelledException, UserNotFoundException, NoCategoryFoundException {
+    public void completeTheOrder(String vendorEmail, long orderId) throws OrderNotFoundException, OrderCategoryMismatchException, OrderCancelledException, UserNotFoundException, NoCategoryFoundException, OrderAlreadyCompletedException {
         Order order = orderRepository.findById(orderId).orElseThrow(OrderNotFoundException::new);
         Category category = categoryService.getCategory(vendorEmail);
         if (!category.equals(order.getCategory())) throw new OrderCategoryMismatchException();
         if (order.getStatus().equals(OrderStatus.CANCELED)) throw new OrderCancelledException();
+        if (order.getStatus().equals(OrderStatus.DELIVERED)) throw new OrderAlreadyCompletedException();
         order.setStatus(OrderStatus.DELIVERED);
         orderRepository.save(order);
     }
