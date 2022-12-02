@@ -28,7 +28,7 @@ public class CartControllerTest {
     private CartService cartService;
 
     @Test
-    void shouldBeAbleToAddItemToCart() throws ItemDoesNotExistException, NoCategoryFoundException, UserNotFoundException {
+    void shouldBeAbleToAddItemToCart() throws ItemDoesNotExistException, NoCategoryFoundException, UserNotFoundException, ItemUnavailableException {
         long itemId = 1;
         long quantity = 2;
 

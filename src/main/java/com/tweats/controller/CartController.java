@@ -22,7 +22,7 @@ public class CartController {
     public void add(Principal principal,
                     @PathVariable long itemId,
                     @Min(value = 0, message = "quantity cannot be negative")
-                    @RequestParam long quantity) throws ItemDoesNotExistException, NoCategoryFoundException, UserNotFoundException {
+                    @RequestParam long quantity) throws ItemDoesNotExistException, NoCategoryFoundException, UserNotFoundException, ItemUnavailableException {
         cartService.addItem(principal.getName(), itemId, quantity);
     }
 

@@ -51,7 +51,7 @@ public class CartServiceTest {
     }
 
     @Test
-    void shouldBeAbleToSaveCartItemWhenUserAddsItemToCart() throws ItemDoesNotExistException, NoCategoryFoundException, UserNotFoundException {
+    void shouldBeAbleToSaveCartItemWhenUserAddsItemToCart() throws ItemDoesNotExistException, NoCategoryFoundException, UserNotFoundException, ItemUnavailableException {
         long itemId = 1;
         long quantity = 2;
         String itemName = "Mango";
@@ -68,6 +68,17 @@ public class CartServiceTest {
 
         verify(cartRepository).save(cart);
         assertThat(cart.getCartItems(), is(expectedCartItems));
+    }
+
+    @Test
+    void shouldThrowItemUnavailableExceptionWhenTheGivenItemIsNotAvailable() throws UserNotFoundException, ItemDoesNotExistException {
+        item.setAvailable(false);
+        int quantity = 3;
+        long itemId = 2;
+        when(userPrincipalService.findUserByEmail(user.getEmail())).thenReturn(user);
+        when(itemService.getItem(itemId)).thenReturn(item);
+
+        assertThrows(ItemUnavailableException.class, () -> cartService.addItem(user.getEmail(), itemId, quantity));
     }
 
     @Test

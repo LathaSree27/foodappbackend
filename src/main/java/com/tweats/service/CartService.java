@@ -28,9 +28,10 @@ public class CartService {
     private CartRepository cartRepository;
     private ImageService imageService;
 
-    public void addItem(String userEmail, long itemId, long quantity) throws ItemDoesNotExistException, NoCategoryFoundException, UserNotFoundException {
+    public void addItem(String userEmail, long itemId, long quantity) throws ItemDoesNotExistException, NoCategoryFoundException, UserNotFoundException, ItemUnavailableException {
         User user = userPrincipalService.findUserByEmail(userEmail);
         Item item = itemService.getItem(itemId);
+        if(!item.isAvailable()) throw new ItemUnavailableException();
         Cart cart = getCart(user.getId(), item.getCategory().getId());
         CartItem cartItem = cart.getCartItem(item, quantity);
         cart.addCartItem(cartItem);

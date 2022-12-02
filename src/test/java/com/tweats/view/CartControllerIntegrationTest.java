@@ -82,8 +82,21 @@ public class CartControllerIntegrationTest {
         Item savedItem = itemRepository.save(item);
 
         mockMvc.perform(post("/cart/item/" + savedItem.getId())
-                .param("quantity", String.valueOf(1L))
+                .param("quantity", String.valueOf(1))
                 .with(httpBasic("abc@gmail.com", "password"))).andExpect(status().isOk());
+    }
+
+    @Test
+    void shouldThrowItemUnavailableErrorWhenTheGivenItemIsNotAvailable() throws Exception {
+        BigDecimal itemPrice = new BigDecimal(100);
+        String itemName = "manchuria";
+        Item item = new Item(itemName, categoryImage, itemPrice, category);
+        item.setAvailable(false);
+        Item savedItem = itemRepository.save(item);
+
+        mockMvc.perform(post("/cart/item/" + savedItem.getId())
+                .param("quantity", String.valueOf(1))
+                .with(httpBasic("abc@gmail.com", "password"))).andExpect(status().isNotFound());
     }
 
     @Test
