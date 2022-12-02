@@ -77,6 +77,7 @@ public class CategoryServiceTest {
         assertThat(actualVendorCategoryResponse.getId(), is(category.getId()));
         assertThat(actualVendorCategoryResponse.getCategoryName(), is(category.getName()));
         assertThat(actualVendorCategoryResponse.getImageLink(), is(imageLink));
+        assertThat(actualVendorCategoryResponse.isOpen(), is(category.isOpen()));
     }
 
     @Test

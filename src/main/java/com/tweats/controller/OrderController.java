@@ -1,6 +1,7 @@
 package com.tweats.controller;
 
-import com.tweats.controller.response.OrdersResponse;
+import com.tweats.controller.response.ActiveOrdersResponse;
+import com.tweats.controller.response.CompletedOrdersResponse;
 import com.tweats.exceptions.*;
 import com.tweats.service.OrderService;
 import lombok.AllArgsConstructor;
@@ -22,14 +23,14 @@ public class OrderController {
     private OrderService orderService;
 
     @GetMapping("completed")
-    public OrdersResponse getCompletedOrders(
+    public CompletedOrdersResponse getCompletedOrders(
             @RequestParam(name = "categoryId") long categoryId,
             @RequestParam("date") @DateTimeFormat(pattern = "yyyy-MM-dd") Date date) throws NoOrdersFoundException {
         return orderService.getCompletedOrders(categoryId, date);
     }
 
     @GetMapping("active")
-    public OrdersResponse getActiveOrders(Principal principal) throws NoOrdersFoundException, UserNotFoundException, NoCategoryFoundException {
+    public ActiveOrdersResponse getActiveOrders(Principal principal) throws NoOrdersFoundException, UserNotFoundException, NoCategoryFoundException {
         return orderService.getActiveOrders(principal.getName());
     }
 

@@ -1,6 +1,7 @@
 package com.tweats.controller;
 
-import com.tweats.controller.response.OrdersResponse;
+import com.tweats.controller.response.ActiveOrdersResponse;
+import com.tweats.controller.response.CompletedOrdersResponse;
 import com.tweats.exceptions.*;
 import com.tweats.service.OrderService;
 import org.junit.jupiter.api.Test;
@@ -31,21 +32,21 @@ public class OrderControllerTest {
     void shouldBeAbleToFetchAllCompletedOrdersWhenCategoryIdAndDateIsGiven() throws NoOrdersFoundException {
         long categoryId = 1;
         Date today = new Date();
-        OrdersResponse expectedOrdersResponse = OrdersResponse.builder().build();
-        when(orderService.getCompletedOrders(categoryId, today)).thenReturn(expectedOrdersResponse);
+        CompletedOrdersResponse expectedCompletedOrdersResponse = CompletedOrdersResponse.builder().build();
+        when(orderService.getCompletedOrders(categoryId, today)).thenReturn(expectedCompletedOrdersResponse);
 
-        OrdersResponse actualOrdersResponse = orderController.getCompletedOrders(categoryId, today);
+        CompletedOrdersResponse actualCompletedOrdersResponse = orderController.getCompletedOrders(categoryId, today);
 
         verify(orderService).getCompletedOrders(categoryId, today);
-        assertThat(actualOrdersResponse, is(expectedOrdersResponse));
+        assertThat(actualCompletedOrdersResponse, is(expectedCompletedOrdersResponse));
     }
 
     @Test
     void shouldBeAbleToFetchAllActiveOrdersWhenCategoryIdIsGiven() throws NoOrdersFoundException, UserNotFoundException, NoCategoryFoundException {
-        OrdersResponse expectedActiveOrderResponse = OrdersResponse.builder().build();
+        ActiveOrdersResponse expectedActiveOrderResponse = ActiveOrdersResponse.builder().build();
         when(orderService.getActiveOrders(principal.getName())).thenReturn(expectedActiveOrderResponse);
 
-        OrdersResponse actualActiveOrderResponse = orderController.getActiveOrders(principal);
+        ActiveOrdersResponse actualActiveOrderResponse = orderController.getActiveOrders(principal);
 
         verify(orderService).getActiveOrders(principal.getName());
         assertThat(actualActiveOrderResponse, is(expectedActiveOrderResponse));

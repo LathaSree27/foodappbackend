@@ -1,8 +1,9 @@
 package com.tweats.service;
 
+import com.tweats.controller.response.ActiveOrdersResponse;
 import com.tweats.controller.response.OrderResponse;
 import com.tweats.controller.response.OrderedItemResponse;
-import com.tweats.controller.response.OrdersResponse;
+import com.tweats.controller.response.CompletedOrdersResponse;
 import com.tweats.exceptions.*;
 import com.tweats.model.*;
 import com.tweats.model.constants.OrderStatus;
@@ -33,7 +34,7 @@ public class OrderService {
 
     private CartService cartService;
 
-    public OrdersResponse getCompletedOrders(long categoryId, Date date) throws NoOrdersFoundException {
+    public CompletedOrdersResponse getCompletedOrders(long categoryId, Date date) throws NoOrdersFoundException {
         List<Order> orders = orderRepository.getAllCompletedOrdersByCategoryAndDate(categoryId, date, OrderStatus.DELIVERED.name());
         int count = orders.size();
         if (count == 0) throw new NoOrdersFoundException();
@@ -70,22 +71,22 @@ public class OrderService {
         return billAmount;
     }
 
-    private OrdersResponse getCompletedOrdersResponse(int count, BigDecimal revenue,List<OrderResponse> orders){
-        return OrdersResponse.builder()
+    private CompletedOrdersResponse getCompletedOrdersResponse(int count, BigDecimal revenue, List<OrderResponse> orders){
+        return CompletedOrdersResponse.builder()
                 .count(count)
                 .revenue(revenue)
                 .orders(orders)
                 .build();
     }
 
-    private OrdersResponse getActiveOrdersResponse(int count, List<OrderResponse> orders){
-        return OrdersResponse.builder()
+    private ActiveOrdersResponse getActiveOrdersResponse(int count, List<OrderResponse> orders){
+        return ActiveOrdersResponse.builder()
                 .count(count)
                 .orders(orders)
                 .build();
     }
 
-    public OrdersResponse getActiveOrders(String vendorEmail) throws NoOrdersFoundException, UserNotFoundException, NoCategoryFoundException {
+    public ActiveOrdersResponse getActiveOrders(String vendorEmail) throws NoOrdersFoundException, UserNotFoundException, NoCategoryFoundException {
         Category category = categoryService.getCategory(vendorEmail);
         List<Order> orders = orderRepository.getAllActiveOrdersByCategoryId(category.getId(), OrderStatus.PLACED.name());
         int count = orders.size();

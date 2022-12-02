@@ -43,8 +43,7 @@ public class CategoryService {
 
     public CategoryResponse getVendorCategoryResponse(String userEmail) throws UserNotFoundException, NoCategoryFoundException {
         Category category = getCategory(userEmail);
-        String imageLink = imageService.getImageLink(category.getImage());
-        return getVendorCategoryResponse(category, imageLink);
+        return getCategoryResponse(category);
     }
 
     public List<CategoryResponse> getAllCategories() throws NoCategoryFoundException {
@@ -68,14 +67,6 @@ public class CategoryService {
                 .categoryName(category.getName())
                 .imageLink(imageService.getImageLink(category.getImage()))
                 .isOpen(category.isOpen())
-                .build();
-    }
-
-    private CategoryResponse getVendorCategoryResponse(Category category, String imageLink) {
-        return CategoryResponse.builder()
-                .id(category.getId())
-                .categoryName(category.getName())
-                .imageLink(imageLink)
                 .build();
     }
 

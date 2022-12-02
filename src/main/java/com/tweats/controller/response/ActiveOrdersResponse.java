@@ -3,14 +3,12 @@ package com.tweats.controller.response;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.math.BigDecimal;
 import java.util.List;
-
+import java.util.Objects;
 
 @Getter
 @Builder
-public class OrdersResponse {
+public class ActiveOrdersResponse {
     private long count;
-    private BigDecimal revenue;
     private List<OrderResponse> orders;
 }

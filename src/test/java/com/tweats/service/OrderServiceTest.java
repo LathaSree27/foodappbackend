@@ -1,8 +1,9 @@
 package com.tweats.service;
 
+import com.tweats.controller.response.ActiveOrdersResponse;
 import com.tweats.controller.response.OrderResponse;
 import com.tweats.controller.response.OrderedItemResponse;
-import com.tweats.controller.response.OrdersResponse;
+import com.tweats.controller.response.CompletedOrdersResponse;
 import com.tweats.exceptions.*;
 import com.tweats.model.*;
 import com.tweats.model.constants.OrderStatus;
@@ -80,12 +81,12 @@ public class OrderServiceTest {
         when(orderRepository.getAllCompletedOrdersByCategoryAndDate(category.getId(), today, OrderStatus.DELIVERED.name())).thenReturn(orders);
         when(orderRepository.getRevenueOfCompletedOrdersByCategoryIdAndDate(category.getId(), today, OrderStatus.DELIVERED.name())).thenReturn(revenue);
 
-        OrdersResponse actualOrdersResponse = orderService.getCompletedOrders(category.getId(), today);
+        CompletedOrdersResponse actualCompletedOrdersResponse = orderService.getCompletedOrders(category.getId(), today);
 
         verify(orderRepository).getAllCompletedOrdersByCategoryAndDate(category.getId(), today, OrderStatus.DELIVERED.name());
-        assertThat(actualOrdersResponse.getCount(), is(count));
-        assertThat(actualOrdersResponse.getRevenue(), is(revenue));
-        assertThat(actualOrdersResponse.getOrders(), is(orderResponses));
+        assertThat(actualCompletedOrdersResponse.getCount(), is(count));
+        assertThat(actualCompletedOrdersResponse.getRevenue(), is(revenue));
+        assertThat(actualCompletedOrdersResponse.getOrders(), is(orderResponses));
 
     }
 
@@ -107,7 +108,7 @@ public class OrderServiceTest {
         when(categoryService.getCategory(user.getEmail())).thenReturn(category);
         when(orderRepository.getAllActiveOrdersByCategoryId(category.getId(), OrderStatus.PLACED.name())).thenReturn(orders);
 
-        OrdersResponse actualActiveOrders = orderService.getActiveOrders(user.getEmail());
+        ActiveOrdersResponse actualActiveOrders = orderService.getActiveOrders(user.getEmail());
 
         verify(orderRepository).getAllActiveOrdersByCategoryId(category.getId(), OrderStatus.PLACED.name());
         assertThat(actualActiveOrders.getCount(), is(count));
