@@ -61,13 +61,12 @@ public class CartControllerTest {
     }
 
     @Test
-    void shouldBeAbleToDeleteCartItemWhenIdIsGiven() throws CartItemNotFoundException, CartNotFoundException {
+    void shouldBeAbleToDeleteCartItemWhenIdIsGiven() throws CartItemNotFoundException, CartNotFoundException, CartAccessDeniedException {
         long cartId = 2;
-
         int itemId = 3;
-        cartController.deleteCartItem(cartId, itemId);
+        cartController.deleteCartItem(principal, cartId, itemId);
 
-        verify(cartService).deleteCartItem(cartId, itemId);
+        verify(cartService).deleteCartItem(principal.getName(), cartId, itemId);
     }
 }
 

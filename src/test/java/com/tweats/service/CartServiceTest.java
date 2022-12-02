@@ -184,18 +184,32 @@ public class CartServiceTest {
     }
 
     @Test
-    void shouldBeAbleToDeleteCartItemWhenIdIsGiven() throws CartItemNotFoundException, CartNotFoundException {
+    void shouldBeAbleToDeleteCartItemWhenIdIsGiven() throws CartItemNotFoundException, CartNotFoundException, CartAccessDeniedException {
         long itemId = 2;
         long cartId = 1;
         long initialQuantity = 2;
+        String email = "abc@gmail.com";
         CartItem cartItem = new CartItem(cart, item, initialQuantity);
         cart.addCartItem(cartItem);
         when(cartRepository.findById(cartId)).thenReturn(Optional.of(cart));
         when(item.getId()).thenReturn(itemId);
+        when(user.getEmail()).thenReturn(email);
 
-        cartService.deleteCartItem(cartId, itemId);
+        cartService.deleteCartItem(email, cartId, itemId);
 
         verify(cartRepository).save(cart);
+    }
+
+    @Test
+    void shouldThrowCartAccessDeniedExceptionWhenGivenCartDoesNotBelongsToUserWhoTriesToDelete() {
+        long itemId = 2;
+        long cartId = 1;
+        String email = "abc@gmail.com";
+        String cartUserEmail = "xyz@gmail.com";
+        when(cartRepository.findById(cartId)).thenReturn(Optional.of(cart));
+        when(user.getEmail()).thenReturn(cartUserEmail);
+
+        assertThrows(CartAccessDeniedException.class, () -> cartService.deleteCartItem(email, cartId, itemId));
     }
 
     @Test
@@ -203,7 +217,7 @@ public class CartServiceTest {
         long cartId = 2;
         int itemId = 3;
 
-        assertThrows(CartNotFoundException.class, () -> cartService.deleteCartItem(cartId, itemId));
+        assertThrows(CartNotFoundException.class, () -> cartService.deleteCartItem(user.getEmail(), cartId, itemId));
     }
 
     @Test

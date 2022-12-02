@@ -55,8 +55,10 @@ public class CartService {
         cartRepository.save(cart);
     }
 
-    public void deleteCartItem(long cartId, long itemId) throws CartItemNotFoundException, CartNotFoundException {
+    public void deleteCartItem(String email, long cartId, long itemId) throws CartItemNotFoundException, CartNotFoundException, CartAccessDeniedException {
         Cart cart = getCart(cartId);
+        String cartUserEmail = cart.getUser().getEmail();
+        if (!cartUserEmail.equals(email)) throw new CartAccessDeniedException();
         Set<CartItem> cartItems = cart.getCartItems();
         CartItem cartItem = getCartItem(itemId, cartItems);
         cartItems.remove(cartItem);

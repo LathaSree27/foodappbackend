@@ -41,8 +41,8 @@ public class CartController {
     }
 
     @DeleteMapping("{cartId}")
-    public void deleteCartItem(@PathVariable long cartId, @RequestParam long itemId) throws CartItemNotFoundException, CartNotFoundException {
-        cartService.deleteCartItem(cartId, itemId);
+    public void deleteCartItem(Principal principal, @PathVariable long cartId, @RequestParam long itemId) throws CartItemNotFoundException, CartNotFoundException, CartAccessDeniedException {
+        cartService.deleteCartItem(principal.getName(), cartId, itemId);
     }
 }
 
