@@ -115,7 +115,7 @@ public class CartServiceTest {
     }
 
     @Test
-    void shouldBeAbleToUpdateQuantityOfACartItemWhenCartItemIdAndQuantityAreGiven() throws CartItemNotFoundException, CartAccessDeniedException, CartNotFoundException {
+    void shouldBeAbleToUpdateQuantityOfACartItemWhenCartItemIdAndQuantityAreGiven() throws CartItemNotFoundException, CartAccessDeniedException, CartNotFoundException, ItemUnavailableException {
         long itemId = 2;
         long cartId = 1;
         long initialQuantity = 2;
@@ -126,10 +126,26 @@ public class CartServiceTest {
         when(cartRepository.findById(cartId)).thenReturn(Optional.of(cart));
         when(user.getEmail()).thenReturn(email);
         when(item.getId()).thenReturn(itemId);
+        when(item.isAvailable()).thenReturn(true);
 
         cartService.updateCartItemQuantity(email, cartId, itemId, quantity);
 
         assertThat(cartItem.getQuantity(), is(quantity));
+    }
+
+    @Test
+    void shouldThrowItemUnavailableExceptionWhenTheGivenItemIsNotAvailableToUpdate() {
+        item.setAvailable(false);
+        long itemId = 2;
+        long quantity = 3;
+        String email = "abc@gmail.com";
+        CartItem cartItem = new CartItem(cart, item, quantity);
+        cart.addCartItem(cartItem);
+        when(cartRepository.findById(cart.getId())).thenReturn(Optional.of(cart));
+        when(user.getEmail()).thenReturn(email);
+        when(cartItem.getItem().getId()).thenReturn(itemId);
+
+        assertThrows(ItemUnavailableException.class, () -> cartService.updateCartItemQuantity(email, cart.getId(), itemId, quantity));
     }
 
     @Test

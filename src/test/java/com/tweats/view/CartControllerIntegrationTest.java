@@ -20,6 +20,7 @@ import java.util.Set;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(classes = TweatsApplication.class)
@@ -153,6 +154,33 @@ public class CartControllerIntegrationTest {
                         .param("quantity", String.valueOf(updatedQuantity))
                         .with(httpBasic("abc@gmail.com", "password")))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    void shouldThrowItemUnavailableErrorWhenTheGivenItemIsNotAvailableToUpdate() throws Exception {
+        String itemName = "mango";
+        long quantity = 1;
+        Set<CartItem> cartItems = new HashSet<>();
+        Item item = new Item(itemName, categoryImage, new BigDecimal(2), category);
+        item.setAvailable(false);
+        Item savedItem = itemRepository.save(item);
+        CartItem cartItem = new CartItem(cart, item, quantity);
+        cartItems.add(cartItem);
+        cart.setCartItems(cartItems);
+        Cart savedCart = cartRepository.save(cart);
+        int updatedQuantity = 2;
+
+        mockMvc.perform(put("/cart/" + savedCart.getId())
+                        .param("itemId", String.valueOf(savedItem.getId()))
+                        .param("quantity", String.valueOf(updatedQuantity))
+                        .with(httpBasic("abc@gmail.com", "password")))
+                .andExpect(status().isNotFound())
+                .andExpect(content().json("{\n" +
+                        "    \"message\": \"Item not available!\",\n" +
+                        "    \"details\": [\n" +
+                        "        \"Item is not available at this point of time!\"\n" +
+                        "    ]\n" +
+                        "}"));
     }
 
     @Test

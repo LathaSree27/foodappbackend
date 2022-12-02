@@ -50,7 +50,7 @@ public class CartControllerTest {
     }
 
     @Test
-    void shouldBeAbleToUpdateQuantityOfCartItemWhenQuantityIsGiven() throws CartItemNotFoundException, CartAccessDeniedException, CartNotFoundException {
+    void shouldBeAbleToUpdateQuantityOfCartItemWhenQuantityIsGiven() throws CartItemNotFoundException, CartAccessDeniedException, CartNotFoundException, ItemUnavailableException {
         long cartId = 2;
         long itemId = 1;
         long quantity = 30;

@@ -31,7 +31,7 @@ public class CartService {
     public void addItem(String userEmail, long itemId, long quantity) throws ItemDoesNotExistException, NoCategoryFoundException, UserNotFoundException, ItemUnavailableException {
         User user = userPrincipalService.findUserByEmail(userEmail);
         Item item = itemService.getItem(itemId);
-        if(!item.isAvailable()) throw new ItemUnavailableException();
+        if (!item.isAvailable()) throw new ItemUnavailableException();
         Cart cart = getCart(user.getId(), item.getCategory().getId());
         CartItem cartItem = cart.getCartItem(item, quantity);
         cart.addCartItem(cartItem);
@@ -44,12 +44,13 @@ public class CartService {
         return getCartResponse(cart);
     }
 
-    public void updateCartItemQuantity(String email, long cartId, long itemId, long quantity) throws CartItemNotFoundException, CartAccessDeniedException, CartNotFoundException {
+    public void updateCartItemQuantity(String email, long cartId, long itemId, long quantity) throws CartItemNotFoundException, CartAccessDeniedException, CartNotFoundException, ItemUnavailableException {
         Cart cart = getCart(cartId);
         String cartUserEmail = cart.getUser().getEmail();
         if (!cartUserEmail.equals(email)) throw new CartAccessDeniedException();
         Set<CartItem> cartItems = cart.getCartItems();
         CartItem cartItem = getCartItem(itemId, cartItems);
+        if (!cartItem.getItem().isAvailable()) throw new ItemUnavailableException();
         cartItem.setQuantity(quantity);
         cartRepository.save(cart);
     }
